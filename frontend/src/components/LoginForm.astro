@@ -23,13 +23,23 @@
         >
           Contraseña
         </label>
-        <input
-          type="password"
-          id="password"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm"
-          placeholder="••••••••"
-          required
-        />
+        <div class="relative">
+          <input
+            type="password"
+            id="password"
+            class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg shadow-sm"
+            placeholder="••••••••"
+            required
+          />
+          <button
+            type="button"
+            id="toggle-password"
+            class="absolute inset-y-0 right-3 px-2 text-gray-500 text-lg"
+            tabindex="-1"
+          >
+            <i id="eye-icon" class="fa-solid fa-eye-slash"></i>
+          </button>
+        </div>
       </div>
       <button
         type="submit"
@@ -47,10 +57,21 @@
 
     const form = document.getElementById("login-form");
 
+    // Mostrar/ocultar contraseña con Font Awesome
+    const toggle = document.getElementById("toggle-password");
+    const passwordInput = document.getElementById("password");
+    const icon = document.getElementById("eye-icon");
+
+    toggle.addEventListener("click", () => {
+      const hidden = passwordInput.type === "password";
+      passwordInput.type = hidden ? "text" : "password";
+      icon.className = hidden ? "fa-solid fa-eye" : "fa-solid fa-eye-slash";
+    });
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const username = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+      const password = passwordInput.value;
 
       try {
         const res = await fetch(`${API_URL}/api/auth/login/`, {
@@ -73,7 +94,6 @@
           return;
         }
 
-        // Guardamos los datos de sesión y redirigimos
         localStorage.setItem("access_token", data.access);
         localStorage.setItem("refresh_token", data.refresh);
         localStorage.setItem("username", username);

@@ -6,25 +6,33 @@ import Footer from "../components/Footer.astro";
 
 <!doctype html>
 <html lang="es">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<title>Análisis Apuestas Deportivas</title>
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="description" content="Plataforma para analizar estadisticas de apuestas deportivas y apuntar tus resultados" />
-	</head>
-	<body>
-		<Header />
-		<slot />
-		<Footer />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Análisis Apuestas Deportivas</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="description" content="Plataforma para analizar estadísticas de apuestas deportivas y apuntar tus resultados" />
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      integrity="sha512-KN+7fG0RgfWqU6tW7e7r+lKY+u3T3bEuGkBd0EtLVJePykFkKlo6Qw1T5Pp+LKbpDuzp/iylAHLaaPRV3Roh8A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <Header />
+    <slot />
+    <Footer />
+  </body>
 </html>
 
 <style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
 </style>
