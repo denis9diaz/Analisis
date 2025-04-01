@@ -12,7 +12,7 @@
           type="text"
           id="name"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm"
-          placeholder="Tu nombre"
+          placeholder="Tu nombre de usuario"
           required
         />
       </div>
@@ -82,10 +82,7 @@
         const data = await res.json();
 
         if (res.ok) {
-          alert("Registro exitoso");
-          console.log("Usuario creado:", data);
-          // Redirigir al login si quieres:
-          // window.location.href = "/login";
+          window.location.href = "/login";
         } else {
           alert("Error en el registro");
           console.error(data);
