@@ -8,6 +8,7 @@ from auth.serializers import RegisterSerializer, UserSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
 
 # Generar token JWT
 def get_tokens_for_user(user):
@@ -31,16 +32,21 @@ def register(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
-    username = request.data.get('username')
+    identifier = request.data.get('username')
     password = request.data.get('password')
-    
-    # Autenticamos al usuario
-    user = authenticate(username=username, password=password)
 
-    if user is not None:
-        # Generamos los tokens de acceso y refresh
-        tokens = get_tokens_for_user(user)
-        return Response(tokens, status=status.HTTP_200_OK)
+    user = User.objects.filter(Q(username=identifier) | Q(email=identifier)).first()
+
+    if user:
+        user_auth = authenticate(username=user.username, password=password)
+        if user_auth:
+            tokens = get_tokens_for_user(user_auth)
+            return Response({
+                "access": tokens["access"],
+                "refresh": tokens["refresh"],
+                "username": user.username,  # ← añadimos username real
+            }, status=status.HTTP_200_OK)
+
     return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
 
 # Logout de usuario
