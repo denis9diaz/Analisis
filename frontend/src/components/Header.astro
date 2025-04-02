@@ -1,6 +1,6 @@
 <header class="bg-blue-600 text-white p-4 shadow-md relative">
   <div class="container mx-auto flex justify-between items-center">
-    <a href="/"><h1 class="text-xl font-bold">Análisis Apuestas</h1></a>
+    <a href="/"><h1 class="text-xl font-bold">Logo</h1></a>
     <nav class="space-x-4 ml-auto relative" id="header-nav">
       <!-- Se rellena por JS -->
     </nav>
@@ -13,6 +13,7 @@
 
   if (username) {
     nav.innerHTML = `
+      <a href="/analisis" class="hover:underline">Análisis</a>
       <div class="relative inline-block text-left">
         <button id="user-menu-button" class="hover:underline">
           ${username}
@@ -38,7 +39,6 @@
       window.location.href = "/";
     });
 
-    // Cierra el dropdown si haces clic fuera
     document.addEventListener("click", (e) => {
       if (!nav.contains(e.target)) {
         dropdown.classList.add("hidden");
