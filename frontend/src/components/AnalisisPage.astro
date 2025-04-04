@@ -1,6 +1,7 @@
 ---
-import LigaSelect from './LigaSelect.tsx';
-import MetodosList from './MetodosList.tsx';
+import PartidosList from '../components/PartidosList.tsx';
+import MetodosList from '../components/MetodosList.tsx';
+import LigaSelect from '../components/LigaSelect.tsx';
 ---
 
 <div class="flex">
@@ -9,5 +10,6 @@ import MetodosList from './MetodosList.tsx';
   </div>
   <div class="w-3/4">
     <LigaSelect client:load />
+    <PartidosList client:load />
   </div>
 </div>
