@@ -1,8 +1,13 @@
 ---
 import LigaSelect from './LigaSelect.tsx';
+import MetodosList from './MetodosList.tsx';
 ---
 
-<div>
-  <h2>Análisis de partidos</h2>
-  <LigaSelect client:load />
+<div class="flex">
+  <div class="w-1/4">
+    <MetodosList client:load />
+  </div>
+  <div class="w-3/4">
+    <LigaSelect client:load />
+  </div>
 </div>

@@ -14,6 +14,7 @@ type Option = {
 
 export default function LigaSelect() {
   const [options, setOptions] = useState<Option[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     fetch("http://localhost:8000/api/general/ligas/")
@@ -35,9 +36,14 @@ export default function LigaSelect() {
         }));
 
         setOptions(formattedOptions);
+        setLoading(false); // Desactivar el loading después de cargar los datos
       })
       .catch((err) => console.error("Error cargando ligas:", err));
   }, []);
+
+  if (loading) {
+    return <div>Cargando ligas...</div>; // Mostrar mensaje de carga mientras se obtiene la información
+  }
 
   return (
     <div className="mb-4">
