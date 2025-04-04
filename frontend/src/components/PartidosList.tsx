@@ -44,6 +44,11 @@ export default function PartidosList() {
   const [estado, setEstado] = useState("NO");
   const [notas, setNotas] = useState("");
 
+  const formatFecha = (fecha: string) => {
+    const [year, month, day] = fecha.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
   useEffect(() => {
     if (!metodoSeleccionado) return;
 
@@ -60,9 +65,12 @@ export default function PartidosList() {
       .then((res) => res.json())
       .then((data: Partido[]) => {
         console.log("Partidos obtenidos:", data);
-        const filtrados = data.filter(
-          (p) => p.metodo === metodoSeleccionado.id
-        );
+        const filtrados = data
+          .filter((p) => p.metodo === metodoSeleccionado.id)
+          .sort(
+            (a, b) =>
+              new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+          );
         console.log("Partidos filtrados:", filtrados);
         setPartidos(filtrados);
       })
@@ -151,7 +159,7 @@ export default function PartidosList() {
           <tbody>
             {partidos.map((p) => (
               <tr key={p.id}>
-                <td className="border px-2 py-1">{p.fecha}</td>
+                <td className="border px-2 py-1">{formatFecha(p.fecha)}</td>
                 <td className="border px-2 py-1">{p.nombre_partido}</td>
                 <td className="border px-2 py-1">
                   {p.liga && p.liga.codigo_pais ? (
@@ -189,7 +197,7 @@ export default function PartidosList() {
         </table>
       </div>
 
-      {/* Formulario para añadir */}
+      {/* Formulario modal */}
       <PartidoFormModal
         isOpen={showModal}
         onRequestClose={() => setShowModal(false)}
@@ -202,11 +210,13 @@ export default function PartidosList() {
           })
             .then((res) => res.json())
             .then((data: Partido[]) => {
-              console.log("Partidos cargados tras guardar:", data); // 👈 Añade esto
-
-              const filtrados = data.filter(
-                (p) => p.metodo === metodoSeleccionado.id
-              );
+              console.log("Partidos cargados tras guardar:", data);
+              const filtrados = data
+                .filter((p) => p.metodo === metodoSeleccionado.id)
+                .sort(
+                  (a, b) =>
+                    new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+                );
               setPartidos(filtrados);
             });
         }}

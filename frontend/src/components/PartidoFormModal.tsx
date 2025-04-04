@@ -28,14 +28,14 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
 
   const [fecha, setFecha] = useState("");
   const [nombre, setNombre] = useState("");
-  const [porLocal, setPorLocal] = useState(0);
-  const [porVisitante, setPorVisitante] = useState(0);
-  const [porGeneral, setPorGeneral] = useState(0);
+  const [porLocal, setPorLocal] = useState<number | "">("");
+  const [porVisitante, setPorVisitante] = useState<number | "">("");
+  const [porGeneral, setPorGeneral] = useState<number | "">("");
   const [rachaLocal, setRachaLocal] = useState("");
   const [rachaVisitante, setRachaVisitante] = useState("");
   const [rachaHistLocal, setRachaHistLocal] = useState("");
   const [rachaHistVisitante, setRachaHistVisitante] = useState("");
-  const [estado, setEstado] = useState("NO");
+  const [estado, setEstado] = useState("");
   const [notas, setNotas] = useState("");
 
   useEffect(() => {
@@ -59,14 +59,18 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
   }, []);
 
   useEffect(() => {
-    const promedio = (porLocal + porVisitante) / 2;
-    setPorGeneral(parseFloat(promedio.toFixed(2)));
+    if (porLocal !== "" && porVisitante !== "") {
+      const promedio = (+porLocal + +porVisitante) / 2;
+      setPorGeneral(parseFloat(promedio.toFixed(2)));
+    } else {
+      setPorGeneral("");
+    }
   }, [porLocal, porVisitante]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!metodoSeleccionado || !ligaSeleccionada) return;
+    if (!metodoSeleccionado || !ligaSeleccionada || estado === "") return;
 
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -95,42 +99,141 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
     })
       .then((res) => res.json())
       .then(() => {
-        onPartidoGuardado(); // recarga la lista
-        onRequestClose(); // cierra el modal
+        onPartidoGuardado();
+        onRequestClose();
+
+        // 🔁 Limpiar formulario
+        setFecha("");
+        setNombre("");
+        setLigaSeleccionada(null);
+        setPorLocal("");
+        setPorVisitante("");
+        setPorGeneral("");
+        setRachaLocal("");
+        setRachaVisitante("");
+        setRachaHistLocal("");
+        setRachaHistVisitante("");
+        setEstado("");
+        setNotas("");
       })
       .catch((err) => console.error("Error al guardar partido:", err));
   };
 
   return (
-    <Modal isOpen={isOpen} onRequestClose={onRequestClose} contentLabel="Añadir Partido"
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      contentLabel="Añadir Partido"
       className="bg-white p-6 rounded shadow-md max-w-xl mx-auto mt-20 outline-none"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start"
     >
-      <h2 className="text-xl font-bold mb-4">Añadir Partido</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} className="input w-full" />
-        <input type="text" placeholder="Nombre del partido" value={nombre} onChange={(e) => setNombre(e.target.value)} className="input w-full" />
+        <input
+          type="date"
+          value={fecha}
+          onChange={(e) => setFecha(e.target.value)}
+          className="input w-full"
+        />
+        <input
+          type="text"
+          placeholder="Partido"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          className="input w-full h-10 text-base"
+        />
         <Select
           options={ligas}
           value={ligaSeleccionada}
           onChange={(op) => setLigaSeleccionada(op)}
           placeholder="Selecciona una liga"
         />
-        <input type="number" placeholder="% Local" value={porLocal} onChange={(e) => setPorLocal(+e.target.value)} className="input w-full" />
-        <input type="number" placeholder="% Visitante" value={porVisitante} onChange={(e) => setPorVisitante(+e.target.value)} className="input w-full" />
-        <input type="number" placeholder="% General" value={porGeneral} onChange={(e) => setPorGeneral(+e.target.value)} className="input w-full" />
-        <input type="text" placeholder="Racha Local" value={rachaLocal} onChange={(e) => setRachaLocal(e.target.value)} className="input w-full" />
-        <input type="text" placeholder="Racha Visitante" value={rachaVisitante} onChange={(e) => setRachaVisitante(e.target.value)} className="input w-full" />
-        <input type="text" placeholder="Racha Hist. Local" value={rachaHistLocal} onChange={(e) => setRachaHistLocal(e.target.value)} className="input w-full" />
-        <input type="text" placeholder="Racha Hist. Visitante" value={rachaHistVisitante} onChange={(e) => setRachaHistVisitante(e.target.value)} className="input w-full" />
-        <select value={estado} onChange={(e) => setEstado(e.target.value)} className="input w-full">
-          <option value="NO">No</option>
-          <option value="LIVE">En Vivo</option>
-          <option value="APOSTADO">Apostado</option>
+        <input
+          type="number"
+          placeholder="% Local"
+          value={porLocal}
+          onChange={(e) =>
+            setPorLocal(e.target.value === "" ? "" : +e.target.value)
+          }
+          className="input w-full"
+        />
+        <input
+          type="number"
+          placeholder="% Visitante"
+          value={porVisitante}
+          onChange={(e) =>
+            setPorVisitante(e.target.value === "" ? "" : +e.target.value)
+          }
+          className="input w-full"
+        />
+        <input
+          type="number"
+          placeholder="% General"
+          value={porGeneral}
+          onChange={(e) =>
+            setPorGeneral(e.target.value === "" ? "" : +e.target.value)
+          }
+          className="input w-full"
+        />
+        <input
+          type="text"
+          placeholder="Racha Local"
+          value={rachaLocal}
+          onChange={(e) => setRachaLocal(e.target.value)}
+          className="input w-full"
+        />
+        <input
+          type="text"
+          placeholder="Racha Visitante"
+          value={rachaVisitante}
+          onChange={(e) => setRachaVisitante(e.target.value)}
+          className="input w-full"
+        />
+        <input
+          type="text"
+          placeholder="Racha Histórica Local"
+          value={rachaHistLocal}
+          onChange={(e) => setRachaHistLocal(e.target.value)}
+          className="input w-full"
+        />
+        <input
+          type="text"
+          placeholder="Racha Histórica Visitante"
+          value={rachaHistVisitante}
+          onChange={(e) => setRachaHistVisitante(e.target.value)}
+          className="input w-full"
+        />
+        <select
+          value={estado}
+          onChange={(e) => setEstado(e.target.value)}
+          className="input w-full text-gray-700"
+        >
+          <option value="" disabled>
+            Estado
+          </option>
+          <option value="LIVE">LIVE</option>
+          <option value="NO">NO</option>
+          <option value="APOSTADO">APOSTADO</option>
         </select>
-        <textarea placeholder="Notas" value={notas} onChange={(e) => setNotas(e.target.value)} className="input w-full" />
+        <textarea
+          placeholder="Notas"
+          value={notas}
+          onChange={(e) => setNotas(e.target.value)}
+          className="input w-full"
+        />
         <div className="flex justify-end">
-          <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded">Guardar</button>
+          <button
+            type="button"
+            className="bg-red-500 text-white py-2 px-4 rounded mr-2 hover:bg-red-600"
+            onClick={onRequestClose}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+          >
+            Guardar
+          </button>
         </div>
       </form>
     </Modal>
