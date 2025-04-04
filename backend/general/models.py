@@ -15,7 +15,7 @@ class MetodoAnalisis(models.Model):
 
 class Liga(models.Model):
     nombre = models.CharField(max_length=255)
-    codigo_pais = models.CharField(max_length=2, default='ES')  # Valor temporal para poder migrar
+    codigo_pais = models.CharField(max_length=6, default='ES')  # Valor temporal para poder migrar
 
     def __str__(self):
         return self.nombre
