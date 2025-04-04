@@ -137,13 +137,13 @@ export default function PartidosList() {
               <th className="border px-2 py-1">Fecha</th>
               <th className="border px-2 py-1">Partido</th>
               <th className="border px-2 py-1">Liga</th>
-              <th className="border px-2 py-1">%Local</th>
-              <th className="border px-2 py-1">%Visitante</th>
-              <th className="border px-2 py-1">%General</th>
-              <th className="border px-2 py-1">RL</th>
-              <th className="border px-2 py-1">RV</th>
-              <th className="border px-2 py-1">RHL</th>
-              <th className="border px-2 py-1">RHV</th>
+              <th className="border px-2 py-1 w-24">%Local</th>
+              <th className="border px-2 py-1 w-24">%Visitante</th>
+              <th className="border px-2 py-1 w-24">%General</th>
+              <th className="border px-2 py-1 w-20">RL</th>
+              <th className="border px-2 py-1 w-20">RV</th>
+              <th className="border px-2 py-1 w-20">RHL</th>
+              <th className="border px-2 py-1 w-20">RHV</th>
               <th className="border px-2 py-1">Estado</th>
               <th className="border px-2 py-1">Notas</th>
             </tr>
@@ -154,7 +154,7 @@ export default function PartidosList() {
                 <td className="border px-2 py-1">{p.fecha}</td>
                 <td className="border px-2 py-1">{p.nombre_partido}</td>
                 <td className="border px-2 py-1">
-                  {p.liga && (
+                  {p.liga && p.liga.codigo_pais ? (
                     <div className="flex items-center gap-2">
                       <img
                         src={`https://flagcdn.com/w20/${p.liga.codigo_pais.toLowerCase()}.png`}
@@ -164,15 +164,23 @@ export default function PartidosList() {
                       />
                       {p.liga.nombre}
                     </div>
+                  ) : (
+                    <span className="text-gray-400 italic">Sin liga</span>
                   )}
                 </td>
-                <td className="border px-2 py-1">{p.porcentaje_local}%</td>
-                <td className="border px-2 py-1">{p.porcentaje_visitante}%</td>
-                <td className="border px-2 py-1">{p.porcentaje_general}%</td>
-                <td className="border px-2 py-1">{p.racha_local}</td>
-                <td className="border px-2 py-1">{p.racha_visitante}</td>
-                <td className="border px-2 py-1">{p.racha_hist_local}</td>
-                <td className="border px-2 py-1">{p.racha_hist_visitante}</td>
+                <td className="border px-2 py-1 w-24">{p.porcentaje_local}%</td>
+                <td className="border px-2 py-1 w-24">
+                  {p.porcentaje_visitante}%
+                </td>
+                <td className="border px-2 py-1 w-24">
+                  {p.porcentaje_general}%
+                </td>
+                <td className="border px-2 py-1 w-20">{p.racha_local}</td>
+                <td className="border px-2 py-1 w-20">{p.racha_visitante}</td>
+                <td className="border px-2 py-1 w-20">{p.racha_hist_local}</td>
+                <td className="border px-2 py-1 w-20">
+                  {p.racha_hist_visitante}
+                </td>
                 <td className="border px-2 py-1">{p.estado}</td>
                 <td className="border px-2 py-1">{p.notas}</td>
               </tr>
@@ -194,6 +202,8 @@ export default function PartidosList() {
           })
             .then((res) => res.json())
             .then((data: Partido[]) => {
+              console.log("Partidos cargados tras guardar:", data); // 👈 Añade esto
+
               const filtrados = data.filter(
                 (p) => p.metodo === metodoSeleccionado.id
               );

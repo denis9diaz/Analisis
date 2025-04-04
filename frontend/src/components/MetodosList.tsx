@@ -55,13 +55,6 @@ export default function MetodosList() {
           </li>
         ))}
       </ul>
-
-      {metodoSeleccionado && (
-        <div className="mt-4">
-          <h4 className="font-semibold">Método Seleccionado:</h4>
-          <p>{metodoSeleccionado.nombre}</p>
-        </div>
-      )}
     </div>
   );
 }

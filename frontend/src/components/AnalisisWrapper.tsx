@@ -12,10 +12,10 @@ export default function AnalisisWrapper() {
   return (
     <MetodoProvider>
       <div className="flex">
-        <div className="w-1/4">
+        <div className="w-1/6">
           <MetodosList />
         </div>
-        <div className="w-3/4">
+        <div className="w-5/6">
           <PartidosConMetodo />
         </div>
       </div>

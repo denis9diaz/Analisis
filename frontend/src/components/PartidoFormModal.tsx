@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
+Modal.setAppElement('#root');
 import Select from "react-select";
 import { useMetodo } from "../context/MetodoContext";
 
@@ -56,6 +57,11 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
         setLigas(options);
       });
   }, []);
+
+  useEffect(() => {
+    const promedio = (porLocal + porVisitante) / 2;
+    setPorGeneral(parseFloat(promedio.toFixed(2)));
+  }, [porLocal, porVisitante]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
