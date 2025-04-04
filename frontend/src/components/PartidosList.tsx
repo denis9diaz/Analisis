@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMetodo } from "../context/MetodoContext";
+import PartidoFormModal from "./PartidoFormModal";
 
 type Partido = {
   id: number;
@@ -24,7 +25,7 @@ console.log("PartidosList renderizado");
 export default function PartidosList() {
   const { metodoSeleccionado } = useMetodo();
   const [partidos, setPartidos] = useState<Partido[]>([]);
-  const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const [fecha, setFecha] = useState("");
   const [nombrePartido, setNombrePartido] = useState("");
@@ -41,12 +42,12 @@ export default function PartidosList() {
 
   useEffect(() => {
     if (!metodoSeleccionado) return;
-  
+
     console.log("Método seleccionado:", metodoSeleccionado);
-  
+
     const token = localStorage.getItem("access_token");
     if (!token) return;
-  
+
     fetch("http://localhost:8000/api/general/partidos/", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -63,7 +64,6 @@ export default function PartidosList() {
       })
       .catch((err) => console.error("Error cargando partidos:", err));
   }, [metodoSeleccionado]);
-  
 
   const handleSubmitPartido = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,8 +95,6 @@ export default function PartidosList() {
       .then((res) => res.json())
       .then((nuevoPartido: Partido) => {
         setPartidos((prev) => [...prev, nuevoPartido]);
-        setShowForm(false);
-        // Limpiar campos
         setFecha("");
         setNombrePartido("");
         setLiga("");
@@ -120,10 +118,10 @@ export default function PartidosList() {
       {/* Botón para añadir partido */}
       <div className="mb-4">
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => setShowModal(true)}
           className="bg-blue-600 text-white py-2 px-4 rounded-lg"
         >
-          {showForm ? "Cancelar" : "Añadir Partido"}
+          Añadir Partido
         </button>
       </div>
 
@@ -168,27 +166,25 @@ export default function PartidosList() {
       </div>
 
       {/* Formulario para añadir */}
-      {showForm && (
-        <form className="space-y-4" onSubmit={handleSubmitPartido}>
-          <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} className="input" />
-          <input type="text" placeholder="Nombre del partido" value={nombrePartido} onChange={(e) => setNombrePartido(e.target.value)} className="input" />
-          <input type="text" placeholder="Liga ID" value={liga} onChange={(e) => setLiga(e.target.value)} className="input" />
-          <input type="number" placeholder="% Local" value={porcentajeLocal} onChange={(e) => setPorcentajeLocal(+e.target.value)} className="input" />
-          <input type="number" placeholder="% Visitante" value={porcentajeVisitante} onChange={(e) => setPorcentajeVisitante(+e.target.value)} className="input" />
-          <input type="number" placeholder="% General" value={porcentajeGeneral} onChange={(e) => setPorcentajeGeneral(+e.target.value)} className="input" />
-          <input type="text" placeholder="Racha Local" value={rachaLocal} onChange={(e) => setRachaLocal(e.target.value)} className="input" />
-          <input type="text" placeholder="Racha Visitante" value={rachaVisitante} onChange={(e) => setRachaVisitante(e.target.value)} className="input" />
-          <input type="text" placeholder="Racha Hist. Local" value={rachaHistLocal} onChange={(e) => setRachaHistLocal(e.target.value)} className="input" />
-          <input type="text" placeholder="Racha Hist. Visitante" value={rachaHistVisitante} onChange={(e) => setRachaHistVisitante(e.target.value)} className="input" />
-          <select value={estado} onChange={(e) => setEstado(e.target.value)} className="input">
-            <option value="NO">No</option>
-            <option value="LIVE">Live</option>
-            <option value="APOSTADO">Apostado</option>
-          </select>
-          <textarea placeholder="Notas" value={notas} onChange={(e) => setNotas(e.target.value)} className="input" />
-          <button type="submit" className="bg-green-600 text-white py-2 px-4 rounded">Guardar Partido</button>
-        </form>
-      )}
+      <PartidoFormModal
+        isOpen={showModal}
+        onRequestClose={() => setShowModal(false)}
+        onPartidoGuardado={() => {
+          const token = localStorage.getItem("access_token");
+          if (!token || !metodoSeleccionado) return;
+
+          fetch("http://localhost:8000/api/general/partidos/", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then((res) => res.json())
+            .then((data: Partido[]) => {
+              const filtrados = data.filter(
+                (p) => p.metodo === metodoSeleccionado.id
+              );
+              setPartidos(filtrados);
+            });
+        }}
+      />
     </div>
   );
 }
