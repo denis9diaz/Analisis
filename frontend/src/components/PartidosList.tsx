@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useMetodo } from "../context/MetodoContext";
 
 type Partido = {
   id: number;
@@ -8,70 +9,185 @@ type Partido = {
   porcentaje_local: number;
   porcentaje_visitante: number;
   porcentaje_general: number;
+  racha_local: string;
+  racha_visitante: string;
+  racha_hist_local: string;
+  racha_hist_visitante: string;
   estado: string;
   cumplido: string | null;
   notas: string;
+  metodo: number;
 };
 
+console.log("PartidosList renderizado");
+
 export default function PartidosList() {
+  const { metodoSeleccionado } = useMetodo();
   const [partidos, setPartidos] = useState<Partido[]>([]);
-  const [selectedPartido, setSelectedPartido] = useState<Partido | null>(null);
+  const [showForm, setShowForm] = useState(false);
+
+  const [fecha, setFecha] = useState("");
+  const [nombrePartido, setNombrePartido] = useState("");
+  const [liga, setLiga] = useState("");
+  const [porcentajeLocal, setPorcentajeLocal] = useState(0);
+  const [porcentajeVisitante, setPorcentajeVisitante] = useState(0);
+  const [porcentajeGeneral, setPorcentajeGeneral] = useState(0);
+  const [rachaLocal, setRachaLocal] = useState("");
+  const [rachaVisitante, setRachaVisitante] = useState("");
+  const [rachaHistLocal, setRachaHistLocal] = useState("");
+  const [rachaHistVisitante, setRachaHistVisitante] = useState("");
+  const [estado, setEstado] = useState("NO");
+  const [notas, setNotas] = useState("");
 
   useEffect(() => {
+    if (!metodoSeleccionado) return;
+  
+    console.log("Método seleccionado:", metodoSeleccionado);
+  
     const token = localStorage.getItem("access_token");
-    console.log("Token recuperado:", token);
-
-    if (!token) {
-      console.error("No se encontró el token de acceso.");
-      return;
-    }
-
+    if (!token) return;
+  
     fetch("http://localhost:8000/api/general/partidos/", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res.json())
-      .then((data) => {
-        console.log("Partidos recibidos:", data);
-        setPartidos(data);
+      .then((data: Partido[]) => {
+        console.log("Partidos obtenidos:", data);
+        const filtrados = data.filter(
+          (p) => p.metodo === metodoSeleccionado.id
+        );
+        console.log("Partidos filtrados:", filtrados);
+        setPartidos(filtrados);
       })
       .catch((err) => console.error("Error cargando partidos:", err));
-  }, []);
+  }, [metodoSeleccionado]);
+  
 
-  const handleSelectPartido = (partido: Partido) => {
-    setSelectedPartido(partido);
+  const handleSubmitPartido = (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem("access_token");
+    if (!token || !metodoSeleccionado) return;
+
+    fetch("http://localhost:8000/api/general/partidos/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        fecha,
+        nombre_partido: nombrePartido,
+        liga,
+        porcentaje_local: porcentajeLocal,
+        porcentaje_visitante: porcentajeVisitante,
+        porcentaje_general: porcentajeGeneral,
+        metodo: metodoSeleccionado.id,
+        racha_local: rachaLocal,
+        racha_visitante: rachaVisitante,
+        racha_hist_local: rachaHistLocal,
+        racha_hist_visitante: rachaHistVisitante,
+        estado,
+        notas,
+      }),
+    })
+      .then((res) => res.json())
+      .then((nuevoPartido: Partido) => {
+        setPartidos((prev) => [...prev, nuevoPartido]);
+        setShowForm(false);
+        // Limpiar campos
+        setFecha("");
+        setNombrePartido("");
+        setLiga("");
+        setPorcentajeLocal(0);
+        setPorcentajeVisitante(0);
+        setPorcentajeGeneral(0);
+        setRachaLocal("");
+        setRachaVisitante("");
+        setRachaHistLocal("");
+        setRachaHistVisitante("");
+        setEstado("NO");
+        setNotas("");
+      })
+      .catch((err) => console.error("Error guardando partido:", err));
   };
 
-  return (
-    <div className="mb-4">
-      <h3 className="text-xl font-semibold mb-4">Mis Partidos</h3>
-      <ul className="space-y-2">
-        {partidos.map((partido) => (
-          <li key={partido.id}>
-            <button
-              className={`w-full text-left px-4 py-2 border rounded ${
-                selectedPartido?.id === partido.id
-                  ? "bg-blue-500 text-white"
-                  : "bg-white text-black"
-              }`}
-              onClick={() => handleSelectPartido(partido)}
-            >
-              {partido.nombre_partido} - {partido.liga.nombre}
-            </button>
-          </li>
-        ))}
-      </ul>
+  if (!metodoSeleccionado) return null;
 
-      {selectedPartido && (
-        <div className="mt-4">
-          <h4 className="font-semibold">Partido Seleccionado:</h4>
-          <p>{selectedPartido.nombre_partido}</p>
-          <p>Fecha: {selectedPartido.fecha}</p>
-          <p>Estado: {selectedPartido.estado}</p>
-          <p>Resultado: {selectedPartido.cumplido}</p>
-          <p>Notas: {selectedPartido.notas}</p>
-        </div>
+  return (
+    <div className="p-4">
+      {/* Botón para añadir partido */}
+      <div className="mb-4">
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="bg-blue-600 text-white py-2 px-4 rounded-lg"
+        >
+          {showForm ? "Cancelar" : "Añadir Partido"}
+        </button>
+      </div>
+
+      {/* Tabla de partidos */}
+      <div className="overflow-x-auto mb-6">
+        <table className="min-w-full border border-gray-300 text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border px-2 py-1">Fecha</th>
+              <th className="border px-2 py-1">Partido</th>
+              <th className="border px-2 py-1">Liga</th>
+              <th className="border px-2 py-1">%Local</th>
+              <th className="border px-2 py-1">%Visitante</th>
+              <th className="border px-2 py-1">%General</th>
+              <th className="border px-2 py-1">RL</th>
+              <th className="border px-2 py-1">RV</th>
+              <th className="border px-2 py-1">RHL</th>
+              <th className="border px-2 py-1">RHV</th>
+              <th className="border px-2 py-1">Estado</th>
+              <th className="border px-2 py-1">Notas</th>
+            </tr>
+          </thead>
+          <tbody>
+            {partidos.map((p) => (
+              <tr key={p.id}>
+                <td className="border px-2 py-1">{p.fecha}</td>
+                <td className="border px-2 py-1">{p.nombre_partido}</td>
+                <td className="border px-2 py-1">{p.liga.nombre}</td>
+                <td className="border px-2 py-1">{p.porcentaje_local}%</td>
+                <td className="border px-2 py-1">{p.porcentaje_visitante}%</td>
+                <td className="border px-2 py-1">{p.porcentaje_general}%</td>
+                <td className="border px-2 py-1">{p.racha_local}</td>
+                <td className="border px-2 py-1">{p.racha_visitante}</td>
+                <td className="border px-2 py-1">{p.racha_hist_local}</td>
+                <td className="border px-2 py-1">{p.racha_hist_visitante}</td>
+                <td className="border px-2 py-1">{p.estado}</td>
+                <td className="border px-2 py-1">{p.notas}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Formulario para añadir */}
+      {showForm && (
+        <form className="space-y-4" onSubmit={handleSubmitPartido}>
+          <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} className="input" />
+          <input type="text" placeholder="Nombre del partido" value={nombrePartido} onChange={(e) => setNombrePartido(e.target.value)} className="input" />
+          <input type="text" placeholder="Liga ID" value={liga} onChange={(e) => setLiga(e.target.value)} className="input" />
+          <input type="number" placeholder="% Local" value={porcentajeLocal} onChange={(e) => setPorcentajeLocal(+e.target.value)} className="input" />
+          <input type="number" placeholder="% Visitante" value={porcentajeVisitante} onChange={(e) => setPorcentajeVisitante(+e.target.value)} className="input" />
+          <input type="number" placeholder="% General" value={porcentajeGeneral} onChange={(e) => setPorcentajeGeneral(+e.target.value)} className="input" />
+          <input type="text" placeholder="Racha Local" value={rachaLocal} onChange={(e) => setRachaLocal(e.target.value)} className="input" />
+          <input type="text" placeholder="Racha Visitante" value={rachaVisitante} onChange={(e) => setRachaVisitante(e.target.value)} className="input" />
+          <input type="text" placeholder="Racha Hist. Local" value={rachaHistLocal} onChange={(e) => setRachaHistLocal(e.target.value)} className="input" />
+          <input type="text" placeholder="Racha Hist. Visitante" value={rachaHistVisitante} onChange={(e) => setRachaHistVisitante(e.target.value)} className="input" />
+          <select value={estado} onChange={(e) => setEstado(e.target.value)} className="input">
+            <option value="NO">No</option>
+            <option value="LIVE">Live</option>
+            <option value="APOSTADO">Apostado</option>
+          </select>
+          <textarea placeholder="Notas" value={notas} onChange={(e) => setNotas(e.target.value)} className="input" />
+          <button type="submit" className="bg-green-600 text-white py-2 px-4 rounded">Guardar Partido</button>
+        </form>
       )}
     </div>
   );

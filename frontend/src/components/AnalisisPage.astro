@@ -1,15 +1,5 @@
 ---
-import PartidosList from '../components/PartidosList.tsx';
-import MetodosList from '../components/MetodosList.tsx';
-import LigaSelect from '../components/LigaSelect.tsx';
+import AnalisisWrapper from "./AnalisisWrapper.tsx";
 ---
 
-<div class="flex">
-  <div class="w-1/4">
-    <MetodosList client:load />
-  </div>
-  <div class="w-3/4">
-    <LigaSelect client:load />
-    <PartidosList client:load />
-  </div>
-</div>
+<AnalisisWrapper client:load />
