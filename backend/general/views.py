@@ -25,3 +25,10 @@ class PartidoListAPIView(APIView):
         partidos = Partido.objects.filter(metodo__usuario=request.user) 
         serializer = PartidoSerializer(partidos, many=True)
         return Response(serializer.data)
+
+    def post(self, request):
+        serializer = PartidoSerializer(data=request.data)
+        if serializer.is_valid():
+            partido = serializer.save()
+            return Response(PartidoSerializer(partido).data, status=201)
+        return Response(serializer.errors, status=400)

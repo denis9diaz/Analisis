@@ -12,6 +12,8 @@ class MetodoAnalisisSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre']
 
 class PartidoSerializer(serializers.ModelSerializer):
+    liga = LigaSerializer(read_only=True)
+
     class Meta:
         model = Partido
         fields = [
