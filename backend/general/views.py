@@ -1,8 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Liga, MetodoAnalisis
-from .serializers import LigaSerializer, MetodoAnalisisSerializer
+from .models import Liga, MetodoAnalisis, Partido
+from .serializers import LigaSerializer, MetodoAnalisisSerializer, PartidoSerializer
 
 class LigaListAPIView(APIView):
     def get(self, request):
@@ -18,3 +18,10 @@ class MetodoAnalisisListAPIView(APIView):
         serializer = MetodoAnalisisSerializer(metodos, many=True)
         return Response(serializer.data)
 
+class PartidoListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        partidos = Partido.objects.filter(metodo__usuario=request.user) 
+        serializer = PartidoSerializer(partidos, many=True)
+        return Response(serializer.data)
