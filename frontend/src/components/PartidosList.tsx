@@ -5,7 +5,11 @@ import PartidoFormModal from "./PartidoFormModal";
 type Partido = {
   id: number;
   nombre_partido: string;
-  liga: { nombre: string };
+  liga: {
+    id: number;
+    nombre: string;
+    codigo_pais: string;
+  };
   fecha: string;
   porcentaje_local: number;
   porcentaje_visitante: number;
@@ -149,7 +153,19 @@ export default function PartidosList() {
               <tr key={p.id}>
                 <td className="border px-2 py-1">{p.fecha}</td>
                 <td className="border px-2 py-1">{p.nombre_partido}</td>
-                <td className="border px-2 py-1">{p.liga.nombre}</td>
+                <td className="border px-2 py-1">
+                  {p.liga && (
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={`https://flagcdn.com/w20/${p.liga.codigo_pais.toLowerCase()}.png`}
+                        alt={p.liga.nombre}
+                        width={20}
+                        height={15}
+                      />
+                      {p.liga.nombre}
+                    </div>
+                  )}
+                </td>
                 <td className="border px-2 py-1">{p.porcentaje_local}%</td>
                 <td className="border px-2 py-1">{p.porcentaje_visitante}%</td>
                 <td className="border px-2 py-1">{p.porcentaje_general}%</td>
