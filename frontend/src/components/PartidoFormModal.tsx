@@ -1,0 +1,241 @@
+import { useEffect, useState } from "react";
+import Modal from "react-modal";
+Modal.setAppElement('#root');
+import Select from "react-select";
+import { useMetodo } from "../context/MetodoContext";
+
+type Liga = {
+  id: number;
+  nombre: string;
+  codigo_pais: string;
+};
+
+type Option = {
+  value: number;
+  label: JSX.Element;
+};
+
+type Props = {
+  isOpen: boolean;
+  onRequestClose: () => void;
+  onPartidoGuardado: () => void;
+};
+
+export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuardado }: Props) {
+  const { metodoSeleccionado } = useMetodo();
+  const [ligas, setLigas] = useState<Option[]>([]);
+  const [ligaSeleccionada, setLigaSeleccionada] = useState<Option | null>(null);
+
+  const [fecha, setFecha] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [porLocal, setPorLocal] = useState<number | "">("");
+  const [porVisitante, setPorVisitante] = useState<number | "">("");
+  const [porGeneral, setPorGeneral] = useState<number | "">("");
+  const [rachaLocal, setRachaLocal] = useState("");
+  const [rachaVisitante, setRachaVisitante] = useState("");
+  const [rachaHistLocal, setRachaHistLocal] = useState("");
+  const [rachaHistVisitante, setRachaHistVisitante] = useState("");
+  const [estado, setEstado] = useState("");
+  const [notas, setNotas] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/general/ligas/")
+      .then((res) => res.json())
+      .then((data: Liga[]) => {
+        const options = data.map((liga) => ({
+          value: liga.id,
+          label: (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <img
+                src={`https://flagcdn.com/w20/${liga.codigo_pais.toLowerCase()}.png`}
+                alt={liga.nombre}
+              />
+              {liga.nombre}
+            </div>
+          ),
+        }));
+        setLigas(options);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (porLocal !== "" && porVisitante !== "") {
+      const promedio = (+porLocal + +porVisitante) / 2;
+      setPorGeneral(parseFloat(promedio.toFixed(2)));
+    } else {
+      setPorGeneral("");
+    }
+  }, [porLocal, porVisitante]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!metodoSeleccionado || !ligaSeleccionada || estado === "") return;
+
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    fetch("http://localhost:8000/api/general/partidos/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        metodo: metodoSeleccionado.id,
+        fecha,
+        nombre_partido: nombre,
+        liga: ligaSeleccionada.value,
+        porcentaje_local: porLocal,
+        porcentaje_visitante: porVisitante,
+        porcentaje_general: porGeneral,
+        racha_local: rachaLocal,
+        racha_visitante: rachaVisitante,
+        racha_hist_local: rachaHistLocal,
+        racha_hist_visitante: rachaHistVisitante,
+        estado,
+        notas,
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        onPartidoGuardado();
+        onRequestClose();
+
+        // 🔁 Limpiar formulario
+        setFecha("");
+        setNombre("");
+        setLigaSeleccionada(null);
+        setPorLocal("");
+        setPorVisitante("");
+        setPorGeneral("");
+        setRachaLocal("");
+        setRachaVisitante("");
+        setRachaHistLocal("");
+        setRachaHistVisitante("");
+        setEstado("");
+        setNotas("");
+      })
+      .catch((err) => console.error("Error al guardar partido:", err));
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      contentLabel="Añadir Partido"
+      className="bg-white p-6 rounded shadow-md max-w-xl mx-auto mt-20 outline-none"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="date"
+          value={fecha}
+          onChange={(e) => setFecha(e.target.value)}
+          className="input w-full"
+        />
+        <input
+          type="text"
+          placeholder="Partido"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          className="input w-full h-10 text-base"
+        />
+        <Select
+          options={ligas}
+          value={ligaSeleccionada}
+          onChange={(op) => setLigaSeleccionada(op)}
+          placeholder="Selecciona una liga"
+        />
+        <input
+          type="number"
+          placeholder="% Local"
+          value={porLocal}
+          onChange={(e) =>
+            setPorLocal(e.target.value === "" ? "" : +e.target.value)
+          }
+          className="input w-full"
+        />
+        <input
+          type="number"
+          placeholder="% Visitante"
+          value={porVisitante}
+          onChange={(e) =>
+            setPorVisitante(e.target.value === "" ? "" : +e.target.value)
+          }
+          className="input w-full"
+        />
+        <input
+          type="number"
+          placeholder="% General"
+          value={porGeneral}
+          onChange={(e) =>
+            setPorGeneral(e.target.value === "" ? "" : +e.target.value)
+          }
+          className="input w-full"
+        />
+        <input
+          type="text"
+          placeholder="Racha Local"
+          value={rachaLocal}
+          onChange={(e) => setRachaLocal(e.target.value)}
+          className="input w-full"
+        />
+        <input
+          type="text"
+          placeholder="Racha Visitante"
+          value={rachaVisitante}
+          onChange={(e) => setRachaVisitante(e.target.value)}
+          className="input w-full"
+        />
+        <input
+          type="text"
+          placeholder="Racha Histórica Local"
+          value={rachaHistLocal}
+          onChange={(e) => setRachaHistLocal(e.target.value)}
+          className="input w-full"
+        />
+        <input
+          type="text"
+          placeholder="Racha Histórica Visitante"
+          value={rachaHistVisitante}
+          onChange={(e) => setRachaHistVisitante(e.target.value)}
+          className="input w-full"
+        />
+        <select
+          value={estado}
+          onChange={(e) => setEstado(e.target.value)}
+          className="input w-full text-gray-700"
+        >
+          <option value="" disabled>
+            Estado
+          </option>
+          <option value="LIVE">LIVE</option>
+          <option value="NO">NO</option>
+          <option value="APOSTADO">APOSTADO</option>
+        </select>
+        <textarea
+          placeholder="Notas"
+          value={notas}
+          onChange={(e) => setNotas(e.target.value)}
+          className="input w-full"
+        />
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="bg-red-500 text-white py-2 px-4 rounded mr-2 hover:bg-red-600"
+            onClick={onRequestClose}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+          >
+            Guardar
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}

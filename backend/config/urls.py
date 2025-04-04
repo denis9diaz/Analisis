@@ -6,4 +6,5 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('admin/', admin.site.urls),
     path('api/auth/', include('auth.urls')), 
+    path('api/general/', include('general.urls')),
 ]
