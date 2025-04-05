@@ -184,16 +184,16 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
         />
         <input
           type="text"
-          placeholder="Racha Visitante"
-          value={rachaVisitante}
-          onChange={(e) => setRachaVisitante(e.target.value)}
+          placeholder="Racha Histórica Local"
+          value={rachaHistLocal}
+          onChange={(e) => setRachaHistLocal(e.target.value)}
           className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="text"
-          placeholder="Racha Histórica Local"
-          value={rachaHistLocal}
-          onChange={(e) => setRachaHistLocal(e.target.value)}
+          placeholder="Racha Visitante"
+          value={rachaVisitante}
+          onChange={(e) => setRachaVisitante(e.target.value)}
           className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input

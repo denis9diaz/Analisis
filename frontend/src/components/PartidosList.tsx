@@ -9,7 +9,7 @@ type Partido = {
     id: number;
     nombre: string;
     codigo_pais: string;
-  };
+  } | null;
   fecha: string;
   porcentaje_local: number;
   porcentaje_visitante: number;
@@ -24,6 +24,28 @@ type Partido = {
   metodo: number;
 };
 
+const RESULTADO_LABELS: Record<string, string> = {
+  VERDE: "Acierto",
+  ROJO: "Fallo",
+  "": "Sin resultado",
+  null: "Sin resultado",
+};
+
+const MESES = [
+  { value: "2025-01", label: "Enero 2025" },
+  { value: "2025-02", label: "Febrero 2025" },
+  { value: "2025-03", label: "Marzo 2025" },
+  { value: "2025-04", label: "Abril 2025" },
+  { value: "2025-05", label: "Mayo 2025" },
+  { value: "2025-06", label: "Junio 2025" },
+  { value: "2025-07", label: "Julio 2025" },
+  { value: "2025-08", label: "Agosto 2025" },
+  { value: "2025-09", label: "Septiembre 2025" },
+  { value: "2025-10", label: "Octubre 2025" },
+  { value: "2025-11", label: "Noviembre 2025" },
+  { value: "2025-12", label: "Diciembre 2025" },
+];
+
 export default function PartidosList() {
   const { metodoSeleccionado } = useMetodo();
   const [partidos, setPartidos] = useState<Partido[]>([]);
@@ -31,6 +53,8 @@ export default function PartidosList() {
 
   const [filtroLiga, setFiltroLiga] = useState<string>("TODAS");
   const [filtroEstado, setFiltroEstado] = useState<string>("TODOS");
+  const [filtroResultado, setFiltroResultado] = useState<string>("TODOS");
+  const [filtroMes, setFiltroMes] = useState<string>("TODOS");
 
   const formatFecha = (fecha: string) => {
     const [year, month, day] = fecha.split("-");
@@ -69,14 +93,42 @@ export default function PartidosList() {
       filtroLiga === "TODAS" || p.liga?.nombre === filtroLiga;
     const coincideEstado =
       filtroEstado === "TODOS" || p.estado === filtroEstado;
-    return coincideLiga && coincideEstado;
+    const coincideResultado =
+      filtroResultado === "TODOS" || (p.cumplido || "") === filtroResultado;
+    const coincideMes =
+      filtroMes === "TODOS" || p.fecha.startsWith(filtroMes);
+    return coincideLiga && coincideEstado && coincideResultado && coincideMes;
   });
+
+  const handleResultadoChange = async (id: number, nuevoResultado: string) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+      const res = await fetch("http://localhost:8000/api/general/partidos/", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id, cumplido: nuevoResultado || null }),
+      });
+
+      const partidoActualizado: Partido = await res.json();
+      setPartidos((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, cumplido: partidoActualizado.cumplido } : p
+        )
+      );
+    } catch (err) {
+      console.error("Error actualizando resultado:", err);
+    }
+  };
 
   if (!metodoSeleccionado) return null;
 
   return (
     <div className="p-4">
-      {/* Botón + filtros */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <button
           onClick={() => setShowModal(true)}
@@ -109,10 +161,33 @@ export default function PartidosList() {
             <option value="APOSTADO">APOSTADO</option>
             <option value="NO">NO</option>
           </select>
+
+          <select
+            value={filtroResultado}
+            onChange={(e) => setFiltroResultado(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm"
+          >
+            <option value="TODOS">Todos los resultados</option>
+            <option value="VERDE">Acierto</option>
+            <option value="ROJO">Fallo</option>
+            <option value="">Sin resultado</option>
+          </select>
+
+          <select
+            value={filtroMes}
+            onChange={(e) => setFiltroMes(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm"
+          >
+            <option value="TODOS">Todos los meses</option>
+            {MESES.map((mes) => (
+              <option key={mes.value} value={mes.value}>
+                {mes.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      {/* Tabla de partidos */}
       <div className="overflow-x-auto rounded-lg shadow-md bg-white">
         <table className="min-w-full text-sm text-gray-800 border-collapse">
           <thead className="bg-blue-600 text-white text-sm">
@@ -123,11 +198,10 @@ export default function PartidosList() {
               <th className="px-3 py-2 text-center">% Local</th>
               <th className="px-3 py-2 text-center">% Visitante</th>
               <th className="px-3 py-2 text-center">% General</th>
-              <th className="px-3 py-2 text-center">RL</th>
-              <th className="px-3 py-2 text-center">RV</th>
-              <th className="px-3 py-2 text-center">RHL</th>
-              <th className="px-3 py-2 text-center">RHV</th>
-              <th className="px-3 py-2 text-left">Estado</th>
+              <th className="px-3 py-2 text-center">Racha Loc.</th>
+              <th className="px-3 py-2 text-center">Racha Vis.</th>
+              <th className="px-3 py-2 text-center">Estado</th>
+              <th className="px-3 py-2 text-center">Resultado</th>
               <th className="px-3 py-2 text-left">Notas</th>
             </tr>
           </thead>
@@ -140,7 +214,7 @@ export default function PartidosList() {
                 <td className="px-3 py-2">{formatFecha(p.fecha)}</td>
                 <td className="px-3 py-2">{p.nombre_partido}</td>
                 <td className="px-3 py-2">
-                  {p.liga && p.liga.codigo_pais ? (
+                  {p.liga ? (
                     <div className="flex items-center gap-2">
                       <img
                         src={`https://flagcdn.com/w20/${p.liga.codigo_pais.toLowerCase()}.png`}
@@ -155,19 +229,34 @@ export default function PartidosList() {
                   )}
                 </td>
                 <td className="px-3 py-2 text-center">{p.porcentaje_local}%</td>
+                <td className="px-3 py-2 text-center">{p.porcentaje_visitante}%</td>
+                <td className="px-3 py-2 text-center">{p.porcentaje_general}%</td>
                 <td className="px-3 py-2 text-center">
-                  {p.porcentaje_visitante}%
+                  {p.racha_local} ({p.racha_hist_local})
                 </td>
                 <td className="px-3 py-2 text-center">
-                  {p.porcentaje_general}%
+                  {p.racha_visitante} ({p.racha_hist_visitante})
                 </td>
-                <td className="px-3 py-2 text-center">{p.racha_local}</td>
-                <td className="px-3 py-2 text-center">{p.racha_visitante}</td>
-                <td className="px-3 py-2 text-center">{p.racha_hist_local}</td>
+                <td className="px-3 py-2 text-center">{p.estado}</td>
                 <td className="px-3 py-2 text-center">
-                  {p.racha_hist_visitante}
+                  <select
+                    value={p.cumplido || ""}
+                    onChange={(e) =>
+                      handleResultadoChange(p.id, e.target.value)
+                    }
+                    className={`px-2 py-1 rounded-md border text-sm shadow-sm ${
+                      p.cumplido === "VERDE"
+                        ? "bg-green-100 text-green-800"
+                        : p.cumplido === "ROJO"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-gray-50 text-gray-600"
+                    }`}
+                  >
+                    <option value="">Sin resultado</option>
+                    <option value="VERDE">Acierto</option>
+                    <option value="ROJO">Fallo</option>
+                  </select>
                 </td>
-                <td className="px-3 py-2">{p.estado}</td>
                 <td className="px-3 py-2">{p.notas}</td>
               </tr>
             ))}
@@ -175,7 +264,6 @@ export default function PartidosList() {
         </table>
       </div>
 
-      {/* Formulario modal */}
       <PartidoFormModal
         isOpen={showModal}
         onRequestClose={() => setShowModal(false)}
