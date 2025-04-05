@@ -1,4 +1,6 @@
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
+from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.response import Response
@@ -54,12 +56,12 @@ def login(request):
 @permission_classes([IsAuthenticated])
 def logout(request):
     try:
-        # El token de refresh no se guarda en el servidor, por lo que no hay necesidad de invalidarlo explícitamente.
-        # Lo único que podemos hacer es informar al usuario que su sesión ha terminado.
-        
+        refresh_token = request.data.get("refresh")
+        token = RefreshToken(refresh_token)
+        token.blacklist()
         return Response({"message": "Logout exitoso"}, status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response({"error": f"Error al hacer logout: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+    except TokenError as e:
+        return Response({"error": "Token inválido o ya ha sido bloqueado."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Eliminar usuario autenticado
