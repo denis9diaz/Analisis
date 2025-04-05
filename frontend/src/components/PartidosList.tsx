@@ -52,8 +52,6 @@ export default function PartidosList() {
   useEffect(() => {
     if (!metodoSeleccionado) return;
 
-    console.log("Método seleccionado:", metodoSeleccionado);
-
     const token = localStorage.getItem("access_token");
     if (!token) return;
 
@@ -64,14 +62,12 @@ export default function PartidosList() {
     })
       .then((res) => res.json())
       .then((data: Partido[]) => {
-        console.log("Partidos obtenidos:", data);
         const filtrados = data
           .filter((p) => p.metodo === metodoSeleccionado.id)
           .sort(
             (a, b) =>
               new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
           );
-        console.log("Partidos filtrados:", filtrados);
         setPartidos(filtrados);
       })
       .catch((err) => console.error("Error cargando partidos:", err));
@@ -128,40 +124,43 @@ export default function PartidosList() {
   return (
     <div className="p-4">
       {/* Botón para añadir partido */}
-      <div className="mb-4">
+      <div className="mb-6">
         <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 text-white py-2 px-4 rounded-lg"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition"
         >
           Añadir Partido
         </button>
       </div>
 
       {/* Tabla de partidos */}
-      <div className="overflow-x-auto mb-6">
-        <table className="min-w-full border border-gray-300 text-sm">
-          <thead className="bg-gray-100">
+      <div className="overflow-x-auto rounded-lg shadow-md bg-white">
+        <table className="min-w-full text-sm text-gray-800 border-collapse">
+          <thead className="bg-blue-600 text-white text-sm">
             <tr>
-              <th className="border px-2 py-1">Fecha</th>
-              <th className="border px-2 py-1">Partido</th>
-              <th className="border px-2 py-1">Liga</th>
-              <th className="border px-2 py-1 w-24">%Local</th>
-              <th className="border px-2 py-1 w-24">%Visitante</th>
-              <th className="border px-2 py-1 w-24">%General</th>
-              <th className="border px-2 py-1 w-20">RL</th>
-              <th className="border px-2 py-1 w-20">RV</th>
-              <th className="border px-2 py-1 w-20">RHL</th>
-              <th className="border px-2 py-1 w-20">RHV</th>
-              <th className="border px-2 py-1">Estado</th>
-              <th className="border px-2 py-1">Notas</th>
+              <th className="px-3 py-2 text-left">Fecha</th>
+              <th className="px-3 py-2 text-left">Partido</th>
+              <th className="px-3 py-2 text-left">Liga</th>
+              <th className="px-3 py-2 text-center">% Local</th>
+              <th className="px-3 py-2 text-center">% Visitante</th>
+              <th className="px-3 py-2 text-center">% General</th>
+              <th className="px-3 py-2 text-center">RL</th>
+              <th className="px-3 py-2 text-center">RV</th>
+              <th className="px-3 py-2 text-center">RHL</th>
+              <th className="px-3 py-2 text-center">RHV</th>
+              <th className="px-3 py-2 text-left">Estado</th>
+              <th className="px-3 py-2 text-left">Notas</th>
             </tr>
           </thead>
           <tbody>
             {partidos.map((p) => (
-              <tr key={p.id}>
-                <td className="border px-2 py-1">{formatFecha(p.fecha)}</td>
-                <td className="border px-2 py-1">{p.nombre_partido}</td>
-                <td className="border px-2 py-1">
+              <tr
+                key={p.id}
+                className="hover:bg-gray-50 transition border-t border-gray-200"
+              >
+                <td className="px-3 py-2">{formatFecha(p.fecha)}</td>
+                <td className="px-3 py-2">{p.nombre_partido}</td>
+                <td className="px-3 py-2">
                   {p.liga && p.liga.codigo_pais ? (
                     <div className="flex items-center gap-2">
                       <img
@@ -176,21 +175,21 @@ export default function PartidosList() {
                     <span className="text-gray-400 italic">Sin liga</span>
                   )}
                 </td>
-                <td className="border px-2 py-1 w-24">{p.porcentaje_local}%</td>
-                <td className="border px-2 py-1 w-24">
+                <td className="px-3 py-2 text-center">{p.porcentaje_local}%</td>
+                <td className="px-3 py-2 text-center">
                   {p.porcentaje_visitante}%
                 </td>
-                <td className="border px-2 py-1 w-24">
+                <td className="px-3 py-2 text-center">
                   {p.porcentaje_general}%
                 </td>
-                <td className="border px-2 py-1 w-20">{p.racha_local}</td>
-                <td className="border px-2 py-1 w-20">{p.racha_visitante}</td>
-                <td className="border px-2 py-1 w-20">{p.racha_hist_local}</td>
-                <td className="border px-2 py-1 w-20">
+                <td className="px-3 py-2 text-center">{p.racha_local}</td>
+                <td className="px-3 py-2 text-center">{p.racha_visitante}</td>
+                <td className="px-3 py-2 text-center">{p.racha_hist_local}</td>
+                <td className="px-3 py-2 text-center">
                   {p.racha_hist_visitante}
                 </td>
-                <td className="border px-2 py-1">{p.estado}</td>
-                <td className="border px-2 py-1">{p.notas}</td>
+                <td className="px-3 py-2">{p.estado}</td>
+                <td className="px-3 py-2">{p.notas}</td>
               </tr>
             ))}
           </tbody>
@@ -210,7 +209,6 @@ export default function PartidosList() {
           })
             .then((res) => res.json())
             .then((data: Partido[]) => {
-              console.log("Partidos cargados tras guardar:", data);
               const filtrados = data
                 .filter((p) => p.metodo === metodoSeleccionado.id)
                 .sort(
