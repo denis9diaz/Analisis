@@ -91,6 +91,7 @@ export default function PartidosList() {
   const total = partidosFiltrados.length;
   const aciertos = partidosFiltrados.filter((p) => p.cumplido === "VERDE").length;
   const fallos = partidosFiltrados.filter((p) => p.cumplido === "ROJO").length;
+  const sinResultado = partidosFiltrados.filter((p) => !p.cumplido || p.cumplido === "").length;
   const porcentaje = total > 0 ? ((aciertos / total) * 100).toFixed(1) : "0";
 
   const handleResultadoChange = async (id: number, nuevoResultado: string) => {
@@ -116,6 +117,7 @@ export default function PartidosList() {
 
   return (
     <div className="p-4">
+      {/* Filtros */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <button
           onClick={() => setShowModal(true)}
@@ -159,6 +161,7 @@ export default function PartidosList() {
           <span>Partidos: <strong>{total}</strong></span>
           <span className="text-green-700">Aciertos: <strong>{aciertos}</strong></span>
           <span className="text-red-700">Fallos: <strong>{fallos}</strong></span>
+          <span className="text-gray-600">Sin resultado: <strong>{sinResultado}</strong></span>
           <span>Porcentaje de acierto: <strong>{porcentaje}%</strong></span>
         </div>
       </div>
@@ -231,7 +234,6 @@ export default function PartidosList() {
         </table>
       </div>
 
-      {/* Modal */}
       <PartidoFormModal
         isOpen={showModal}
         onRequestClose={() => setShowModal(false)}
