@@ -24,25 +24,13 @@ type Partido = {
   metodo: number;
 };
 
-console.log("PartidosList renderizado");
-
 export default function PartidosList() {
   const { metodoSeleccionado } = useMetodo();
   const [partidos, setPartidos] = useState<Partido[]>([]);
   const [showModal, setShowModal] = useState(false);
 
-  const [fecha, setFecha] = useState("");
-  const [nombrePartido, setNombrePartido] = useState("");
-  const [liga, setLiga] = useState("");
-  const [porcentajeLocal, setPorcentajeLocal] = useState(0);
-  const [porcentajeVisitante, setPorcentajeVisitante] = useState(0);
-  const [porcentajeGeneral, setPorcentajeGeneral] = useState(0);
-  const [rachaLocal, setRachaLocal] = useState("");
-  const [rachaVisitante, setRachaVisitante] = useState("");
-  const [rachaHistLocal, setRachaHistLocal] = useState("");
-  const [rachaHistVisitante, setRachaHistVisitante] = useState("");
-  const [estado, setEstado] = useState("NO");
-  const [notas, setNotas] = useState("");
+  const [filtroLiga, setFiltroLiga] = useState<string>("TODAS");
+  const [filtroEstado, setFiltroEstado] = useState<string>("TODOS");
 
   const formatFecha = (fecha: string) => {
     const [year, month, day] = fecha.split("-");
@@ -65,72 +53,63 @@ export default function PartidosList() {
         const filtrados = data
           .filter((p) => p.metodo === metodoSeleccionado.id)
           .sort(
-            (a, b) =>
-              new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+            (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
           );
         setPartidos(filtrados);
       })
       .catch((err) => console.error("Error cargando partidos:", err));
   }, [metodoSeleccionado]);
 
-  const handleSubmitPartido = (e: React.FormEvent) => {
-    e.preventDefault();
-    const token = localStorage.getItem("access_token");
-    if (!token || !metodoSeleccionado) return;
+  const ligasUnicas = Array.from(
+    new Set(partidos.map((p) => p.liga?.nombre).filter(Boolean))
+  );
 
-    fetch("http://localhost:8000/api/general/partidos/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        fecha,
-        nombre_partido: nombrePartido,
-        liga,
-        porcentaje_local: porcentajeLocal,
-        porcentaje_visitante: porcentajeVisitante,
-        porcentaje_general: porcentajeGeneral,
-        metodo: metodoSeleccionado.id,
-        racha_local: rachaLocal,
-        racha_visitante: rachaVisitante,
-        racha_hist_local: rachaHistLocal,
-        racha_hist_visitante: rachaHistVisitante,
-        estado,
-        notas,
-      }),
-    })
-      .then((res) => res.json())
-      .then((nuevoPartido: Partido) => {
-        setPartidos((prev) => [...prev, nuevoPartido]);
-        setFecha("");
-        setNombrePartido("");
-        setLiga("");
-        setPorcentajeLocal(0);
-        setPorcentajeVisitante(0);
-        setPorcentajeGeneral(0);
-        setRachaLocal("");
-        setRachaVisitante("");
-        setRachaHistLocal("");
-        setRachaHistVisitante("");
-        setEstado("NO");
-        setNotas("");
-      })
-      .catch((err) => console.error("Error guardando partido:", err));
-  };
+  const partidosFiltrados = partidos.filter((p) => {
+    const coincideLiga =
+      filtroLiga === "TODAS" || p.liga?.nombre === filtroLiga;
+    const coincideEstado =
+      filtroEstado === "TODOS" || p.estado === filtroEstado;
+    return coincideLiga && coincideEstado;
+  });
 
   if (!metodoSeleccionado) return null;
 
   return (
     <div className="p-4">
-      {/* Botón para añadir partido */}
-      <div className="mb-6">
+      {/* Botón + filtros */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <button
           onClick={() => setShowModal(true)}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition"
         >
           Añadir Partido
         </button>
+
+        <div className="flex gap-4">
+          <select
+            value={filtroLiga}
+            onChange={(e) => setFiltroLiga(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm"
+          >
+            <option value="TODAS">Todas las ligas</option>
+            {ligasUnicas.map((liga) => (
+              <option key={liga} value={liga}>
+                {liga}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={filtroEstado}
+            onChange={(e) => setFiltroEstado(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm"
+          >
+            <option value="TODOS">Todos los estados</option>
+            <option value="LIVE">LIVE</option>
+            <option value="APOSTADO">APOSTADO</option>
+            <option value="NO">NO</option>
+          </select>
+        </div>
       </div>
 
       {/* Tabla de partidos */}
@@ -153,7 +132,7 @@ export default function PartidosList() {
             </tr>
           </thead>
           <tbody>
-            {partidos.map((p) => (
+            {partidosFiltrados.map((p) => (
               <tr
                 key={p.id}
                 className="hover:bg-gray-50 transition border-t border-gray-200"
