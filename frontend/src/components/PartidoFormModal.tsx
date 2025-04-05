@@ -3,6 +3,7 @@ import Modal from "react-modal";
 Modal.setAppElement('#root');
 import Select from "react-select";
 import { useMetodo } from "../context/MetodoContext";
+import { fetchWithAuth } from "../utils/authFetch";
 
 type Liga = {
   id: number;
@@ -39,7 +40,7 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
   const [notas, setNotas] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/general/ligas/")
+    fetchWithAuth("http://localhost:8000/api/general/ligas/")
       .then((res) => res.json())
       .then((data: Liga[]) => {
         const options = data.map((liga) => ({
@@ -72,15 +73,8 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
 
     if (!metodoSeleccionado || !ligaSeleccionada || estado === "") return;
 
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-
-    fetch("http://localhost:8000/api/general/partidos/", {
+    fetchWithAuth("http://localhost:8000/api/general/partidos/", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
       body: JSON.stringify({
         metodo: metodoSeleccionado.id,
         fecha,
@@ -102,7 +96,7 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
         onPartidoGuardado();
         onRequestClose();
 
-        // 🔁 Limpiar formulario
+        // Limpiar formulario
         setFecha("");
         setNombre("");
         setLigaSeleccionada(null);
@@ -152,27 +146,21 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
           type="number"
           placeholder="% Local"
           value={porLocal}
-          onChange={(e) =>
-            setPorLocal(e.target.value === "" ? "" : +e.target.value)
-          }
+          onChange={(e) => setPorLocal(e.target.value === "" ? "" : +e.target.value)}
           className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="number"
           placeholder="% Visitante"
           value={porVisitante}
-          onChange={(e) =>
-            setPorVisitante(e.target.value === "" ? "" : +e.target.value)
-          }
+          onChange={(e) => setPorVisitante(e.target.value === "" ? "" : +e.target.value)}
           className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="number"
           placeholder="% General"
           value={porGeneral}
-          onChange={(e) =>
-            setPorGeneral(e.target.value === "" ? "" : +e.target.value)
-          }
+          onChange={(e) => setPorGeneral(e.target.value === "" ? "" : +e.target.value)}
           className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
@@ -208,9 +196,7 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
           onChange={(e) => setEstado(e.target.value)}
           className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="" disabled>
-            Estado
-          </option>
+          <option value="" disabled>Estado</option>
           <option value="LIVE">LIVE</option>
           <option value="NO">NO</option>
           <option value="APOSTADO">APOSTADO</option>

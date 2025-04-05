@@ -12,7 +12,7 @@ export default function AnalisisWrapper() {
   return (
     <MetodoProvider>
       <div className="flex min-h-screen bg-gray-100 p-6 gap-6">
-        <div className="w-1/5 bg-white rounded-lg shadow-md p-4">
+        <div className="w-1/6 bg-white rounded-lg shadow-md p-4">
           <MetodosList />
         </div>
         <div className="flex-1">

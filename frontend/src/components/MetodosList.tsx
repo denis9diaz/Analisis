@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMetodo } from "../context/MetodoContext";
+import { fetchWithAuth } from "../utils/authFetch";
 
 type Metodo = {
   id: number;
@@ -11,19 +12,7 @@ export default function MetodosList() {
   const { metodoSeleccionado, setMetodoSeleccionado } = useMetodo();
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    console.log("Token recuperado:", token);
-
-    if (!token) {
-      console.error("No se encontró el token de acceso.");
-      return;
-    }
-
-    fetch("http://localhost:8000/api/general/metodos/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    fetchWithAuth("http://localhost:8000/api/general/metodos/")
       .then((res) => res.json())
       .then((data) => {
         console.log("Métodos recibidos:", data);

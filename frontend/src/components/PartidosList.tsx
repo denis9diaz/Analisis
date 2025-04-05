@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMetodo } from "../context/MetodoContext";
 import PartidoFormModal from "./PartidoFormModal";
+import { fetchWithAuth } from "../utils/authFetch";
 
 type Partido = {
   id: number;
@@ -24,13 +25,6 @@ type Partido = {
   metodo: number;
 };
 
-const RESULTADO_LABELS: Record<string, string> = {
-  VERDE: "Acierto",
-  ROJO: "Fallo",
-  "": "Sin resultado",
-  null: "Sin resultado",
-};
-
 const MESES = [
   { value: "2025-01", label: "Enero 2025" },
   { value: "2025-02", label: "Febrero 2025" },
@@ -51,10 +45,10 @@ export default function PartidosList() {
   const [partidos, setPartidos] = useState<Partido[]>([]);
   const [showModal, setShowModal] = useState(false);
 
-  const [filtroLiga, setFiltroLiga] = useState<string>("TODAS");
-  const [filtroEstado, setFiltroEstado] = useState<string>("TODOS");
-  const [filtroResultado, setFiltroResultado] = useState<string>("TODOS");
-  const [filtroMes, setFiltroMes] = useState<string>("TODOS");
+  const [filtroLiga, setFiltroLiga] = useState("TODAS");
+  const [filtroEstado, setFiltroEstado] = useState("TODOS");
+  const [filtroResultado, setFiltroResultado] = useState("TODOS");
+  const [filtroMes, setFiltroMes] = useState("TODOS");
 
   const formatFecha = (fecha: string) => {
     const [year, month, day] = fecha.split("-");
@@ -63,12 +57,8 @@ export default function PartidosList() {
 
   useEffect(() => {
     if (!metodoSeleccionado) return;
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
 
-    fetch("http://localhost:8000/api/general/partidos/", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetchWithAuth("http://localhost:8000/api/general/partidos/")
       .then((res) => res.json())
       .then((data: Partido[]) => {
         const filtrados = data
@@ -78,7 +68,9 @@ export default function PartidosList() {
       });
   }, [metodoSeleccionado]);
 
-  const ligasUnicas = Array.from(new Set(partidos.map((p) => p.liga?.nombre).filter(Boolean)));
+  const ligasUnicas = Array.from(
+    new Set(partidos.map((p) => p.liga?.nombre).filter(Boolean))
+  );
 
   const partidosFiltrados = partidos.filter((p) => {
     const coincideLiga = filtroLiga === "TODAS" || p.liga?.nombre === filtroLiga;
@@ -95,21 +87,16 @@ export default function PartidosList() {
   const porcentaje = total > 0 ? ((aciertos / total) * 100).toFixed(1) : "0";
 
   const handleResultadoChange = async (id: number, nuevoResultado: string) => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-
-    const res = await fetch("http://localhost:8000/api/general/partidos/", {
+    const res = await fetchWithAuth("http://localhost:8000/api/general/partidos/", {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
       body: JSON.stringify({ id, cumplido: nuevoResultado || null }),
     });
 
     const partidoActualizado: Partido = await res.json();
     setPartidos((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, cumplido: partidoActualizado.cumplido } : p))
+      prev.map((p) =>
+        p.id === id ? { ...p, cumplido: partidoActualizado.cumplido } : p
+      )
     );
   };
 
@@ -238,12 +225,7 @@ export default function PartidosList() {
         isOpen={showModal}
         onRequestClose={() => setShowModal(false)}
         onPartidoGuardado={() => {
-          const token = localStorage.getItem("access_token");
-          if (!token || !metodoSeleccionado) return;
-
-          fetch("http://localhost:8000/api/general/partidos/", {
-            headers: { Authorization: `Bearer ${token}` },
-          })
+          fetchWithAuth("http://localhost:8000/api/general/partidos/")
             .then((res) => res.json())
             .then((data: Partido[]) => {
               const filtrados = data
