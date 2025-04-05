@@ -63,66 +63,53 @@ export default function PartidosList() {
 
   useEffect(() => {
     if (!metodoSeleccionado) return;
-
     const token = localStorage.getItem("access_token");
     if (!token) return;
 
     fetch("http://localhost:8000/api/general/partidos/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((data: Partido[]) => {
         const filtrados = data
           .filter((p) => p.metodo === metodoSeleccionado.id)
-          .sort(
-            (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
-          );
+          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
         setPartidos(filtrados);
-      })
-      .catch((err) => console.error("Error cargando partidos:", err));
+      });
   }, [metodoSeleccionado]);
 
-  const ligasUnicas = Array.from(
-    new Set(partidos.map((p) => p.liga?.nombre).filter(Boolean))
-  );
+  const ligasUnicas = Array.from(new Set(partidos.map((p) => p.liga?.nombre).filter(Boolean)));
 
   const partidosFiltrados = partidos.filter((p) => {
-    const coincideLiga =
-      filtroLiga === "TODAS" || p.liga?.nombre === filtroLiga;
-    const coincideEstado =
-      filtroEstado === "TODOS" || p.estado === filtroEstado;
-    const coincideResultado =
-      filtroResultado === "TODOS" || (p.cumplido || "") === filtroResultado;
-    const coincideMes =
-      filtroMes === "TODOS" || p.fecha.startsWith(filtroMes);
+    const coincideLiga = filtroLiga === "TODAS" || p.liga?.nombre === filtroLiga;
+    const coincideEstado = filtroEstado === "TODOS" || p.estado === filtroEstado;
+    const coincideResultado = filtroResultado === "TODOS" || (p.cumplido || "") === filtroResultado;
+    const coincideMes = filtroMes === "TODOS" || p.fecha.startsWith(filtroMes);
     return coincideLiga && coincideEstado && coincideResultado && coincideMes;
   });
+
+  const total = partidosFiltrados.length;
+  const aciertos = partidosFiltrados.filter((p) => p.cumplido === "VERDE").length;
+  const fallos = partidosFiltrados.filter((p) => p.cumplido === "ROJO").length;
+  const porcentaje = total > 0 ? ((aciertos / total) * 100).toFixed(1) : "0";
 
   const handleResultadoChange = async (id: number, nuevoResultado: string) => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
 
-    try {
-      const res = await fetch("http://localhost:8000/api/general/partidos/", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ id, cumplido: nuevoResultado || null }),
-      });
+    const res = await fetch("http://localhost:8000/api/general/partidos/", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id, cumplido: nuevoResultado || null }),
+    });
 
-      const partidoActualizado: Partido = await res.json();
-      setPartidos((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, cumplido: partidoActualizado.cumplido } : p
-        )
-      );
-    } catch (err) {
-      console.error("Error actualizando resultado:", err);
-    }
+    const partidoActualizado: Partido = await res.json();
+    setPartidos((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, cumplido: partidoActualizado.cumplido } : p))
+    );
   };
 
   if (!metodoSeleccionado) return null;
@@ -138,56 +125,45 @@ export default function PartidosList() {
         </button>
 
         <div className="flex gap-4">
-          <select
-            value={filtroLiga}
-            onChange={(e) => setFiltroLiga(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm"
-          >
+          <select value={filtroLiga} onChange={(e) => setFiltroLiga(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm">
             <option value="TODAS">Todas las ligas</option>
             {ligasUnicas.map((liga) => (
-              <option key={liga} value={liga}>
-                {liga}
-              </option>
+              <option key={liga} value={liga}>{liga}</option>
             ))}
           </select>
-
-          <select
-            value={filtroEstado}
-            onChange={(e) => setFiltroEstado(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm"
-          >
+          <select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm">
             <option value="TODOS">Todos los estados</option>
             <option value="LIVE">LIVE</option>
             <option value="APOSTADO">APOSTADO</option>
             <option value="NO">NO</option>
           </select>
-
-          <select
-            value={filtroResultado}
-            onChange={(e) => setFiltroResultado(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm"
-          >
+          <select value={filtroResultado} onChange={(e) => setFiltroResultado(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm">
             <option value="TODOS">Todos los resultados</option>
             <option value="VERDE">Acierto</option>
             <option value="ROJO">Fallo</option>
             <option value="">Sin resultado</option>
           </select>
-
-          <select
-            value={filtroMes}
-            onChange={(e) => setFiltroMes(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm"
-          >
+          <select value={filtroMes} onChange={(e) => setFiltroMes(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm">
             <option value="TODOS">Todos los meses</option>
             {MESES.map((mes) => (
-              <option key={mes.value} value={mes.value}>
-                {mes.label}
-              </option>
+              <option key={mes.value} value={mes.value}>{mes.label}</option>
             ))}
           </select>
         </div>
       </div>
 
+      {/* Estadísticas */}
+      <div className="mb-4 bg-gray-50 border border-gray-200 rounded-md p-4 shadow-sm text-sm text-gray-700">
+        <p className="mb-1 font-medium">📊 Estadísticas (según filtros aplicados):</p>
+        <div className="flex flex-wrap gap-4">
+          <span>Partidos: <strong>{total}</strong></span>
+          <span className="text-green-700">Aciertos: <strong>{aciertos}</strong></span>
+          <span className="text-red-700">Fallos: <strong>{fallos}</strong></span>
+          <span>Porcentaje de acierto: <strong>{porcentaje}%</strong></span>
+        </div>
+      </div>
+
+      {/* Tabla */}
       <div className="overflow-x-auto rounded-lg shadow-md bg-white">
         <table className="min-w-full text-sm text-gray-800 border-collapse">
           <thead className="bg-blue-600 text-white text-sm">
@@ -207,10 +183,7 @@ export default function PartidosList() {
           </thead>
           <tbody>
             {partidosFiltrados.map((p) => (
-              <tr
-                key={p.id}
-                className="hover:bg-gray-50 transition border-t border-gray-200"
-              >
+              <tr key={p.id} className="hover:bg-gray-50 transition border-t border-gray-200">
                 <td className="px-3 py-2">{formatFecha(p.fecha)}</td>
                 <td className="px-3 py-2">{p.nombre_partido}</td>
                 <td className="px-3 py-2">
@@ -231,19 +204,13 @@ export default function PartidosList() {
                 <td className="px-3 py-2 text-center">{p.porcentaje_local}%</td>
                 <td className="px-3 py-2 text-center">{p.porcentaje_visitante}%</td>
                 <td className="px-3 py-2 text-center">{p.porcentaje_general}%</td>
-                <td className="px-3 py-2 text-center">
-                  {p.racha_local} ({p.racha_hist_local})
-                </td>
-                <td className="px-3 py-2 text-center">
-                  {p.racha_visitante} ({p.racha_hist_visitante})
-                </td>
+                <td className="px-3 py-2 text-center">{p.racha_local} ({p.racha_hist_local})</td>
+                <td className="px-3 py-2 text-center">{p.racha_visitante} ({p.racha_hist_visitante})</td>
                 <td className="px-3 py-2 text-center">{p.estado}</td>
                 <td className="px-3 py-2 text-center">
                   <select
                     value={p.cumplido || ""}
-                    onChange={(e) =>
-                      handleResultadoChange(p.id, e.target.value)
-                    }
+                    onChange={(e) => handleResultadoChange(p.id, e.target.value)}
                     className={`px-2 py-1 rounded-md border text-sm shadow-sm ${
                       p.cumplido === "VERDE"
                         ? "bg-green-100 text-green-800"
@@ -264,6 +231,7 @@ export default function PartidosList() {
         </table>
       </div>
 
+      {/* Modal */}
       <PartidoFormModal
         isOpen={showModal}
         onRequestClose={() => setShowModal(false)}
@@ -278,10 +246,7 @@ export default function PartidosList() {
             .then((data: Partido[]) => {
               const filtrados = data
                 .filter((p) => p.metodo === metodoSeleccionado.id)
-                .sort(
-                  (a, b) =>
-                    new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
-                );
+                .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
               setPartidos(filtrados);
             });
         }}
