@@ -1,24 +1,31 @@
-<header class="bg-blue-600 text-white p-4 shadow-md relative">
-  <div class="container mx-auto flex justify-between items-center">
-    <a href="/"><h1 class="text-xl font-bold">Logo</h1></a>
-    <nav class="space-x-4 ml-auto relative" id="header-nav">
-      <!-- Se rellena por JS -->
-    </nav>
+<header
+  class="bg-blue-600/90 text-white backdrop-blur-md p-4 shadow-lg sticky top-0 z-50"
+>
+  <div class="container mx-auto flex items-center relative">
+    <a href="/" class="text-xl font-bold">Logo</a>
+    <nav class="flex-1 flex justify-center" id="center-nav"></nav>
+    <nav class="flex items-center gap-4" id="header-nav"></nav>
   </div>
 </header>
 
 <script type="module">
-  const nav = document.getElementById("header-nav");
+  const centerNav = document.getElementById("center-nav");
+  const rightNav = document.getElementById("header-nav");
   const username = localStorage.getItem("username");
 
   if (username) {
-    nav.innerHTML = `
-      <a href="/analisis" class="hover:underline">Análisis</a>
+    centerNav.innerHTML = `
+      <a href="/analisis" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">
+        Análisis
+      </a>
+    `;
+
+    rightNav.innerHTML = `
       <div class="relative inline-block text-left">
-        <button id="user-menu-button" class="hover:underline">
+        <button id="user-menu-button" class="font-medium cursor-pointer transition-transform hover:scale-105">
           ${username}
         </button>
-        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-28 bg-white text-black rounded-md shadow-lg z-10">
+        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-28 bg-white text-black rounded-md shadow-lg z-10 transition duration-200">
           <button id="logout-button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button>
         </div>
       </div>
@@ -40,14 +47,19 @@
     });
 
     document.addEventListener("click", (e) => {
-      if (!nav.contains(e.target)) {
+      if (!rightNav.contains(e.target)) {
         dropdown.classList.add("hidden");
       }
     });
   } else {
-    nav.innerHTML = `
-      <a href="/login" class="hover:underline">Login</a>
-      <a href="/register" class="hover:underline">Register</a>
+    centerNav.innerHTML = ``;
+    rightNav.innerHTML = `
+      <a href="/login" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg transition">
+        Iniciar sesión
+      </a>
+      <a href="/register" class="text-white font-medium">
+        Registrarse
+      </a>
     `;
   }
 </script>
