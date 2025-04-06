@@ -23,6 +23,13 @@ class MetodoAnalisisListAPIView(APIView):
         serializer = MetodoAnalisisSerializer(metodos, many=True)
         return Response(serializer.data)
 
+    def post(self, request):
+        serializer = MetodoAnalisisSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            metodo = serializer.save()
+            return Response(MetodoAnalisisSerializer(metodo).data, status=201)
+        return Response(serializer.errors, status=400)
+        
 class PartidoListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
