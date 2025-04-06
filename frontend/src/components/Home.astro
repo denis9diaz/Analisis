@@ -1,15 +1,15 @@
 ---
-import Hero from '../components/Hero.astro';
-import Benefits from '../components/Benefits.astro';
-import TheWeb from '../components/TheWeb.astro';
-import CTA from '../components/CTA.astro';
-import Footer from '../components/Footer.astro';
+import Hero from './Hero.astro';
+import Benefits from './Benefits.astro';
+import TheWeb from './TheWeb.astro';
+import CTA from './CTA.astro';
+import Footer from './Footer.astro';
 ---
 
-<section
-  class="bg-[url('/public/fondo.png')] bg-no-repeat bg-center bg-fixed bg-contain md:bg-cover min-h-screen text-white"
->
-  <div class="backdrop-blur-sm backdrop-brightness-75">
+<!-- Fondo con imagen fija y máxima calidad -->
+<section class="relative min-h-screen">
+  <!-- Capa oscura semitransparente -->
+  <div class="w-full h-full bg-black/60">
     <Hero />
     <Benefits />
     <TheWeb />
