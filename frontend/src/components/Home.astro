@@ -6,9 +6,8 @@ import CTA from '../components/CTA.astro';
 import Footer from '../components/Footer.astro';
 ---
 
-<!-- Fondo común con imagen fija -->
 <section
-  class="bg-[url('src/public/fondo.png')] bg-cover bg-center bg-fixed min-h-screen text-white"
+  class="bg-[url('/public/fondo.png')] bg-no-repeat bg-center bg-fixed bg-contain md:bg-cover min-h-screen text-white"
 >
   <div class="backdrop-blur-sm backdrop-brightness-75">
     <Hero />
