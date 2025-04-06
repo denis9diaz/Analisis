@@ -1,35 +1,52 @@
 <header class="bg-[#0b0f24]/70 text-white backdrop-blur-md p-4 shadow-lg sticky top-0 z-50 transition-colors duration-300">
   <div class="container mx-auto flex items-center justify-between relative">
-    
     <!-- Logo -->
     <a href="/" class="flex items-center gap-2">
       <img src="/public/logo.png" alt="Logo" class="h-16 w-auto" />
     </a>
 
-    <!-- Análisis centrado absoluto -->
-    <nav class="absolute left-1/2 -translate-x-1/2" id="center-nav"></nav>
+    <!-- Hamburguesa -->
+    <button id="menu-toggle" class="md:hidden focus:outline-none">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
 
-    <!-- Username + Dropdown -->
-    <nav class="flex items-center gap-4" id="header-nav"></nav>
+    <!-- Navegación centrada -->
+    <nav class="hidden md:block absolute left-1/2 -translate-x-1/2" id="center-nav"></nav>
 
+    <!-- Navegación derecha -->
+    <nav class="hidden md:flex items-center gap-4" id="header-nav"></nav>
+  </div>
+
+  <!-- Menú móvil -->
+  <div id="mobile-menu" class="md:hidden hidden px-4 pt-4 pb-2">
+    <div id="mobile-center-nav" class="mb-2"></div>
+    <div id="mobile-header-nav"></div>
   </div>
 </header>
 
 <script type="module">
   const centerNav = document.getElementById("center-nav");
   const rightNav = document.getElementById("header-nav");
+  const mobileCenterNav = document.getElementById("mobile-center-nav");
+  const mobileRightNav = document.getElementById("mobile-header-nav");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const menuToggle = document.getElementById("menu-toggle");
 
   const username = localStorage.getItem("username");
   const access = localStorage.getItem("access_token");
 
-  // Función para limpiar sesión
   const clearSession = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("username");
   };
 
-  // Verificar validez del access token
+  menuToggle.addEventListener("click", () => {
+    mobileMenu.classList.toggle("hidden");
+  });
+
   async function checkToken() {
     if (!access) {
       clearSession();
@@ -52,13 +69,12 @@
   }
 
   function showUserLinks(username) {
-    centerNav.innerHTML = `
+    const analysisBtn = `
       <a href="/analisis" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">
         Análisis
-      </a>
-    `;
+      </a>`;
 
-    rightNav.innerHTML = `
+    const dropdownHTML = `
       <div class="relative inline-block text-left">
         <button id="user-menu-button" class="font-medium cursor-pointer transition-transform hover:scale-105">
           ${username}
@@ -70,8 +86,12 @@
             Logout
           </button>
         </div>
-      </div>
-    `;
+      </div>`;
+
+    centerNav.innerHTML = analysisBtn;
+    rightNav.innerHTML = dropdownHTML;
+    mobileCenterNav.innerHTML = analysisBtn;
+    mobileRightNav.innerHTML = dropdownHTML;
 
     const userButton = document.getElementById("user-menu-button");
     const dropdown = document.getElementById("user-dropdown");
@@ -94,17 +114,14 @@
   }
 
   function showGuestLinks() {
+    const login = `<a href="/login" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg transition">Iniciar sesión</a>`;
+    const register = `<a href="/register" class="text-white font-medium">Registrarse</a>`;
+
     centerNav.innerHTML = ``;
-    rightNav.innerHTML = `
-      <a href="/login" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg transition">
-        Iniciar sesión
-      </a>
-      <a href="/register" class="text-white font-medium">
-        Registrarse
-      </a>
-    `;
+    rightNav.innerHTML = login + register;
+    mobileCenterNav.innerHTML = ``;
+    mobileRightNav.innerHTML = login + register;
   }
 
-  // ✅ Ejecutar al cargar
   checkToken();
 </script>
