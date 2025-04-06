@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import Liga, MetodoAnalisis, Partido
 from .serializers import (
@@ -60,3 +61,15 @@ class PartidoListAPIView(APIView):
             partido_actualizado = serializer.save()
             return Response(PartidoReadSerializer(partido_actualizado).data)
         return Response(serializer.errors, status=400)
+
+# Estadísticas del usuario
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_stats(request):
+    usuario = request.user
+    metodos_count = MetodoAnalisis.objects.filter(usuario=usuario).count()
+    partidos_count = Partido.objects.filter(metodo__usuario=usuario).count()
+    return Response({
+        "metodos": metodos_count,
+        "partidos": partidos_count
+    })

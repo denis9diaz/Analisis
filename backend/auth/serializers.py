@@ -1,9 +1,9 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-import re
 
-# Serializador para el registro de usuario
+# 📝 Serializador para el registro
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -12,27 +12,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password']
 
     def validate_password(self, value):
-        """Validar que la contraseña sea lo suficientemente segura"""
-        # Al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial
-        if len(value) < 8:
-            raise serializers.ValidationError("La contraseña debe tener al menos 8 caracteres.")
-        
-        if not re.search(r'[A-Z]', value):
-            raise serializers.ValidationError("La contraseña debe contener al menos una letra mayúscula.")
-        
-        if not re.search(r'[a-z]', value):
-            raise serializers.ValidationError("La contraseña debe contener al menos una letra minúscula.")
-        
-        if not re.search(r'\d', value):
-            raise serializers.ValidationError("La contraseña debe contener al menos un número.")
-        
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', value):
-            raise serializers.ValidationError("La contraseña debe contener al menos un carácter especial.")
-
+        """Usa la validación estándar de Django"""
+        try:
+            validate_password(value)
+        except ValidationError as e:
+            raise serializers.ValidationError(e.messages)
         return value
 
     def create(self, validated_data):
-        """Crear un usuario con la contraseña cifrada"""
+        """Crear usuario con contraseña cifrada"""
         password = validated_data.pop('password')
         user = User.objects.create_user(
             username=validated_data['username'],
@@ -41,7 +29,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
-# Serializador para la autenticación (opcional, Django maneja esto automáticamente)
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Este email ya está en uso.")
+        return value
+
+# 👤 Serializador para retornar info de usuario
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

@@ -1,9 +1,19 @@
 from pathlib import Path
 from datetime import timedelta
 from corsheaders.defaults import default_headers, default_methods
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# MAILING
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'info.bettracker@gmail.com'
+EMAIL_HOST_PASSWORD = 'zycu mghz nqzf erkv'
+DEFAULT_FROM_EMAIL = 'BetTracker <info.bettracker@gmail.com>'
 
 
 # Quick-start development settings - unsuitable for production
@@ -17,8 +27,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-# Application definition
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
+# Application definition
 INSTALLED_APPS = [
     # Apps de Django
     'django.contrib.admin',
@@ -65,7 +78,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

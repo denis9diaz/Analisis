@@ -10,6 +10,10 @@ urlpatterns = [
     path('login/', views.login, name="login"),
     path('logout/', views.logout, name='logout'),
     path('delete-user/', views.delete_user, name='delete_user'),
+    path('me/', views.me, name='me'),
+    path('update-username/', views.update_username, name='update_username'),
+    path('change-password/', views.change_password, name='change_password'),
+    path('send-temp-password/', views.send_temp_password, name='send_temp_password'),
 
     # JWT endpoints estándar
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
