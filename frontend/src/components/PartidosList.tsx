@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMetodo } from "../context/MetodoContext";
 import PartidoFormModal from "./PartidoFormModal";
 import { fetchWithAuth } from "../utils/authFetch";
+import Select from "react-select";
 
 type Partido = {
   id: number;
@@ -63,34 +64,67 @@ export default function PartidosList() {
       .then((data: Partido[]) => {
         const filtrados = data
           .filter((p) => p.metodo === metodoSeleccionado.id)
-          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+          .sort(
+            (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+          );
         setPartidos(filtrados);
       });
   }, [metodoSeleccionado]);
 
   const ligasUnicas = Array.from(
-    new Set(partidos.map((p) => p.liga?.nombre).filter(Boolean))
+    new Map(
+      partidos.filter((p) => p.liga).map((p) => [p.liga!.nombre, p.liga!])
+    ).values()
   );
 
+  const opcionesLiga = [
+    { value: "TODAS", label: "Todas las ligas" },
+    ...ligasUnicas.map((liga) => ({
+      value: liga.nombre,
+      label: (
+        <div className="flex items-center gap-2">
+          <img
+            src={`https://flagcdn.com/w20/${liga.codigo_pais.toLowerCase()}.png`}
+            alt={liga.nombre}
+            className="inline"
+            width={20}
+            height={15}
+          />
+          <span>{liga.nombre}</span>
+        </div>
+      ),
+    })),
+  ];
+
   const partidosFiltrados = partidos.filter((p) => {
-    const coincideLiga = filtroLiga === "TODAS" || p.liga?.nombre === filtroLiga;
-    const coincideEstado = filtroEstado === "TODOS" || p.estado === filtroEstado;
-    const coincideResultado = filtroResultado === "TODOS" || (p.cumplido || "") === filtroResultado;
+    const coincideLiga =
+      filtroLiga === "TODAS" || p.liga?.nombre === filtroLiga;
+    const coincideEstado =
+      filtroEstado === "TODOS" || p.estado === filtroEstado;
+    const coincideResultado =
+      filtroResultado === "TODOS" || (p.cumplido || "") === filtroResultado;
     const coincideMes = filtroMes === "TODOS" || p.fecha.startsWith(filtroMes);
     return coincideLiga && coincideEstado && coincideResultado && coincideMes;
   });
 
   const total = partidosFiltrados.length;
-  const aciertos = partidosFiltrados.filter((p) => p.cumplido === "VERDE").length;
+  const aciertos = partidosFiltrados.filter(
+    (p) => p.cumplido === "VERDE"
+  ).length;
   const fallos = partidosFiltrados.filter((p) => p.cumplido === "ROJO").length;
-  const sinResultado = partidosFiltrados.filter((p) => !p.cumplido || p.cumplido === "").length;
+  const sinResultado = partidosFiltrados.filter(
+    (p) => !p.cumplido || p.cumplido === ""
+  ).length;
   const porcentaje = total > 0 ? ((aciertos / total) * 100).toFixed(1) : "0";
 
   const handleResultadoChange = async (id: number, nuevoResultado: string) => {
-    const res = await fetchWithAuth("http://localhost:8000/api/general/partidos/", {
-      method: "PATCH",
-      body: JSON.stringify({ id, cumplido: nuevoResultado || null }),
-    });
+    const res = await fetchWithAuth(
+      "http://localhost:8000/api/general/partidos/",
+      {
+        method: "PATCH",
+        body: JSON.stringify({ id, cumplido: nuevoResultado || null }),
+      }
+    );
 
     const partidoActualizado: Partido = await res.json();
     setPartidos((prev) =>
@@ -105,51 +139,158 @@ export default function PartidosList() {
   return (
     <div className="p-4">
       {/* Filtros */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4 text-gray-700">
         <button
           onClick={() => setShowModal(true)}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition"
         >
-          Añadir Partido
+          Añadir partido
         </button>
 
-        <div className="flex gap-4">
-          <select value={filtroLiga} onChange={(e) => setFiltroLiga(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm">
-            <option value="TODAS">Todas las ligas</option>
-            {ligasUnicas.map((liga) => (
-              <option key={liga} value={liga}>{liga}</option>
-            ))}
-          </select>
-          <select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm">
-            <option value="TODOS">Todos los estados</option>
-            <option value="LIVE">LIVE</option>
-            <option value="APOSTADO">APOSTADO</option>
-            <option value="NO">NO</option>
-          </select>
-          <select value={filtroResultado} onChange={(e) => setFiltroResultado(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm">
-            <option value="TODOS">Todos los resultados</option>
-            <option value="VERDE">Acierto</option>
-            <option value="ROJO">Fallo</option>
-            <option value="">Sin resultado</option>
-          </select>
-          <select value={filtroMes} onChange={(e) => setFiltroMes(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm">
-            <option value="TODOS">Todos los meses</option>
-            {MESES.map((mes) => (
-              <option key={mes.value} value={mes.value}>{mes.label}</option>
-            ))}
-          </select>
+        <div className="flex gap-4 items-center flex-wrap">
+          {/* Filtro liga */}
+          <div className="min-w-[200px]">
+            <Select
+              options={[
+                { value: "TODAS", label: "Todas las ligas" },
+                ...ligasUnicas.map((liga) => ({
+                  value: liga.nombre,
+                  label: (
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={`https://flagcdn.com/w20/${liga.codigo_pais.toLowerCase()}.png`}
+                        alt={liga.nombre}
+                        className="inline"
+                        width={20}
+                        height={15}
+                      />
+                      <span>{liga.nombre}</span>
+                    </div>
+                  ),
+                })),
+              ]}
+              value={
+                filtroLiga === "TODAS"
+                  ? { value: "TODAS", label: "Todas las ligas" }
+                  : {
+                      value: filtroLiga,
+                      label: (
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={`https://flagcdn.com/w20/${ligasUnicas
+                              .find((l) => l.nombre === filtroLiga)
+                              ?.codigo_pais.toLowerCase()}.png`}
+                            alt={filtroLiga}
+                            width={20}
+                            height={15}
+                          />
+                          <span>{filtroLiga}</span>
+                        </div>
+                      ),
+                    }
+              }
+              onChange={(selectedOption) => {
+                if (selectedOption) {
+                  setFiltroLiga(selectedOption.value);
+                }
+              }}
+              classNamePrefix="react-select"
+            />
+          </div>
+
+          {/* Filtro estado */}
+          <div className="min-w-[200px]">
+            <Select
+              options={[
+                { value: "TODOS", label: "Todos los estados" },
+                { value: "LIVE", label: "LIVE" },
+                { value: "APOSTADO", label: "APOSTADO" },
+                { value: "NO", label: "NO" },
+              ]}
+              value={{
+                value: filtroEstado,
+                label:
+                  filtroEstado === "TODOS" ? "Todos los estados" : filtroEstado,
+              }}
+              onChange={(selectedOption) => {
+                if (selectedOption) {
+                  setFiltroEstado(selectedOption.value);
+                }
+              }}
+              classNamePrefix="react-select"
+            />
+          </div>
+
+          {/* Filtro resultado */}
+          <div className="min-w-[200px]">
+            <Select
+              options={[
+                { value: "TODOS", label: "Todos los resultados" },
+                { value: "VERDE", label: "Acierto" },
+                { value: "ROJO", label: "Fallo" },
+                { value: "", label: "Sin resultado" },
+              ]}
+              value={{
+                value: filtroResultado,
+                label:
+                  filtroResultado === "TODOS"
+                    ? "Todos los resultados"
+                    : filtroResultado === "VERDE"
+                    ? "Acierto"
+                    : filtroResultado === "ROJO"
+                    ? "Fallo"
+                    : "Sin resultado",
+              }}
+              onChange={(selectedOption) => {
+                if (selectedOption) {
+                  setFiltroResultado(selectedOption.value);
+                }
+              }}
+              classNamePrefix="react-select"
+            />
+          </div>
+
+          {/* Filtro mes */}
+          <div className="min-w-[200px]">
+            <Select
+              options={[{ value: "TODOS", label: "Todos los meses" }, ...MESES]}
+              value={
+                filtroMes === "TODOS"
+                  ? { value: "TODOS", label: "Todos los meses" }
+                  : MESES.find((m) => m.value === filtroMes)
+              }
+              onChange={(selectedOption) => {
+                if (selectedOption) {
+                  setFiltroMes(selectedOption.value);
+                }
+              }}
+              classNamePrefix="react-select"
+            />
+          </div>
         </div>
       </div>
 
       {/* Estadísticas */}
       <div className="mb-4 bg-gray-50 border border-gray-200 rounded-md p-4 shadow-sm text-sm text-gray-700">
-        <p className="mb-1 font-medium">📊 Estadísticas (según filtros aplicados):</p>
+        <p className="mb-1 font-medium">
+          📊 Estadísticas (según filtros aplicados):
+        </p>
         <div className="flex flex-wrap gap-4">
-          <span>Partidos: <strong>{total}</strong></span>
-          <span className="text-green-700">Aciertos: <strong>{aciertos}</strong></span>
-          <span className="text-red-700">Fallos: <strong>{fallos}</strong></span>
-          <span className="text-gray-600">Sin resultado: <strong>{sinResultado}</strong></span>
-          <span>Porcentaje de acierto: <strong>{porcentaje}%</strong></span>
+          <span>
+            Partidos: <strong>{total}</strong>
+          </span>
+          <span className="text-green-700">
+            Aciertos: <strong>{aciertos}</strong>
+          </span>
+          <span className="text-red-700">
+            Fallos: <strong>{fallos}</strong>
+          </span>
+          <span className="text-gray-600">
+            Sin resultado: <strong>{sinResultado}</strong>
+          </span>
+          <span>
+            Porcentaje de acierto: <strong>{porcentaje}%</strong>
+          </span>
         </div>
       </div>
 
@@ -173,7 +314,10 @@ export default function PartidosList() {
           </thead>
           <tbody>
             {partidosFiltrados.map((p) => (
-              <tr key={p.id} className="hover:bg-gray-50 transition border-t border-gray-200">
+              <tr
+                key={p.id}
+                className="hover:bg-gray-50 transition border-t border-gray-200"
+              >
                 <td className="px-3 py-2">{formatFecha(p.fecha)}</td>
                 <td className="px-3 py-2">{p.nombre_partido}</td>
                 <td className="px-3 py-2">
@@ -192,15 +336,25 @@ export default function PartidosList() {
                   )}
                 </td>
                 <td className="px-3 py-2 text-center">{p.porcentaje_local}%</td>
-                <td className="px-3 py-2 text-center">{p.porcentaje_visitante}%</td>
-                <td className="px-3 py-2 text-center">{p.porcentaje_general}%</td>
-                <td className="px-3 py-2 text-center">{p.racha_local} ({p.racha_hist_local})</td>
-                <td className="px-3 py-2 text-center">{p.racha_visitante} ({p.racha_hist_visitante})</td>
+                <td className="px-3 py-2 text-center">
+                  {p.porcentaje_visitante}%
+                </td>
+                <td className="px-3 py-2 text-center">
+                  {p.porcentaje_general}%
+                </td>
+                <td className="px-3 py-2 text-center">
+                  {p.racha_local} ({p.racha_hist_local})
+                </td>
+                <td className="px-3 py-2 text-center">
+                  {p.racha_visitante} ({p.racha_hist_visitante})
+                </td>
                 <td className="px-3 py-2 text-center">{p.estado}</td>
                 <td className="px-3 py-2 text-center">
                   <select
                     value={p.cumplido || ""}
-                    onChange={(e) => handleResultadoChange(p.id, e.target.value)}
+                    onChange={(e) =>
+                      handleResultadoChange(p.id, e.target.value)
+                    }
                     className={`px-2 py-1 rounded-md border text-sm shadow-sm ${
                       p.cumplido === "VERDE"
                         ? "bg-green-100 text-green-800"
@@ -230,7 +384,10 @@ export default function PartidosList() {
             .then((data: Partido[]) => {
               const filtrados = data
                 .filter((p) => p.metodo === metodoSeleccionado.id)
-                .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+                .sort(
+                  (a, b) =>
+                    new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+                );
               setPartidos(filtrados);
             });
         }}

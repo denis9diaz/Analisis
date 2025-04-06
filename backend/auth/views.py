@@ -20,6 +20,13 @@ def get_tokens_for_user(user):
         'access': str(refresh.access_token),
     }
 
+# Validar si el token de acceso es válido
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def validate_token(request):
+    return Response({"detail": "Token válido"}, status=status.HTTP_200_OK)
+
+
 # Registro de usuario (sin cambios)
 @api_view(['POST'])
 @permission_classes([AllowAny])

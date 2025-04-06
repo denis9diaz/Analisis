@@ -1,35 +1,97 @@
-<header
-  class="bg-blue-600/90 text-white backdrop-blur-md p-4 shadow-lg sticky top-0 z-50"
->
-  <div class="container mx-auto flex items-center relative">
-    <a href="/" class="text-xl font-bold">Logo</a>
-    <nav class="flex-1 flex justify-center" id="center-nav"></nav>
-    <nav class="flex items-center gap-4" id="header-nav"></nav>
+<header class="bg-[#0b0f24]/70 text-white backdrop-blur-md p-4 shadow-lg sticky top-0 z-50 transition-colors duration-300">
+  <div class="container mx-auto flex items-center justify-between relative">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2">
+      <img src="/public/logo.png" alt="Logo" class="h-16 w-auto" />
+    </a>
+
+    <!-- Hamburguesa -->
+    <button id="menu-toggle" class="md:hidden focus:outline-none">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+
+    <!-- Navegación centrada -->
+    <nav class="hidden md:block absolute left-1/2 -translate-x-1/2" id="center-nav"></nav>
+
+    <!-- Navegación derecha -->
+    <nav class="hidden md:flex items-center gap-4" id="header-nav"></nav>
+  </div>
+
+  <!-- Menú móvil -->
+  <div id="mobile-menu" class="md:hidden hidden px-4 pt-4 pb-2">
+    <div id="mobile-center-nav" class="mb-2"></div>
+    <div id="mobile-header-nav"></div>
   </div>
 </header>
 
 <script type="module">
   const centerNav = document.getElementById("center-nav");
   const rightNav = document.getElementById("header-nav");
-  const username = localStorage.getItem("username");
+  const mobileCenterNav = document.getElementById("mobile-center-nav");
+  const mobileRightNav = document.getElementById("mobile-header-nav");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const menuToggle = document.getElementById("menu-toggle");
 
-  if (username) {
-    centerNav.innerHTML = `
+  const username = localStorage.getItem("username");
+  const access = localStorage.getItem("access_token");
+
+  const clearSession = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("username");
+  };
+
+  menuToggle.addEventListener("click", () => {
+    mobileMenu.classList.toggle("hidden");
+  });
+
+  async function checkToken() {
+    if (!access) {
+      clearSession();
+      showGuestLinks();
+      return;
+    }
+
+    const res = await fetch("http://localhost:8000/api/auth/validate/", {
+      headers: {
+        Authorization: `Bearer ${access}`,
+      },
+    });
+
+    if (res.ok) {
+      showUserLinks(username);
+    } else {
+      clearSession();
+      showGuestLinks();
+    }
+  }
+
+  function showUserLinks(username) {
+    const analysisBtn = `
       <a href="/analisis" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">
         Análisis
-      </a>
-    `;
+      </a>`;
 
-    rightNav.innerHTML = `
+    const dropdownHTML = `
       <div class="relative inline-block text-left">
         <button id="user-menu-button" class="font-medium cursor-pointer transition-transform hover:scale-105">
           ${username}
         </button>
-        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-28 bg-white text-black rounded-md shadow-lg z-10 transition duration-200">
-          <button id="logout-button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button>
+        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-40 bg-white text-black rounded-md shadow-lg z-10 overflow-hidden text-sm">
+          <a href="/cuenta" class="block px-4 py-2 hover:bg-gray-100 transition">Mi cuenta</a>
+          <div class="border-t border-gray-200"></div>
+          <button id="logout-button" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-700 transition">
+            Logout
+          </button>
         </div>
-      </div>
-    `;
+      </div>`;
+
+    centerNav.innerHTML = analysisBtn;
+    rightNav.innerHTML = dropdownHTML;
+    mobileCenterNav.innerHTML = analysisBtn;
+    mobileRightNav.innerHTML = dropdownHTML;
 
     const userButton = document.getElementById("user-menu-button");
     const dropdown = document.getElementById("user-dropdown");
@@ -40,9 +102,7 @@
     });
 
     logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      localStorage.removeItem("username");
+      clearSession();
       window.location.href = "/";
     });
 
@@ -51,15 +111,17 @@
         dropdown.classList.add("hidden");
       }
     });
-  } else {
-    centerNav.innerHTML = ``;
-    rightNav.innerHTML = `
-      <a href="/login" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg transition">
-        Iniciar sesión
-      </a>
-      <a href="/register" class="text-white font-medium">
-        Registrarse
-      </a>
-    `;
   }
+
+  function showGuestLinks() {
+    const login = `<a href="/login" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg transition">Iniciar sesión</a>`;
+    const register = `<a href="/register" class="text-white font-medium">Registrarse</a>`;
+
+    centerNav.innerHTML = ``;
+    rightNav.innerHTML = login + register;
+    mobileCenterNav.innerHTML = ``;
+    mobileRightNav.innerHTML = login + register;
+  }
+
+  checkToken();
 </script>

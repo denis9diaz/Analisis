@@ -9,7 +9,12 @@ class LigaSerializer(serializers.ModelSerializer):
 class MetodoAnalisisSerializer(serializers.ModelSerializer):
     class Meta:
         model = MetodoAnalisis
-        fields = ['id', 'nombre']
+        fields = ['id', 'nombre', 'usuario']
+        read_only_fields = ['usuario']
+
+    def create(self, validated_data):
+        validated_data['usuario'] = self.context['request'].user
+        return super().create(validated_data)
 
 class PartidoReadSerializer(serializers.ModelSerializer):
     liga = LigaSerializer(read_only=True)

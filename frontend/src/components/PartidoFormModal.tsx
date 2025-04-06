@@ -118,10 +118,10 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Añadir Partido"
-      className="bg-white p-8 rounded-xl shadow-lg max-w-2xl w-full mx-auto mt-20 outline-none"
+      className="bg-white p-8 rounded-xl shadow-lg max-w-2xl w-full mx-auto mt-20 outline-none text-gray-700"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50"
     >
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Añadir Partido</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Añadir partido</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="date"
