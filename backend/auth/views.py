@@ -38,7 +38,27 @@ def register(request):
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
+
+        # ✉️ Enviar correo de bienvenida (con fallback si falla)
+        try:
+            subject = '¡Bienvenido a BetTracker!'
+            to = [user.email]
+            context = {
+                'username': user.username,
+            }
+
+            html_content = render_to_string('email/welcome_email.html', context)
+            text_content = f"Bienvenido {user.username}, gracias por unirte a BetTracker."
+
+            email_msg = EmailMultiAlternatives(subject, text_content, None, to)
+            email_msg.attach_alternative(html_content, "text/html")
+            email_msg.send()
+
+        except Exception as e:
+            print("⚠️ Error al enviar correo de bienvenida:", e)
+
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
