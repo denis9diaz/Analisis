@@ -10,11 +10,13 @@ from .serializers import (
     PartidoWriteSerializer,
 )
 
+
 class LigaListAPIView(APIView):
     def get(self, request):
         ligas = Liga.objects.all()
         serializer = LigaSerializer(ligas, many=True)
         return Response(serializer.data)
+
 
 class MetodoAnalisisListAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -31,6 +33,7 @@ class MetodoAnalisisListAPIView(APIView):
             return Response(MetodoAnalisisSerializer(metodo).data, status=201)
         return Response(serializer.errors, status=400)
         
+
 class PartidoListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -61,6 +64,7 @@ class PartidoListAPIView(APIView):
             partido_actualizado = serializer.save()
             return Response(PartidoReadSerializer(partido_actualizado).data)
         return Response(serializer.errors, status=400)
+
 
 # Estadísticas del usuario
 @api_view(['GET'])

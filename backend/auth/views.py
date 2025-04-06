@@ -200,3 +200,31 @@ def send_temp_password(request):
     email_msg.send()
 
     return Response({"message": "Correo enviado"}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def send_contact_message(request):
+    nombre = request.data.get('nombre')
+    email = request.data.get('email')
+    mensaje = request.data.get('mensaje')
+
+    if not nombre or not email or not mensaje:
+        return Response({"error": "Todos los campos son obligatorios."}, status=400)
+
+    subject = f"Consulta de contacto - {nombre}"
+    to = ['info.bettracker@gmail.com']  # destino final
+    context = {
+        'nombre': nombre,
+        'email': email,
+        'mensaje': mensaje,
+    }
+
+    html_content = render_to_string('email/contact_message.html', context)
+    text_content = f"Nombre: {nombre}\nEmail: {email}\nMensaje:\n{mensaje}"
+
+    email_msg = EmailMultiAlternatives(subject, text_content, email, to)
+    email_msg.attach_alternative(html_content, "text/html")
+    email_msg.send()
+
+    return Response({"message": "Mensaje enviado"}, status=200)
