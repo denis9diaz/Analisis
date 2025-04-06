@@ -1,3 +1,160 @@
-<div class="flex items-start justify-center min-h-screen bg-gray-100 text-black pt-20">
-    Mi cuenta
-</div>
+<!-- AccountPage.astro -->
+<div class="min-h-screen bg-gray-50 text-black py-20 px-4">
+    <div class="max-w-2xl mx-auto space-y-10">
+      <h1 class="text-2xl font-semibold text-center">Mi cuenta</h1>
+  
+      <!-- 🧑 Perfil -->
+      <section class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm space-y-4">
+        <h2 class="text-lg font-medium text-gray-800">Perfil</h2>
+  
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Username</label>
+          <div class="flex items-center gap-2">
+            <input
+              id="username-input"
+              class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+              disabled
+            />
+            <button id="edit-username" class="text-gray-500 hover:text-blue-600 text-sm">✏️</button>
+            <button
+              id="save-username"
+              class="bg-blue-600 text-white rounded px-3 py-1.5 text-sm hidden"
+            >
+              Guardar
+            </button>
+          </div>
+        </div>
+  
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Email</label>
+          <input
+            id="email-input"
+            class="w-full border border-gray-200 rounded px-3 py-1.5 text-sm bg-gray-100"
+            disabled
+          />
+        </div>
+      </section>
+  
+      <!-- 📊 Resumen -->
+      <section class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm space-y-4">
+        <h2 class="text-lg font-medium text-gray-800">Resumen</h2>
+  
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-gray-100 rounded p-4 text-center">
+            <p class="text-sm text-gray-600">Métodos creados</p>
+            <p id="metodos-count" class="text-xl font-semibold">0</p>
+          </div>
+          <div class="bg-gray-100 rounded p-4 text-center">
+            <p class="text-sm text-gray-600">Partidos registrados</p>
+            <p id="partidos-count" class="text-xl font-semibold">0</p>
+          </div>
+        </div>
+      </section>
+  
+      <!-- ⚙️ Opciones avanzadas -->
+      <section class="text-center text-sm text-gray-500 space-y-2 mt-10">
+        <a href="cambiar-contraseña" class="hover:text-blue-600 underline">Cambiar contraseña</a><br />
+        <a href="/eliminar" class="hover:text-red-600 underline">Eliminar cuenta</a>
+      </section>
+    </div>
+  
+    <!-- 🔔 Toast Notification -->
+    <div
+      id="toast"
+      class="fixed bottom-6 right-6 text-white px-4 py-2 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50"
+    >
+      Username actualizado
+    </div>
+  </div>
+  
+  <script type="module">
+    const access = localStorage.getItem("access_token");
+  
+    const authFetch = (url, options = {}) => {
+      return fetch(`http://localhost:8000${url}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access}`,
+        },
+        ...options,
+      });
+    };
+  
+    const usernameInput = document.getElementById("username-input");
+    const emailInput = document.getElementById("email-input");
+    const editBtn = document.getElementById("edit-username");
+    const saveBtn = document.getElementById("save-username");
+    const statsMetodos = document.getElementById("metodos-count");
+    const statsPartidos = document.getElementById("partidos-count");
+  
+    async function loadUser() {
+      const res = await authFetch("/api/auth/me/");
+      if (res.ok) {
+        const data = await res.json();
+        usernameInput.value = data.username;
+        emailInput.value = data.email;
+      } else {
+        showToast("No se pudo cargar tu perfil", "error");
+      }
+  
+      const statsRes = await authFetch("/api/general/stats/");
+      if (statsRes.ok) {
+        const stats = await statsRes.json();
+        statsMetodos.textContent = stats.metodos;
+        statsPartidos.textContent = stats.partidos;
+      }
+    }
+  
+    editBtn.addEventListener("click", () => {
+      usernameInput.disabled = false;
+      saveBtn.classList.remove("hidden");
+    });
+  
+    saveBtn.addEventListener("click", async () => {
+      const newUsername = usernameInput.value.trim();
+      if (!newUsername) {
+        showToast("El username no puede estar vacío", "warning");
+        return;
+      }
+  
+      const res = await authFetch("/api/auth/update-username/", {
+        method: "PATCH",
+        body: JSON.stringify({ username: newUsername }),
+      });
+  
+      if (res.ok) {
+        usernameInput.disabled = true;
+        saveBtn.classList.add("hidden");
+        showToast("Username actualizado", "success");
+      } else {
+        showToast("Error al actualizar el username", "error");
+      }
+    });
+  
+    function showToast(message = "Acción completada", type = "success") {
+      const toast = document.getElementById("toast");
+  
+      const colorClasses = {
+        success: "bg-green-600",
+        error: "bg-red-600",
+        info: "bg-blue-600",
+        warning: "bg-yellow-500 text-black",
+      };
+  
+      toast.className =
+        "fixed bottom-6 right-6 text-white px-4 py-2 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50";
+  
+      toast.classList.add(colorClasses[type] || colorClasses.success);
+      toast.textContent = message;
+  
+      toast.classList.remove("opacity-0");
+      toast.classList.add("opacity-100");
+  
+      setTimeout(() => {
+        toast.classList.add("opacity-0");
+        toast.classList.remove("opacity-100");
+      }, 2500);
+    }
+  
+    loadUser();
+  </script>
