@@ -164,7 +164,7 @@ def send_temp_password(request):
     user.set_password(temp_password)
     user.save()
 
-    subject = 'Tu nueva contraseña temporal - Analisis'
+    subject = 'Tu contraseña temporal - BetTracker'
     to = [email]
     context = {
         'username': user.username,
