@@ -70,19 +70,18 @@ def login(request):
     password = request.data.get('password')
 
     if not identifier or not password:
-        return Response({"error": "Username/email y contraseña requeridos"}, status=400)
+        return Response({"error": "Usuario/correo y contraseña requeridos"}, status=400)
 
     user_qs = User.objects.filter(Q(username=identifier) | Q(email=identifier))
-    
+
     if not user_qs.exists():
-        return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"error": "Usuario o correo no registrado"}, status=status.HTTP_401_UNAUTHORIZED)
 
     user = user_qs.first()
-    
     user_auth = authenticate(username=user.username, password=password)
 
     if user_auth is None:
-        return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"error": "Contraseña incorrecta"}, status=status.HTTP_401_UNAUTHORIZED)
 
     tokens = get_tokens_for_user(user_auth)
     return Response({
