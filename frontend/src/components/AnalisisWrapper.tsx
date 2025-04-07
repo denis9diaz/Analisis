@@ -1,11 +1,17 @@
 import { MetodoProvider } from "../context/MetodoContext";
 import MetodosList from "./MetodosList";
 import PartidosList from "./PartidosList";
+import EmptyStateAnalisis from "./EmptyStateAnalisis";
 import { useMetodo } from "../context/MetodoContext";
 
 function PartidosConMetodo() {
   const { metodoSeleccionado } = useMetodo();
-  return metodoSeleccionado ? <PartidosList /> : null;
+
+  return metodoSeleccionado ? (
+    <PartidosList />
+  ) : (
+    <EmptyStateAnalisis />
+  );
 }
 
 export default function AnalisisWrapper() {
