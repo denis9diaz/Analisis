@@ -198,7 +198,7 @@ def send_temp_password(request):
     context = {
         'username': user.username,
         'temp_password': temp_password,
-        'logo_url': 'https://via.placeholder.com/120x60?text=BetTracker',
+        'logo_url': 'https://res.cloudinary.com/dxzhssh9m/image/upload/v1744061761/BetTracker_logo_hif7o4.png',
     }
 
     html_content = render_to_string('email/temp_password.html', context)
