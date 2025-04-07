@@ -11,8 +11,8 @@ function PartidosConMetodo() {
 export default function AnalisisWrapper() {
   return (
     <MetodoProvider>
-      <div className="flex min-h-screen bg-gray-200 p-6 gap-6">
-        <div className="w-1/6 bg-white rounded-lg shadow-md p-4">
+      <div className="flex flex-col xl:flex-row min-h-screen bg-gray-200 p-4 xl:p-6 gap-4 xl:gap-6">
+        <div className="w-full lg:w-1/6 bg-white rounded-lg shadow-md p-4">
           <MetodosList />
         </div>
         <div className="flex-1">
