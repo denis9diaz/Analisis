@@ -159,8 +159,15 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
 
   saveBtn.addEventListener("click", async () => {
     const newUsername = usernameInput.value.trim();
+    const currentUsername = localStorage.getItem("username");
+
     if (!newUsername) {
       showToast("El username no puede estar vacío", "warning");
+      return;
+    }
+
+    if (newUsername === currentUsername) {
+      showToast("El username es el mismo que el actual", "info");
       return;
     }
 
@@ -169,10 +176,20 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
       body: JSON.stringify({ username: newUsername }),
     });
 
+    const data = await res.json();
+
     if (res.ok) {
+      localStorage.setItem("username", newUsername);
       usernameInput.disabled = true;
       saveBtn.classList.add("hidden");
       showToast("Username actualizado", "success");
+
+      // 🔄 Refrescar header con nuevo username
+      if (typeof window.checkToken === "function") {
+        window.checkToken();
+      }
+    } else if (data?.error) {
+      showToast(data.error, "error");
     } else {
       showToast("Error al actualizar el username", "error");
     }
@@ -180,6 +197,7 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
 
   function showToast(message = "Acción completada", type = "success") {
     const toast = document.getElementById("toast");
+    if (!toast) return;
 
     const colorClasses = {
       success: "bg-green-600",
@@ -191,7 +209,8 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
     toast.className =
       "fixed bottom-6 right-6 text-white px-4 py-2 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50";
 
-    toast.classList.add(colorClasses[type] || colorClasses.success);
+    const classListToAdd = (colorClasses[type] || colorClasses.success).split(" ");
+    toast.classList.add(...classListToAdd);
     toast.textContent = message;
 
     toast.classList.remove("opacity-0");

@@ -79,12 +79,15 @@
     });
 
     if (res.ok) {
-      showUserLinks(username);
+      const updatedUsername = localStorage.getItem("username");
+      showUserLinks(updatedUsername);
     } else {
       clearSession();
       showGuestLinks();
     }
   }
+
+  window.checkToken = checkToken; // ✅ Esto es lo que necesitas
 
   function showUserLinks(username) {
     const analysisBtn = `
@@ -92,7 +95,7 @@
         Análisis
       </a>`;
 
-  const dropdownHTML = `
+    const dropdownHTML = `
     <div class="relative inline-block text-left group">
       <button id="user-menu-button" class="flex items-center gap-2 font-medium cursor-pointer text-white hover:text-gray-200 transition-all duration-200">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
