@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import Liga, MetodoAnalisis, Partido
 from .serializers import (
@@ -9,11 +10,13 @@ from .serializers import (
     PartidoWriteSerializer,
 )
 
+
 class LigaListAPIView(APIView):
     def get(self, request):
         ligas = Liga.objects.all()
         serializer = LigaSerializer(ligas, many=True)
         return Response(serializer.data)
+
 
 class MetodoAnalisisListAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -30,6 +33,7 @@ class MetodoAnalisisListAPIView(APIView):
             return Response(MetodoAnalisisSerializer(metodo).data, status=201)
         return Response(serializer.errors, status=400)
         
+
 class PartidoListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -60,3 +64,63 @@ class PartidoListAPIView(APIView):
             partido_actualizado = serializer.save()
             return Response(PartidoReadSerializer(partido_actualizado).data)
         return Response(serializer.errors, status=400)
+
+
+# Estadísticas del usuario
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_stats(request):
+    usuario = request.user
+    metodo_id = request.query_params.get('metodo_id')
+
+    partidos = Partido.objects.filter(metodo__usuario=usuario)
+    if metodo_id:
+        partidos = partidos.filter(metodo_id=metodo_id)
+
+    metodos_count = MetodoAnalisis.objects.filter(usuario=usuario).count()
+    partidos_count = partidos.count()
+
+    # Totales por resultado
+    verdes = partidos.filter(cumplido='VERDE').count()
+    rojos = partidos.filter(cumplido='ROJO').count()
+    sin_resultado = partidos.filter(cumplido__isnull=True).count() + partidos.filter(cumplido='').count()
+
+    # Totales por estado
+    live = partidos.filter(estado='LIVE').count()
+    apostado = partidos.filter(estado='APOSTADO').count()
+    no = partidos.filter(estado='NO').count()
+
+    # Cruce resultado-estado
+    combinaciones = {
+        "VERDE": {
+            "LIVE": partidos.filter(cumplido='VERDE', estado='LIVE').count(),
+            "APOSTADO": partidos.filter(cumplido='VERDE', estado='APOSTADO').count(),
+            "NO": partidos.filter(cumplido='VERDE', estado='NO').count(),
+        },
+        "ROJO": {
+            "LIVE": partidos.filter(cumplido='ROJO', estado='LIVE').count(),
+            "APOSTADO": partidos.filter(cumplido='ROJO', estado='APOSTADO').count(),
+            "NO": partidos.filter(cumplido='ROJO', estado='NO').count(),
+        },
+        "SIN_RESULTADO": {
+            "LIVE": partidos.filter(cumplido__in=[None, ''], estado='LIVE').count(),
+            "APOSTADO": partidos.filter(cumplido__in=[None, ''], estado='APOSTADO').count(),
+            "NO": partidos.filter(cumplido__in=[None, ''], estado='NO').count(),
+        },
+    }
+
+    return Response({
+        "metodos": metodos_count,
+        "partidos": partidos_count,
+        "resultados": {
+            "VERDE": verdes,
+            "ROJO": rojos,
+            "SIN_RESULTADO": sin_resultado
+        },
+        "estados": {
+            "LIVE": live,
+            "APOSTADO": apostado,
+            "NO": no
+        },
+        "cruce_resultado_estado": combinaciones
+    })

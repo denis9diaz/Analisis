@@ -13,7 +13,8 @@ type Liga = {
 
 type Option = {
   value: number;
-  label: JSX.Element;
+  label: string;
+  data: Liga;
 };
 
 type Props = {
@@ -43,20 +44,13 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
     fetchWithAuth("http://localhost:8000/api/general/ligas/")
       .then((res) => res.json())
       .then((data: Liga[]) => {
-        const options = data.map((liga) => ({
+        const options: Option[] = data.map((liga) => ({
           value: liga.id,
-          label: (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <img
-                src={`https://flagcdn.com/w20/${liga.codigo_pais.toLowerCase()}.png`}
-                alt={liga.nombre}
-              />
-              {liga.nombre}
-            </div>
-          ),
+          label: liga.nombre,
+          data: liga,
         }));
         setLigas(options);
-      });
+      });      
   }, []);
 
   useEffect(() => {
@@ -141,6 +135,19 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
           value={ligaSeleccionada}
           onChange={(op) => setLigaSeleccionada(op)}
           placeholder="Selecciona una liga"
+          isClearable
+          formatOptionLabel={(option: Option) => (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <img
+                src={`https://flagcdn.com/w20/${option.data.codigo_pais.toLowerCase()}.png`}
+                alt={option.label}
+              />
+              {option.label}
+            </div>
+          )}
+          filterOption={(option, inputValue) =>
+            option.label.toLowerCase().includes(inputValue.toLowerCase())
+          }
         />
         <input
           type="number"

@@ -17,3 +17,19 @@ import Footer from './Footer.astro';
     <Footer />
   </div>
 </section>
+
+<script is:inline>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('opacity-100');
+        entry.target.classList.remove('opacity-0');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.fade-target').forEach(el => {
+    observer.observe(el);
+  });
+</script>

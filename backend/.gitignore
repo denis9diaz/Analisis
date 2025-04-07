@@ -1,0 +1,28 @@
+# Archivos de base de datos
+db.sqlite3
+
+# Entorno virtual
+venv/
+.env/
+
+# Archivos compilados
+__pycache__/
+*.py[cod]
+
+# Archivos de configuración local o sensibles
+local_settings.py
+
+# Archivos generados por el sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de backup o temporales
+*.bak
+*.swp
+
+# Archivos estáticos generados
+staticfiles/
+media/
+
+# VSCode
+.vscode/
