@@ -1,6 +1,9 @@
-<header class="bg-[#0b0f24]/70 text-white backdrop-blur-md p-4 shadow-lg sticky top-0 z-50 transition-colors duration-300">
-  <div class="w-full max-w-screen-xl mx-auto px-4 flex items-center justify-between relative">
-
+<header
+  class="bg-[#0b0f24]/70 text-white backdrop-blur-md p-4 shadow-lg sticky top-0 z-50 transition-colors duration-300"
+>
+  <div
+    class="w-full max-w-screen-xl mx-auto px-4 flex items-center justify-between relative"
+  >
     <!-- Lado izquierdo: logo -->
     <div class="w-[300px] flex items-center">
       <a href="/" class="flex items-center gap-2">
@@ -15,8 +18,17 @@
     <div class="w-[300px] flex justify-end items-center">
       <!-- Hamburguesa móvil -->
       <button id="menu-toggle" class="md:hidden focus:outline-none">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
 
@@ -31,7 +43,6 @@
     <div id="mobile-header-nav"></div>
   </div>
 </header>
-
 
 <script type="module">
   const centerNav = document.getElementById("center-nav");
@@ -81,22 +92,25 @@
         Análisis
       </a>`;
 
-    const dropdownHTML = `
-      <div class="relative inline-block text-left">
-        <button id="user-menu-button" class="flex items-center gap-1 font-medium cursor-pointer">
-          <span>${username}</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
+  const dropdownHTML = `
+    <div class="relative inline-block text-left group">
+      <button id="user-menu-button" class="flex items-center gap-2 font-medium cursor-pointer text-white hover:text-gray-200 transition-all duration-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A4 4 0 0112 20a4 4 0 016.879-2.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span>${username}</span>
+        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white text-black rounded-xl shadow-xl z-20 overflow-hidden text-sm transform transition-all duration-150 origin-top-right">
+        <a href="/cuenta" class="block px-5 py-3 hover:bg-gray-100 transition-all font-medium">Mi cuenta</a>
+        <div class="border-t border-gray-200"></div>
+        <button id="logout-button" class="block w-full text-left px-5 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 font-medium transition-all">
+          Cerrar sesión
         </button>
-        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-40 bg-white text-black rounded-md shadow-lg z-10 overflow-hidden text-sm">
-          <a href="/cuenta" class="block px-4 py-2 hover:bg-gray-100 transition">Mi cuenta</a>
-          <div class="border-t border-gray-200"></div>
-          <button id="logout-button" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 transition">
-            Cerrar sesión
-          </button>
-        </div>
-      </div>`;
+      </div>
+    </div>`;
 
     centerNav.innerHTML = analysisBtn;
     rightNav.innerHTML = dropdownHTML;

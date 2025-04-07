@@ -4,4 +4,37 @@
 body {
     font-family: 'Inter', sans-serif;
   }
-  
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Estilo general de la barra */
+::-webkit-scrollbar {
+  width: 20px;
+  height: 20px;
+}
+
+/* Fondo del track */
+::-webkit-scrollbar-track {
+  background: #0b0f24; /* igual que el fondo del header */
+}
+
+/* Scroll "thumb" (la parte que se mueve) */
+::-webkit-scrollbar-thumb {
+  background: #2563eb; /* azul elegante (Tailwind: blue-600) */
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* Hover del thumb */
+::-webkit-scrollbar-thumb:hover {
+  background: #1e40af; /* azul más oscuro (Tailwind: blue-800) */
+}
+
+/* Firefox (limitado) */
+* {
+  scrollbar-width: auto; /* ancho del scrollbar */
+  scrollbar-color: #2563eb #0b0f24;
+}
