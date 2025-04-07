@@ -46,6 +46,38 @@ export default function PartidosList() {
   const [partidos, setPartidos] = useState<Partido[]>([]);
   const [showModal, setShowModal] = useState(false);
 
+  const [notasTemp, setNotasTemp] = useState<{ [id: number]: string }>({});
+
+  const handleNotasChange = (id: number, nuevaNota: string) => {
+    setNotasTemp((prev) => ({ ...prev, [id]: nuevaNota }));
+  };
+
+  const guardarNotas = async (id: number) => {
+    const nuevaNota = notasTemp[id];
+    if (nuevaNota === undefined) return;
+
+    const res = await fetchWithAuth(
+      "http://localhost:8000/api/general/partidos/",
+      {
+        method: "PATCH",
+        body: JSON.stringify({ id, notas: nuevaNota }),
+      }
+    );
+
+    const partidoActualizado: Partido = await res.json();
+    setPartidos((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, notas: partidoActualizado.notas } : p
+      )
+    );
+
+    setNotasTemp((prev) => {
+      const nuevo = { ...prev };
+      delete nuevo[id];
+      return nuevo;
+    });
+  };
+
   const [filtroLiga, setFiltroLiga] = useState("TODAS");
   const [filtroEstado, setFiltroEstado] = useState("TODOS");
   const [filtroResultado, setFiltroResultado] = useState("TODOS");
@@ -306,7 +338,7 @@ export default function PartidosList() {
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
               <th className="px-3 py-2 text-left w-[100px]">Fecha</th>
-              <th className="px-3 py-2 text-left w-[240px]">Partido</th>
+              <th className="px-3 py-2 text-left w-[250px]">Partido</th>
               <th className="px-3 py-2 text-left w-[180px]">Liga</th>
               <th className="px-3 py-2 text-center w-[80px]">% Local</th>
               <th className="px-3 py-2 text-center w-[80px]">% Visit.</th>
@@ -314,7 +346,7 @@ export default function PartidosList() {
               <th className="px-3 py-2 text-center w-[60px]">R.L.</th>
               <th className="px-3 py-2 text-center w-[60px]">R.V.</th>
               <th className="px-3 py-2 text-center w-[50px]">Estado</th>
-              <th className="px-3 py-2 text-center w-[110px]">Resultado</th>
+              <th className="px-3 py-2 text-center w-[105px]">Resultado</th>
               <th className="px-3 py-2 text-left w-[280px]">Notas</th>
             </tr>
           </thead>
@@ -325,7 +357,7 @@ export default function PartidosList() {
                 className="hover:bg-gray-50 transition border-t border-gray-200"
               >
                 <td className="px-3 py-2 w-[100px]">{formatFecha(p.fecha)}</td>
-                <td className="px-3 py-2 w-[240px]">{p.nombre_partido}</td>
+                <td className="px-3 py-2 w-[250px]">{p.nombre_partido}</td>
                 <td className="px-3 py-2 w-[180px]">
                   {p.liga ? (
                     <div className="flex items-center gap-2">
@@ -357,7 +389,7 @@ export default function PartidosList() {
                   {p.racha_visitante} ({p.racha_hist_visitante})
                 </td>
                 <td className="px-3 py-2 text-center w-[50px]">{p.estado}</td>
-                <td className="px-3 py-2 text-center w-[110px]">
+                <td className="px-3 py-2 text-center w-[105px]">
                   <select
                     value={p.cumplido || ""}
                     onChange={(e) =>
@@ -376,7 +408,18 @@ export default function PartidosList() {
                     <option value="ROJO">Fallo</option>
                   </select>
                 </td>
-                <td className="px-3 py-2 text-left w-[280px]">{p.notas}</td>
+                <td className="px-3 py-2 text-left w-[280px]">
+                    <textarea
+                      value={
+                        notasTemp[p.id] !== undefined
+                          ? notasTemp[p.id]
+                          : p.notas
+                      }
+                      onChange={(e) => handleNotasChange(p.id, e.target.value)}
+                      onBlur={() => guardarNotas(p.id)}
+                      className="w-full h-[25px] resize-none border rounded-md p-1 text-sm whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll"
+                    />
+                </td>
               </tr>
             ))}
           </tbody>
