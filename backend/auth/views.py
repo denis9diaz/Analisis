@@ -13,6 +13,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.contrib.auth.password_validation import validate_password
 from auth.serializers import RegisterSerializer, UserSerializer
+from django.core.exceptions import ValidationError
 
 
 # 🔐 Generar token JWT
@@ -144,14 +145,23 @@ def change_password(request):
     user = request.user
     old_password = request.data.get('old_password')
     new_password = request.data.get('new_password')
+    repeat_password = request.data.get('repeat_password')
+
+    errors = {}
 
     if not user.check_password(old_password):
-        return Response({'error': 'La contraseña actual no es correcta'}, status=400)
+        errors['old_password'] = ['La contraseña actual no es correcta']
+
+    if new_password != repeat_password:
+        errors['repeat_password'] = ['Las contraseñas no coinciden']
 
     try:
         validate_password(new_password, user=user)
-    except serializers.ValidationError as e:
-        return Response({'error': str(e.detail[0])}, status=400)
+    except ValidationError as e:  # ✅ Usamos el correcto
+        errors['new_password'] = e.messages  # ✅ Formato esperado por el frontend
+
+    if errors:
+        return Response(errors, status=400)
 
     user.set_password(new_password)
     user.save()
