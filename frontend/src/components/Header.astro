@@ -2,17 +2,17 @@
   <div class="w-full max-w-screen-xl mx-auto px-4 flex items-center justify-between relative">
 
     <!-- Lado izquierdo: logo -->
-    <div class="w-[160px] flex items-center">
+    <div class="w-[300px] flex items-center">
       <a href="/" class="flex items-center gap-2">
         <img src="/logo.png" alt="Logo" class="h-16 w-auto" />
       </a>
     </div>
 
     <!-- Centro: botón análisis -->
-    <div id="center-nav" class="flex justify-center"></div>
+    <div id="center-nav" class="hidden md:flex justify-center"></div>
 
     <!-- Lado derecho: usuario -->
-    <div class="w-[160px] flex justify-end items-center">
+    <div class="w-[300px] flex justify-end items-center">
       <!-- Hamburguesa móvil -->
       <button id="menu-toggle" class="md:hidden focus:outline-none">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -130,7 +130,7 @@
   }
 
   function showGuestLinks() {
-    const login = `<a href="/login" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg transition">Iniciar sesión</a>`;
+    const login = `<a href="/login" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 me-1  rounded-lg transition">Iniciar sesión</a>`;
     const register = `<a href="/register" class="text-white font-medium">Registrarse</a>`;
 
     centerNav.innerHTML = ``;
