@@ -71,9 +71,56 @@ class PartidoListAPIView(APIView):
 @permission_classes([IsAuthenticated])
 def user_stats(request):
     usuario = request.user
+    metodo_id = request.query_params.get('metodo_id')
+
+    partidos = Partido.objects.filter(metodo__usuario=usuario)
+    if metodo_id:
+        partidos = partidos.filter(metodo_id=metodo_id)
+
     metodos_count = MetodoAnalisis.objects.filter(usuario=usuario).count()
-    partidos_count = Partido.objects.filter(metodo__usuario=usuario).count()
+    partidos_count = partidos.count()
+
+    # Totales por resultado
+    verdes = partidos.filter(cumplido='VERDE').count()
+    rojos = partidos.filter(cumplido='ROJO').count()
+    sin_resultado = partidos.filter(cumplido__isnull=True).count() + partidos.filter(cumplido='').count()
+
+    # Totales por estado
+    live = partidos.filter(estado='LIVE').count()
+    apostado = partidos.filter(estado='APOSTADO').count()
+    no = partidos.filter(estado='NO').count()
+
+    # Cruce resultado-estado
+    combinaciones = {
+        "VERDE": {
+            "LIVE": partidos.filter(cumplido='VERDE', estado='LIVE').count(),
+            "APOSTADO": partidos.filter(cumplido='VERDE', estado='APOSTADO').count(),
+            "NO": partidos.filter(cumplido='VERDE', estado='NO').count(),
+        },
+        "ROJO": {
+            "LIVE": partidos.filter(cumplido='ROJO', estado='LIVE').count(),
+            "APOSTADO": partidos.filter(cumplido='ROJO', estado='APOSTADO').count(),
+            "NO": partidos.filter(cumplido='ROJO', estado='NO').count(),
+        },
+        "SIN_RESULTADO": {
+            "LIVE": partidos.filter(cumplido__in=[None, ''], estado='LIVE').count(),
+            "APOSTADO": partidos.filter(cumplido__in=[None, ''], estado='APOSTADO').count(),
+            "NO": partidos.filter(cumplido__in=[None, ''], estado='NO').count(),
+        },
+    }
+
     return Response({
         "metodos": metodos_count,
-        "partidos": partidos_count
+        "partidos": partidos_count,
+        "resultados": {
+            "VERDE": verdes,
+            "ROJO": rojos,
+            "SIN_RESULTADO": sin_resultado
+        },
+        "estados": {
+            "LIVE": live,
+            "APOSTADO": apostado,
+            "NO": no
+        },
+        "cruce_resultado_estado": combinaciones
     })
