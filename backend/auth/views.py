@@ -182,9 +182,6 @@ def send_temp_password(request):
         return Response({"message": "Si el correo está registrado, se enviará un mensaje."}, status=200)
 
     temp_password = get_random_string(length=10)
-    print("TEMP PASSWORD:", temp_password)
-    print("USER:", user.username)
-
     try:
         validate_password(temp_password, user=user)
     except serializers.ValidationError:
@@ -198,7 +195,6 @@ def send_temp_password(request):
     context = {
         'username': user.username,
         'temp_password': temp_password,
-        'logo_url': 'https://res.cloudinary.com/dxzhssh9m/image/upload/v1744061761/BetTracker_logo_hif7o4.png',
     }
 
     html_content = render_to_string('email/temp_password.html', context)
