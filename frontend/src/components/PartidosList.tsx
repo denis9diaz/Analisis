@@ -175,7 +175,7 @@ export default function PartidosList() {
   if (!metodoSeleccionado) return null;
 
   return (
-    <div className="p-4">
+    <div className="p-1">
       {/* Filtros */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 text-gray-700">
         <button
