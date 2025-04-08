@@ -4,10 +4,11 @@ import { PieChart, Pie, Cell, Tooltip } from "recharts";
 const COLORS = {
   ACIERTO: "#16a34a",
   FALLO: "#dc2626",
-  "SIN RESULTADO": "#6b7280",
-  LIVE: "#2563eb",
-  APOSTADO: "#f59e0b",
-  NO: "#9ca3af",
+  "SIN RESULTADO": "#2563eb",
+
+  LIVE: "#16a34a",
+  APOSTADO: "#2563eb",
+  NO: "#dc2626",
 };
 
 const RESULTADO_LABELS = {
@@ -32,7 +33,9 @@ type Stats = {
 export default function EstadisticasUsuario() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [metodos, setMetodos] = useState<Metodo[]>([]);
-  const [metodoSeleccionado, setMetodoSeleccionado] = useState<null | number>(null); // null = todos
+  const [metodoSeleccionado, setMetodoSeleccionado] = useState<null | number>(
+    null
+  ); // null = todos
   const [resultadoSeleccionado, setResultadoSeleccionado] = useState("VERDE");
   const [estadoSeleccionado, setEstadoSeleccionado] = useState("LIVE");
 
@@ -69,18 +72,25 @@ export default function EstadisticasUsuario() {
 
   if (!stats) return <p>Cargando estadísticas...</p>;
 
-  const resultadoData = Object.entries(stats.resultados).map(([key, value]) => ({
-    name: RESULTADO_LABELS[key as keyof typeof RESULTADO_LABELS] || key,
-    value,
-  }));
+  const resultadoData = Object.entries(stats.resultados).map(
+    ([key, value]) => ({
+      name: RESULTADO_LABELS[key as keyof typeof RESULTADO_LABELS] || key,
+      value,
+    })
+  );
 
   const estadoData = Object.entries(stats.estados).map(([key, value]) => ({
     name: key,
     value,
   }));
 
-  const cruceTotal = stats.cruce_resultado_estado[resultadoSeleccionado]?.[estadoSeleccionado] ?? 0;
+  const cruceTotal =
+    stats.cruce_resultado_estado[resultadoSeleccionado]?.[estadoSeleccionado] ??
+    0;
   const totalEstado = stats.estados[estadoSeleccionado] ?? 0;
+
+  const porcentaje =
+    totalEstado > 0 ? ((cruceTotal / totalEstado) * 100).toFixed(1) : null;
 
   const renderLeyenda = (data: { name: string }[]) => (
     <div className="flex justify-center gap-4 mt-4 text-sm flex-wrap">
@@ -88,7 +98,9 @@ export default function EstadisticasUsuario() {
         <div key={entry.name} className="flex items-center gap-2">
           <div
             className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: COLORS[entry.name as keyof typeof COLORS] }}
+            style={{
+              backgroundColor: COLORS[entry.name as keyof typeof COLORS],
+            }}
           />
           <span>{entry.name}</span>
         </div>
@@ -105,7 +117,9 @@ export default function EstadisticasUsuario() {
           className="border border-gray-300 px-3 py-1 rounded text-sm"
           value={metodoSeleccionado ?? ""}
           onChange={(e) =>
-            setMetodoSeleccionado(e.target.value === "" ? null : +e.target.value)
+            setMetodoSeleccionado(
+              e.target.value === "" ? null : +e.target.value
+            )
           }
         >
           <option value="">Todos los métodos</option>
@@ -131,7 +145,10 @@ export default function EstadisticasUsuario() {
               dataKey="value"
             >
               {resultadoData.map((entry) => (
-                <Cell key={entry.name} fill={COLORS[entry.name as keyof typeof COLORS]} />
+                <Cell
+                  key={entry.name}
+                  fill={COLORS[entry.name as keyof typeof COLORS]}
+                />
               ))}
             </Pie>
             <Tooltip />
@@ -152,7 +169,10 @@ export default function EstadisticasUsuario() {
               dataKey="value"
             >
               {estadoData.map((entry) => (
-                <Cell key={entry.name} fill={COLORS[entry.name as keyof typeof COLORS]} />
+                <Cell
+                  key={entry.name}
+                  fill={COLORS[entry.name as keyof typeof COLORS]}
+                />
               ))}
             </Pie>
             <Tooltip />
@@ -186,7 +206,14 @@ export default function EstadisticasUsuario() {
           </select>
 
           <p className="text-base">
-            Total: <strong>{cruceTotal}</strong> de {totalEstado} partidos en estado <strong>{estadoSeleccionado}</strong>
+            Total: <strong>{cruceTotal}</strong> de {totalEstado} partidos en
+            estado <strong>{estadoSeleccionado}</strong>
+            {porcentaje !== null && (
+              <>
+                {" "}
+                &mdash; <strong>{porcentaje}%</strong>
+              </>
+            )}
           </p>
         </div>
       </div>
