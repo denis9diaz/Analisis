@@ -9,6 +9,8 @@ const COLORS = {
   LIVE: "#16a34a",
   APOSTADO: "#2563eb",
   NO: "#dc2626",
+
+  VACÍO: "#e5e7eb",
 };
 
 const RESULTADO_LABELS = {
@@ -72,17 +74,26 @@ export default function EstadisticasUsuario() {
 
   if (!stats) return <p>Cargando estadísticas...</p>;
 
-  const resultadoData = Object.entries(stats.resultados).map(
-    ([key, value]) => ({
-      name: RESULTADO_LABELS[key as keyof typeof RESULTADO_LABELS] || key,
-      value,
-    })
+  const resultadoVacio = ["VERDE", "ROJO", "SIN_RESULTADO"].every(
+    (key) => (stats.resultados?.[key] ?? 0) === 0
+  );
+  const estadoVacio = ["LIVE", "APOSTADO", "NO"].every(
+    (key) => (stats.estados?.[key] ?? 0) === 0
   );
 
-  const estadoData = Object.entries(stats.estados).map(([key, value]) => ({
-    name: key,
-    value,
-  }));
+  const resultadoData = resultadoVacio
+    ? [{ name: "VACÍO", value: 1 }]
+    : ["VERDE", "ROJO", "SIN_RESULTADO"].map((key) => ({
+        name: RESULTADO_LABELS[key as keyof typeof RESULTADO_LABELS],
+        value: stats.resultados?.[key] ?? 0,
+      }));
+
+  const estadoData = estadoVacio
+    ? [{ name: "VACÍO", value: 1 }]
+    : ["LIVE", "APOSTADO", "NO"].map((key) => ({
+        name: key,
+        value: stats.estados?.[key] ?? 0,
+      }));
 
   const cruceTotal =
     stats.cruce_resultado_estado[resultadoSeleccionado]?.[estadoSeleccionado] ??
@@ -92,21 +103,27 @@ export default function EstadisticasUsuario() {
   const porcentaje =
     totalEstado > 0 ? ((cruceTotal / totalEstado) * 100).toFixed(1) : null;
 
-  const renderLeyenda = (data: { name: string }[]) => (
-    <div className="flex justify-center gap-4 mt-4 text-sm flex-wrap">
-      {data.map((entry) => (
-        <div key={entry.name} className="flex items-center gap-2">
-          <div
-            className="w-3 h-3 rounded-full"
-            style={{
-              backgroundColor: COLORS[entry.name as keyof typeof COLORS],
-            }}
-          />
-          <span>{entry.name}</span>
-        </div>
-      ))}
-    </div>
-  );
+  const isResultadoEmpty = resultadoData.every((d) => d.value === 0);
+  const isEstadoEmpty = estadoData.every((d) => d.value === 0);
+
+  const renderLeyenda = (data: { name: string }[]) => {
+    if (data.length === 1 && data[0].name === "VACÍO") return null;
+    return (
+      <div className="flex justify-center gap-4 mt-4 text-sm flex-wrap">
+        {data.map((entry) => (
+          <div key={entry.name} className="flex items-center gap-2">
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{
+                backgroundColor: COLORS[entry.name as keyof typeof COLORS],
+              }}
+            />
+            <span>{entry.name}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-8">
@@ -136,23 +153,37 @@ export default function EstadisticasUsuario() {
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-md font-semibold mb-4">Resultados</h3>
           <PieChart width={250} height={250}>
-            <Pie
-              data={resultadoData}
-              cx="50%"
-              cy="50%"
-              label
-              outerRadius={90}
-              dataKey="value"
-            >
-              {resultadoData.map((entry) => (
-                <Cell
-                  key={entry.name}
-                  fill={COLORS[entry.name as keyof typeof COLORS]}
-                />
-              ))}
-            </Pie>
+            {isResultadoEmpty ? (
+              <text
+                x="50%"
+                y="50%"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill="#999"
+                fontSize={14}
+              >
+                Sin datos
+              </text>
+            ) : (
+              <Pie
+                data={resultadoData}
+                cx="50%"
+                cy="50%"
+                label
+                outerRadius={90}
+                dataKey="value"
+              >
+                {resultadoData.map((entry) => (
+                  <Cell
+                    key={entry.name}
+                    fill={COLORS[entry.name as keyof typeof COLORS]}
+                  />
+                ))}
+              </Pie>
+            )}
             <Tooltip />
           </PieChart>
+
           {renderLeyenda(resultadoData)}
         </div>
 
@@ -160,23 +191,37 @@ export default function EstadisticasUsuario() {
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-md font-semibold mb-4">Estados</h3>
           <PieChart width={250} height={250}>
-            <Pie
-              data={estadoData}
-              cx="50%"
-              cy="50%"
-              label
-              outerRadius={90}
-              dataKey="value"
-            >
-              {estadoData.map((entry) => (
-                <Cell
-                  key={entry.name}
-                  fill={COLORS[entry.name as keyof typeof COLORS]}
-                />
-              ))}
-            </Pie>
+            {isEstadoEmpty ? (
+              <text
+                x="50%"
+                y="50%"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill="#999"
+                fontSize={14}
+              >
+                Sin datos
+              </text>
+            ) : (
+              <Pie
+                data={estadoData}
+                cx="50%"
+                cy="50%"
+                label
+                outerRadius={90}
+                dataKey="value"
+              >
+                {estadoData.map((entry) => (
+                  <Cell
+                    key={entry.name}
+                    fill={COLORS[entry.name as keyof typeof COLORS]}
+                  />
+                ))}
+              </Pie>
+            )}
             <Tooltip />
           </PieChart>
+
           {renderLeyenda(estadoData)}
         </div>
       </div>
