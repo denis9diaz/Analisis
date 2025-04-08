@@ -220,6 +220,7 @@ def send_contact_message(request):
     subject = f"Consulta de contacto - {nombre}"
     to = ['info.bettracker@gmail.com']  # destino final
     context = {
+        'asunto': request.data.get('asunto'),
         'nombre': nombre,
         'email': email,
         'mensaje': mensaje,
