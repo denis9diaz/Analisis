@@ -346,7 +346,6 @@ export default function PartidosList() {
               <th className="px-3 py-2 text-center w-[60px]">R.L.</th>
               <th className="px-3 py-2 text-center w-[60px]">R.V.</th>
               <th className="px-3 py-2 text-center w-[50px]">Estado</th>
-              <th className="px-3 py-2 text-center w-[105px]">Resultado</th>
               <th className="px-3 py-2 text-left w-[280px]">Notas</th>
             </tr>
           </thead>
@@ -388,25 +387,32 @@ export default function PartidosList() {
                 <td className="px-3 py-2 text-center w-[60px]">
                   {p.racha_visitante} ({p.racha_hist_visitante})
                 </td>
-                <td className="px-3 py-2 text-center w-[50px]">{p.estado}</td>
-                <td className="px-3 py-2 text-center w-[105px]">
-                  <select
-                    value={p.cumplido || ""}
-                    onChange={(e) =>
-                      handleResultadoChange(p.id, e.target.value)
-                    }
-                    className={`px-2 py-1 rounded-md border text-sm shadow-sm w-full ${
-                      p.cumplido === "VERDE"
-                        ? "bg-green-100 text-green-800"
-                        : p.cumplido === "ROJO"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-gray-50 text-gray-600"
-                    }`}
-                  >
-                    <option value="">Sin resultado</option>
-                    <option value="VERDE">Acierto</option>
-                    <option value="ROJO">Fallo</option>
-                  </select>
+                <td
+                  className={`px-3 py-2 text-center w-[105px] rounded-md transition duration-300
+      ${
+        p.cumplido === "VERDE"
+          ? "bg-green-100 text-green-800"
+          : p.cumplido === "ROJO"
+          ? "bg-red-100 text-red-800"
+          : "bg-gray-100 text-gray-600"
+      }`}
+                >
+                  <div className="relative group">
+                    <span className="block cursor-pointer group-hover:opacity-0 transition-opacity">
+                      {p.estado}
+                    </span>
+                    <select
+                      value={p.cumplido || ""}
+                      onChange={(e) =>
+                        handleResultadoChange(p.id, e.target.value)
+                      }
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 cursor-pointer"
+                    >
+                      <option value="">Sin resultado</option>
+                      <option value="VERDE">Acierto</option>
+                      <option value="ROJO">Fallo</option>
+                    </select>
+                  </div>
                 </td>
                 <td className="px-3 py-2 text-left w-[280px]">
                   <textarea
