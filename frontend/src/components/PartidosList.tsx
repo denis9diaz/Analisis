@@ -409,16 +409,15 @@ export default function PartidosList() {
                   </select>
                 </td>
                 <td className="px-3 py-2 text-left w-[280px]">
-                    <textarea
-                      value={
-                        notasTemp[p.id] !== undefined
-                          ? notasTemp[p.id]
-                          : p.notas
-                      }
-                      onChange={(e) => handleNotasChange(p.id, e.target.value)}
-                      onBlur={() => guardarNotas(p.id)}
-                      className="w-full h-[25px] resize-none border rounded-md p-1 text-sm whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll"
-                    />
+                  <textarea
+                    value={
+                      notasTemp[p.id] !== undefined ? notasTemp[p.id] : p.notas
+                    }
+                    onChange={(e) => handleNotasChange(p.id, e.target.value)}
+                    onBlur={() => guardarNotas(p.id)}
+                    spellCheck={false}
+                    className="w-full h-[25px] resize-none border rounded-md p-1 text-sm whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll"
+                  />
                 </td>
               </tr>
             ))}

@@ -11,6 +11,7 @@
         <input
           type="text"
           id="email"
+          spellcheck="false"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-700"
           placeholder="Usuario o correo electrónico"
           required
@@ -27,6 +28,7 @@
           <input
             type="password"
             id="password"
+            spellcheck="false"
             class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg shadow-sm text-gray-700"
             placeholder="Tu contraseña"
             required
@@ -51,16 +53,20 @@
       <!-- ✅ Enlace a recuperación -->
       <p class="text-sm text-center text-gray-500 mt-2">
         ¿Olvidaste tu contraseña?
-        <a href="/recuperar-contraseña" class="text-blue-600 hover:underline">Recupérala aquí</a>
+        <a href="/recuperar-contraseña" class="text-blue-600 hover:underline"
+          >Recupérala aquí</a
+        >
       </p>
     </form>
   </div>
 </div>
+
 <!-- ✅ Toast visual -->
 <div
   id="toast"
   class="fixed bottom-6 right-6 text-white px-4 py-2 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50"
-></div>
+>
+</div>
 
 <script type="module">
   document.addEventListener("DOMContentLoaded", () => {
