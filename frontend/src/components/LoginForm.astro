@@ -1,4 +1,6 @@
-<div class="flex items-start justify-center min-h-screen bg-gray-200 pt-20 px-4">
+<div
+  class="flex items-start justify-center min-h-screen bg-gray-200 pt-20 px-4"
+>
   <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">
       Inicio sesión
@@ -78,7 +80,8 @@
 <div
   id="toast"
   class="fixed bottom-6 right-6 text-white px-4 py-2 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50"
-></div>
+>
+</div>
 
 <script type="module">
   document.addEventListener("DOMContentLoaded", () => {
@@ -89,6 +92,9 @@
     const toggle = document.getElementById("toggle-password");
     const passwordInput = document.getElementById("password");
     const icon = document.getElementById("eye-icon");
+
+    const resendBtn = document.getElementById("resend-btn");
+    let resendListenerAttached = false;
 
     toggle.addEventListener("click", () => {
       const hidden = passwordInput.type === "password";
@@ -122,29 +128,46 @@
 
         if (!res.ok) {
           // Si es un error de verificación, mostrar botón de reenvío
-          if (data.error === "Debes verificar tu cuenta desde el correo.") {
-            document.getElementById("resend-verification").classList.remove("hidden");
-
-            // Enviar el email si hacen clic
+          if (
+            data.error === "Cuenta sin verificar. Revisa tu correo." ||
+            data.error?.toLowerCase().includes("sin verificar")
+          ) {
             document
-              .getElementById("resend-btn")
-              .addEventListener("click", async () => {
+              .getElementById("resend-verification")
+              .classList.remove("hidden");
+
+            if (!resendListenerAttached) {
+              resendListenerAttached = true;
+
+              resendBtn.addEventListener("click", async () => {
                 try {
-                  const r = await fetch(`${API_URL}/api/auth/resend-verification/`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email: username }),
-                  });
+                  resendBtn.disabled = true;
+                  resendBtn.textContent = "Enviando...";
+
+                  const r = await fetch(
+                    `${API_URL}/api/auth/resend-verification/`,
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ email: username }),
+                    }
+                  );
 
                   if (r.ok) {
                     showToast("Correo reenviado correctamente", "success");
+                    resendBtn.textContent = "Correo enviado";
                   } else {
                     showToast("No se pudo reenviar el correo", "error");
+                    resendBtn.textContent = "Reenviar correo de verificación";
+                    resendBtn.disabled = false;
                   }
                 } catch (err) {
                   showToast("Error al reenviar el correo", "error");
+                  resendBtn.textContent = "Reenviar correo de verificación";
+                  resendBtn.disabled = false;
                 }
               });
+            }
           }
 
           showToast(data.error || "Usuario o contraseña incorrectos", "error");
