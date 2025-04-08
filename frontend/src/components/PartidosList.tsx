@@ -24,6 +24,7 @@ type Partido = {
   cumplido: string | null;
   notas: string;
   metodo: number;
+  equipo_destacado?: "local" | "visitante" | null;
 };
 
 const MESES = [
@@ -412,7 +413,29 @@ export default function PartidosList() {
                 className="hover:bg-gray-50 transition border-t border-gray-200"
               >
                 <td className="px-3 py-2 w-[100px]">{formatFecha(p.fecha)}</td>
-                <td className="px-3 py-2 w-[250px]">{p.nombre_partido}</td>
+                <td className="px-3 py-2 w-[250px]">
+                  {metodoSeleccionado?.nombre === "Team to Score"
+                    ? (() => {
+                        const [local, visitante] =
+                          p.nombre_partido.split(" - ");
+                        return (
+                          <span>
+                            {p.equipo_destacado === "local" ? (
+                              <strong>{local}</strong>
+                            ) : (
+                              local
+                            )}{" "}
+                            -{" "}
+                            {p.equipo_destacado === "visitante" ? (
+                              <strong>{visitante}</strong>
+                            ) : (
+                              visitante
+                            )}
+                          </span>
+                        );
+                      })()
+                    : p.nombre_partido}
+                </td>
                 <td className="px-3 py-2 w-[180px]">
                   {p.liga ? (
                     <div className="flex items-center gap-2">

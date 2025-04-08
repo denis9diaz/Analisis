@@ -49,7 +49,7 @@ export default function MetodoFormModal({ isOpen, onRequestClose, onMetodoGuarda
       className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full mx-auto mt-24 outline-none text-gray-700"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50"
     >
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Añadir método</h2>
+      <h2 className="text-xl font-semibold mb-6 text-gray-800">Añadir método</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"

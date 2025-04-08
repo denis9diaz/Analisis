@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
-Modal.setAppElement('#root');
+Modal.setAppElement("#root");
 import Select from "react-select";
 import { useMetodo } from "../context/MetodoContext";
 import { fetchWithAuth } from "../utils/authFetch";
@@ -23,7 +23,11 @@ type Props = {
   onPartidoGuardado: () => void;
 };
 
-export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuardado }: Props) {
+export default function PartidoFormModal({
+  isOpen,
+  onRequestClose,
+  onPartidoGuardado,
+}: Props) {
   const { metodoSeleccionado } = useMetodo();
   const [ligas, setLigas] = useState<Option[]>([]);
   const [ligaSeleccionada, setLigaSeleccionada] = useState<Option | null>(null);
@@ -39,6 +43,9 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
   const [rachaHistVisitante, setRachaHistVisitante] = useState("");
   const [estado, setEstado] = useState("");
   const [notas, setNotas] = useState("");
+  const [equipoDestacado, setEquipoDestacado] = useState<
+    "local" | "visitante" | ""
+  >("");
 
   useEffect(() => {
     fetchWithAuth("http://localhost:8000/api/general/ligas/")
@@ -50,7 +57,7 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
           data: liga,
         }));
         setLigas(options);
-      });      
+      });
   }, []);
 
   useEffect(() => {
@@ -83,6 +90,7 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
         racha_hist_visitante: rachaHistVisitante,
         estado,
         notas,
+        equipo_a_destacar: equipoDestacado || null,
       }),
     })
       .then((res) => res.json())
@@ -93,6 +101,7 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
         // Limpiar formulario
         setFecha("");
         setNombre("");
+        setEquipoDestacado("");
         setLigaSeleccionada(null);
         setPorLocal("");
         setPorVisitante("");
@@ -112,24 +121,41 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Añadir Partido"
-      className="bg-white p-8 rounded-xl shadow-lg max-w-2xl w-full mx-auto mt-20 outline-none text-gray-700"
+      className="bg-white p-4 rounded-xl shadow-lg max-w-2xl w-full mx-auto mt-20 max-h-[90vh] overflow-y-auto outline-none text-gray-700"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50"
     >
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Añadir partido</h2>
+      <h2 className="text-xl font-semibold mb-6 text-gray-800">
+        Añadir partido
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="date"
           value={fecha}
           onChange={(e) => setFecha(e.target.value)}
-          className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="text"
           placeholder="Partido"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-          className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <select
+          value={equipoDestacado}
+          onChange={(e) =>
+            setEquipoDestacado(
+              e.target.value === ""
+                ? ""
+                : (e.target.value as "local" | "visitante")
+            )
+          }
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">¿Qué equipo debe marcar?</option>
+          <option value="local">Local</option>
+          <option value="visitante">Visitante</option>
+        </select>
         <Select
           options={ligas}
           value={ligaSeleccionada}
@@ -153,57 +179,65 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
           type="number"
           placeholder="% Local"
           value={porLocal}
-          onChange={(e) => setPorLocal(e.target.value === "" ? "" : +e.target.value)}
-          className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={(e) =>
+            setPorLocal(e.target.value === "" ? "" : +e.target.value)
+          }
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="number"
           placeholder="% Visitante"
           value={porVisitante}
-          onChange={(e) => setPorVisitante(e.target.value === "" ? "" : +e.target.value)}
-          className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={(e) =>
+            setPorVisitante(e.target.value === "" ? "" : +e.target.value)
+          }
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="number"
           placeholder="% General"
           value={porGeneral}
-          onChange={(e) => setPorGeneral(e.target.value === "" ? "" : +e.target.value)}
-          className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={(e) =>
+            setPorGeneral(e.target.value === "" ? "" : +e.target.value)
+          }
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="text"
           placeholder="Racha Local"
           value={rachaLocal}
           onChange={(e) => setRachaLocal(e.target.value)}
-          className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="text"
           placeholder="Racha Histórica Local"
           value={rachaHistLocal}
           onChange={(e) => setRachaHistLocal(e.target.value)}
-          className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="text"
           placeholder="Racha Visitante"
           value={rachaVisitante}
           onChange={(e) => setRachaVisitante(e.target.value)}
-          className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="text"
           placeholder="Racha Histórica Visitante"
           value={rachaHistVisitante}
           onChange={(e) => setRachaHistVisitante(e.target.value)}
-          className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <select
           value={estado}
           onChange={(e) => setEstado(e.target.value)}
-          className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="" disabled>Estado</option>
+          <option value="" disabled>
+            Estado
+          </option>
           <option value="LIVE">LIVE</option>
           <option value="NO">NO</option>
           <option value="APOSTADO">APOSTADO</option>
@@ -212,19 +246,19 @@ export default function PartidoFormModal({ isOpen, onRequestClose, onPartidoGuar
           placeholder="Notas"
           value={notas}
           onChange={(e) => setNotas(e.target.value)}
-          className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <div className="flex justify-end pt-4">
           <button
             type="button"
-            className="bg-red-500 text-white py-2 px-4 rounded mr-2 hover:bg-red-600"
+            className="bg-red-500 text-white px-3 py-1 rounded mr-2 hover:bg-red-600"
             onClick={onRequestClose}
           >
             Cancelar
           </button>
           <button
             type="submit"
-            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
           >
             Guardar
           </button>
