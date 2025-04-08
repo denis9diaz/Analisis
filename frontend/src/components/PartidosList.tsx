@@ -145,6 +145,14 @@ export default function PartidosList() {
     return coincideLiga && coincideEstado && coincideResultado && coincideMes;
   });
 
+  const itemsPorPagina = 11;
+  const [paginaActual, setPaginaActual] = useState(1);
+  const totalPaginas = Math.ceil(partidosFiltrados.length / itemsPorPagina);
+  const partidosPaginados = partidosFiltrados.slice(
+    (paginaActual - 1) * itemsPorPagina,
+    paginaActual * itemsPorPagina
+  );
+
   const total = partidosFiltrados.length;
   const aciertos = partidosFiltrados.filter(
     (p) => p.cumplido === "VERDE"
@@ -350,7 +358,7 @@ export default function PartidosList() {
             </tr>
           </thead>
           <tbody>
-            {partidosFiltrados.map((p) => (
+            {partidosPaginados.map((p) => (
               <tr
                 key={p.id}
                 className="hover:bg-gray-50 transition border-t border-gray-200"
@@ -429,6 +437,22 @@ export default function PartidosList() {
             ))}
           </tbody>
         </table>
+        {/* Controles de paginación */}
+        <div className="flex justify-center mt-4 gap-2 text-sm mb-2">
+          {Array.from({ length: totalPaginas }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setPaginaActual(i + 1)}
+              className={`px-3 py-1 rounded ${
+                paginaActual === i + 1
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
       </div>
 
       <PartidoFormModal
