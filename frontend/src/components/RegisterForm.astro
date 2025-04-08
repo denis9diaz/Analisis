@@ -176,9 +176,15 @@
               : [data.password];
             showToast(`Contraseña inválida:\n${mensajes.join("\n")}`, "error");
           } else if (data.username) {
-            showToast("Nombre de usuario ya registrado", "error");
+            const mensajes = Array.isArray(data.username)
+              ? data.username
+              : [data.username];
+            showToast(mensajes.join("\n"), "error");
           } else if (data.email) {
-            showToast("Correo electrónico ya registrado", "error");
+            const mensajes = Array.isArray(data.email)
+              ? data.email
+              : [data.email];
+            showToast(mensajes.join("\n"), "error");
           } else {
             showToast("Error en el registro", "error");
           }
