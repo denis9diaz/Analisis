@@ -16,6 +16,7 @@ class MetodoAnalisisSerializer(serializers.ModelSerializer):
         validated_data['usuario'] = self.context['request'].user
         return super().create(validated_data)
 
+# serializers.py
 class PartidoReadSerializer(serializers.ModelSerializer):
     liga = LigaSerializer(read_only=True)
 
@@ -25,7 +26,7 @@ class PartidoReadSerializer(serializers.ModelSerializer):
             'id', 'metodo', 'fecha', 'nombre_partido', 'liga',
             'porcentaje_local', 'porcentaje_visitante', 'porcentaje_general',
             'racha_local', 'racha_visitante', 'racha_hist_local', 'racha_hist_visitante',
-            'estado', 'cumplido', 'notas'
+            'estado', 'cumplido', 'notas', 'equipo_destacado'  # <--- AÑADIR AQUÍ
         ]
 
 class PartidoWriteSerializer(serializers.ModelSerializer):
@@ -35,5 +36,5 @@ class PartidoWriteSerializer(serializers.ModelSerializer):
             'id', 'metodo', 'fecha', 'nombre_partido', 'liga',
             'porcentaje_local', 'porcentaje_visitante', 'porcentaje_general',
             'racha_local', 'racha_visitante', 'racha_hist_local', 'racha_hist_visitante',
-            'estado', 'cumplido', 'notas'
+            'estado', 'cumplido', 'notas', 'equipo_destacado'  # <--- AÑADIR AQUÍ
         ]
