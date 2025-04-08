@@ -104,11 +104,59 @@ export default function PartidosList() {
       });
   }, [metodoSeleccionado]);
 
-  const ligasUnicas = Array.from(
-    new Map(
-      partidos.filter((p) => p.liga).map((p) => [p.liga!.nombre, p.liga!])
-    ).values()
-  );
+  const ORDEN_LIGAS = [
+    "Bundesliga",
+    "Bundesliga II",
+    "A-League",
+    "Bundesliga (AT)", // este es para diferenciar si es necesario
+    "Jupiler Pro-League",
+    "Serie A Betano",
+    "Superliga",
+    "Premier League (GB-SCT)",
+    "LaLiga EA Sports",
+    "LaLiga Hypermotion",
+    "MLS",
+    "Meistriliiga",
+    "Esiliiga",
+    "Veikkausliiga",
+    "Ykkosliiga",
+    "Ligue 1",
+    "Premier League",
+    "Championship",
+    "League One",
+    "League Two",
+    "Besta deild karla",
+    "Division 1",
+    "Serie A",
+    "Eliteserien",
+    "OBOS-ligaen",
+    "Eredivisie",
+    "Keuken Kampioen",
+    "Liga Portugal",
+    "Allsvenskan",
+    "Superettan",
+    "Super League",
+    "Super Lig",
+    "Champions League",
+    "Europa League",
+    "Conference League",
+  ];
+
+  const ligasMap = new Map<string, Partido["liga"]>();
+
+  partidos.forEach((p) => {
+    if (p.liga && !ligasMap.has(p.liga.nombre)) {
+      ligasMap.set(
+        p.liga.nombre,
+        p.liga as { id: number; nombre: string; codigo_pais: string }
+      );
+    }
+  });
+
+  const ligasUnicas: { id: number; nombre: string; codigo_pais: string }[] =
+    ORDEN_LIGAS.map((nombre) => ligasMap.get(nombre)).filter(
+      (l): l is { id: number; nombre: string; codigo_pais: string } => !!l
+    );
 
   const opcionesLiga = [
     { value: "TODAS", label: "Todas las ligas" },
