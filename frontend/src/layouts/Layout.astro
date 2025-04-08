@@ -10,8 +10,14 @@ import Header from "../components/Header.astro";
     <meta name="viewport" content="width=device-width" />
     <title>BetTracker</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <meta name="description" content="Plataforma para analizar estadísticas de apuestas deportivas y apuntar tus resultados" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta
+      name="description"
+      content="Plataforma para analizar estadísticas de apuestas deportivas y apuntar tus resultados"
+    />
     <!-- Font Awesome CDN -->
     <link
       rel="stylesheet"
@@ -21,9 +27,38 @@ import Header from "../components/Header.astro";
       referrerpolicy="no-referrer"
     />
   </head>
-  <body id="root" class="bg-[url('/fondo.png')] bg-cover bg-center bg-fixed text-white">
+  <body
+    id="root"
+    class="bg-[url('/fondo.png')] bg-cover bg-center bg-fixed text-white"
+  >
     <Header />
     <slot />
+
+    <!-- 👇 Script para logout automático tras 10 minutos de inactividad -->
+    <script is:inline>
+      let timeout;
+      const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutos
+
+      function logout() {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("username");
+        window.location.href = "/";
+      }
+
+      function resetInactivityTimer() {
+        clearTimeout(timeout);
+        timeout = setTimeout(logout, INACTIVITY_LIMIT);
+      }
+
+      ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach(
+        (event) => {
+          window.addEventListener(event, resetInactivityTimer);
+        }
+      );
+
+      resetInactivityTimer();
+    </script>
   </body>
 </html>
 

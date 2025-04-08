@@ -2,6 +2,13 @@
 import EstadisticasUsuario from "../components/EstadisticasUsuario";
 ---
 
+<script is:inline>
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    window.location.href = "/inicio-sesion";
+  }
+</script>
+
 <div class="min-h-screen bg-gray-200 text-black py-20 px-4">
   <div class="max-w-2xl mx-auto space-y-10">
     <h1 class="text-2xl font-semibold text-center">Mi cuenta</h1>
