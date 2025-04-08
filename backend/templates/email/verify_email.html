@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Verifica tu cuenta</title>
+  </head>
+  <body style="background-color: #f3f4f6; font-family: 'Segoe UI', sans-serif; padding: 30px;">
+    <div style="
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e5e7eb;
+    ">
+
+      <!-- Header con fondo -->
+      <div style="background-color: #0b0f24; padding: 30px; text-align: center;">
+        <img src="https://res.cloudinary.com/dxzhssh9m/image/upload/v1744106922/logo_bzro8r.png" alt="Logo BetTracker" style="height: 60px;" />
+      </div>
+
+      <!-- Contenido -->
+      <div style="padding: 30px;">
+        <h2 style="color: #0b0f24; font-size: 22px; margin-bottom: 15px;">
+          ¡Hola {{ username }}!
+        </h2>
+
+        <p style="color: #444; font-size: 15px; line-height: 1.6;">
+          Gracias por registrarte en <strong>BetTracker</strong>. Antes de empezar, necesitamos que confirmes tu dirección de correo electrónico.
+        </p>
+
+        <p style="color: #555; font-size: 14px; margin: 25px 0; line-height: 1.6;">
+          Solo tienes que hacer clic en el botón siguiente para verificar tu cuenta y comenzar a usar todas las funcionalidades de la plataforma.
+        </p>
+
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="{{ activation_url }}" style="
+            background-color: #0D86EA;
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+          ">Verificar cuenta</a>
+        </div>
+
+        <p style="color: #999; font-size: 12px; margin-top: 40px; text-align: center;">
+          © 2025 BetTracker. Todos los derechos reservados.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
