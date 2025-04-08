@@ -46,6 +46,38 @@ export default function PartidosList() {
   const [partidos, setPartidos] = useState<Partido[]>([]);
   const [showModal, setShowModal] = useState(false);
 
+  const [notasTemp, setNotasTemp] = useState<{ [id: number]: string }>({});
+
+  const handleNotasChange = (id: number, nuevaNota: string) => {
+    setNotasTemp((prev) => ({ ...prev, [id]: nuevaNota }));
+  };
+
+  const guardarNotas = async (id: number) => {
+    const nuevaNota = notasTemp[id];
+    if (nuevaNota === undefined) return;
+
+    const res = await fetchWithAuth(
+      "http://localhost:8000/api/general/partidos/",
+      {
+        method: "PATCH",
+        body: JSON.stringify({ id, notas: nuevaNota }),
+      }
+    );
+
+    const partidoActualizado: Partido = await res.json();
+    setPartidos((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, notas: partidoActualizado.notas } : p
+      )
+    );
+
+    setNotasTemp((prev) => {
+      const nuevo = { ...prev };
+      delete nuevo[id];
+      return nuevo;
+    });
+  };
+
   const [filtroLiga, setFiltroLiga] = useState("TODAS");
   const [filtroEstado, setFiltroEstado] = useState("TODOS");
   const [filtroResultado, setFiltroResultado] = useState("TODOS");
@@ -62,6 +94,7 @@ export default function PartidosList() {
     fetchWithAuth("http://localhost:8000/api/general/partidos/")
       .then((res) => res.json())
       .then((data: Partido[]) => {
+        console.log("📦 Datos recibidos del backend:", data);
         const filtrados = data
           .filter((p) => p.metodo === metodoSeleccionado.id)
           .sort(
@@ -95,6 +128,11 @@ export default function PartidosList() {
       ),
     })),
   ];
+
+  const mostrarPorcentaje = (valor: any) => {
+    const numero = parseFloat(valor);
+    return isNaN(numero) ? "-" : `${numero.toFixed(1)}%`;
+  };
 
   const partidosFiltrados = partidos.filter((p) => {
     const coincideLiga =
@@ -137,7 +175,7 @@ export default function PartidosList() {
   if (!metodoSeleccionado) return null;
 
   return (
-    <div className="p-4">
+    <div className="p-1">
       {/* Filtros */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 text-gray-700">
         <button
@@ -296,20 +334,20 @@ export default function PartidosList() {
 
       {/* Tabla */}
       <div className="overflow-x-auto rounded-lg shadow-md bg-white">
-        <table className="min-w-full text-sm text-gray-800 border-collapse">
+        <table className="min-w-full text-sm text-gray-800 border-collapse table-fixed">
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
-              <th className="px-3 py-2 text-left">Fecha</th>
-              <th className="px-3 py-2 text-left">Partido</th>
-              <th className="px-3 py-2 text-left">Liga</th>
-              <th className="px-3 py-2 text-center">% Local</th>
-              <th className="px-3 py-2 text-center">% Visitante</th>
-              <th className="px-3 py-2 text-center">% General</th>
-              <th className="px-3 py-2 text-center">Racha Loc.</th>
-              <th className="px-3 py-2 text-center">Racha Vis.</th>
-              <th className="px-3 py-2 text-center">Estado</th>
-              <th className="px-3 py-2 text-center">Resultado</th>
-              <th className="px-3 py-2 text-left">Notas</th>
+              <th className="px-3 py-2 text-left w-[100px]">Fecha</th>
+              <th className="px-3 py-2 text-left w-[250px]">Partido</th>
+              <th className="px-3 py-2 text-left w-[180px]">Liga</th>
+              <th className="px-3 py-2 text-center w-[80px]">% Local</th>
+              <th className="px-3 py-2 text-center w-[80px]">% Visit.</th>
+              <th className="px-3 py-2 text-center w-[80px]">% Total</th>
+              <th className="px-3 py-2 text-center w-[60px]">R.L.</th>
+              <th className="px-3 py-2 text-center w-[60px]">R.V.</th>
+              <th className="px-3 py-2 text-center w-[50px]">Estado</th>
+              <th className="px-3 py-2 text-center w-[105px]">Resultado</th>
+              <th className="px-3 py-2 text-left w-[280px]">Notas</th>
             </tr>
           </thead>
           <tbody>
@@ -318,9 +356,9 @@ export default function PartidosList() {
                 key={p.id}
                 className="hover:bg-gray-50 transition border-t border-gray-200"
               >
-                <td className="px-3 py-2">{formatFecha(p.fecha)}</td>
-                <td className="px-3 py-2">{p.nombre_partido}</td>
-                <td className="px-3 py-2">
+                <td className="px-3 py-2 w-[100px]">{formatFecha(p.fecha)}</td>
+                <td className="px-3 py-2 w-[250px]">{p.nombre_partido}</td>
+                <td className="px-3 py-2 w-[180px]">
                   {p.liga ? (
                     <div className="flex items-center gap-2">
                       <img
@@ -335,27 +373,29 @@ export default function PartidosList() {
                     <span className="text-gray-400 italic">Sin liga</span>
                   )}
                 </td>
-                <td className="px-3 py-2 text-center">{p.porcentaje_local}%</td>
-                <td className="px-3 py-2 text-center">
-                  {p.porcentaje_visitante}%
+                <td className="px-3 py-2 text-center w-[80px]">
+                  {mostrarPorcentaje(p.porcentaje_local)}
                 </td>
-                <td className="px-3 py-2 text-center">
-                  {p.porcentaje_general}%
+                <td className="px-3 py-2 text-center w-[80px]">
+                  {mostrarPorcentaje(p.porcentaje_visitante)}
                 </td>
-                <td className="px-3 py-2 text-center">
+                <td className="px-3 py-2 text-center w-[80px]">
+                  {mostrarPorcentaje(p.porcentaje_general)}
+                </td>
+                <td className="px-3 py-2 text-center w-[60px]">
                   {p.racha_local} ({p.racha_hist_local})
                 </td>
-                <td className="px-3 py-2 text-center">
+                <td className="px-3 py-2 text-center w-[60px]">
                   {p.racha_visitante} ({p.racha_hist_visitante})
                 </td>
-                <td className="px-3 py-2 text-center">{p.estado}</td>
-                <td className="px-3 py-2 text-center">
+                <td className="px-3 py-2 text-center w-[50px]">{p.estado}</td>
+                <td className="px-3 py-2 text-center w-[105px]">
                   <select
                     value={p.cumplido || ""}
                     onChange={(e) =>
                       handleResultadoChange(p.id, e.target.value)
                     }
-                    className={`px-2 py-1 rounded-md border text-sm shadow-sm ${
+                    className={`px-2 py-1 rounded-md border text-sm shadow-sm w-full ${
                       p.cumplido === "VERDE"
                         ? "bg-green-100 text-green-800"
                         : p.cumplido === "ROJO"
@@ -368,7 +408,17 @@ export default function PartidosList() {
                     <option value="ROJO">Fallo</option>
                   </select>
                 </td>
-                <td className="px-3 py-2">{p.notas}</td>
+                <td className="px-3 py-2 text-left w-[280px]">
+                  <textarea
+                    value={
+                      notasTemp[p.id] !== undefined ? notasTemp[p.id] : p.notas
+                    }
+                    onChange={(e) => handleNotasChange(p.id, e.target.value)}
+                    onBlur={() => guardarNotas(p.id)}
+                    spellCheck={false}
+                    className="w-full h-[25px] resize-none border rounded-md p-1 text-sm whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll"
+                  />
+                </td>
               </tr>
             ))}
           </tbody>

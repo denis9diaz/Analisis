@@ -18,7 +18,7 @@ export default function EmptyState() {
       <h2 className="text-lg font-semibold mb-1">Sin método seleccionado</h2>
       <p className="text-sm text-center max-w-sm">
         Selecciona un método de análisis en la sección lateral
-        izquierda o crea tu primer método pulsando "Añadir método".
+        izquierda o crea un método pulsando "Añadir método".
       </p>
     </div>
   );

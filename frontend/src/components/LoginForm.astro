@@ -1,4 +1,6 @@
-<div class="flex items-start justify-center min-h-screen bg-gray-200 pt-20">
+<div
+  class="flex items-start justify-center min-h-screen bg-gray-200 pt-20 px-4"
+>
   <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">
       Inicio sesión
@@ -11,6 +13,7 @@
         <input
           type="text"
           id="email"
+          spellcheck="false"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-700"
           placeholder="Usuario o correo electrónico"
           required
@@ -27,6 +30,7 @@
           <input
             type="password"
             id="password"
+            spellcheck="false"
             class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg shadow-sm text-gray-700"
             placeholder="Tu contraseña"
             required
@@ -51,16 +55,33 @@
       <!-- ✅ Enlace a recuperación -->
       <p class="text-sm text-center text-gray-500 mt-2">
         ¿Olvidaste tu contraseña?
-        <a href="/recuperar-contraseña" class="text-blue-600 hover:underline">Recupérala aquí</a>
+        <a href="/recuperar-contraseña" class="text-blue-600 hover:underline">
+          Recupérala aquí
+        </a>
       </p>
     </form>
+
+    <!-- ✅ Reenviar verificación -->
+    <div id="resend-verification" class="hidden mt-4 text-center">
+      <p class="text-sm text-gray-600 mb-2">
+        ¿No recibiste el correo de verificación?
+      </p>
+      <button
+        id="resend-btn"
+        class="bg-gray-100 hover:bg-gray-200 text-sm text-gray-800 px-4 py-2 rounded-lg shadow"
+      >
+        Reenviar correo de verificación
+      </button>
+    </div>
   </div>
 </div>
+
 <!-- ✅ Toast visual -->
 <div
   id="toast"
   class="fixed bottom-6 right-6 text-white px-4 py-2 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50"
-></div>
+>
+</div>
 
 <script type="module">
   document.addEventListener("DOMContentLoaded", () => {
@@ -72,6 +93,9 @@
     const passwordInput = document.getElementById("password");
     const icon = document.getElementById("eye-icon");
 
+    const resendBtn = document.getElementById("resend-btn");
+    let resendListenerAttached = false;
+
     toggle.addEventListener("click", () => {
       const hidden = passwordInput.type === "password";
       passwordInput.type = hidden ? "text" : "password";
@@ -82,6 +106,9 @@
       e.preventDefault();
       const username = document.getElementById("email").value.trim();
       const password = passwordInput.value;
+
+      // Ocultar posible anterior
+      document.getElementById("resend-verification").classList.add("hidden");
 
       try {
         const res = await fetch(`${API_URL}/api/auth/login/`, {
@@ -100,10 +127,54 @@
         const data = await res.json();
 
         if (!res.ok) {
+          // Si es un error de verificación, mostrar botón de reenvío
+          if (
+            data.error === "Cuenta sin verificar. Revisa tu correo." ||
+            data.error?.toLowerCase().includes("sin verificar")
+          ) {
+            document
+              .getElementById("resend-verification")
+              .classList.remove("hidden");
+
+            if (!resendListenerAttached) {
+              resendListenerAttached = true;
+
+              resendBtn.addEventListener("click", async () => {
+                try {
+                  resendBtn.disabled = true;
+                  resendBtn.textContent = "Enviando...";
+
+                  const r = await fetch(
+                    `${API_URL}/api/auth/resend-verification/`,
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ email: username }),
+                    }
+                  );
+
+                  if (r.ok) {
+                    showToast("Correo reenviado correctamente", "success");
+                    resendBtn.textContent = "Correo enviado";
+                  } else {
+                    showToast("No se pudo reenviar el correo", "error");
+                    resendBtn.textContent = "Reenviar correo de verificación";
+                    resendBtn.disabled = false;
+                  }
+                } catch (err) {
+                  showToast("Error al reenviar el correo", "error");
+                  resendBtn.textContent = "Reenviar correo de verificación";
+                  resendBtn.disabled = false;
+                }
+              });
+            }
+          }
+
           showToast(data.error || "Usuario o contraseña incorrectos", "error");
           return;
         }
 
+        // Login correcto
         localStorage.setItem("access_token", data.access);
         localStorage.setItem("refresh_token", data.refresh);
         localStorage.setItem("username", data.username);

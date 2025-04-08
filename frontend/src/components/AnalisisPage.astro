@@ -2,4 +2,11 @@
 import AnalisisWrapper from "./AnalisisWrapper.tsx";
 ---
 
+<script is:inline>
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    window.location.href = "/inicio-sesion";
+  }
+</script>
+
 <AnalisisWrapper client:load />

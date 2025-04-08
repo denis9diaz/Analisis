@@ -15,6 +15,9 @@ urlpatterns = [
     path('change-password/', views.change_password, name='change_password'),
     path('send-temp-password/', views.send_temp_password, name='send_temp_password'),
     path('contact/', views.send_contact_message, name='send_contact_message'),
+    path('verify-email/', views.verify_email, name='verify-email'),
+    path('resend-verification/', views.resend_verification_email, name='resend-verification-email'),
+
 
     # JWT endpoints estándar
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

@@ -1,0 +1,57 @@
+<div
+  class="min-h-screen bg-gray-50 text-gray-800 px-4 py-16 flex items-center justify-center"
+>
+  <section class="max-w-xl mx-auto space-y-6 text-center">
+    <h1 class="text-3xl font-bold">Verificación de cuenta</h1>
+    <p id="mensaje" class="text-lg text-gray-700">Verificando tu cuenta...</p>
+
+    <a
+      href="/inicio-sesion"
+      id="ir-login"
+      class="hidden inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+    >
+      Iniciar sesión
+    </a>
+  </section>
+
+  <script type="module">
+    const mensajeEl = document.getElementById("mensaje");
+    const loginBtn = document.getElementById("ir-login");
+
+    async function verificarCuenta() {
+      const params = new URLSearchParams(window.location.search);
+      const uid = params.get("uid");
+      const token = params.get("token");
+
+      if (!uid || !token) {
+        mensajeEl.textContent =
+          "Parámetros inválidos para verificar la cuenta.";
+        loginBtn.classList.remove("hidden");
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `http://localhost:8000/api/auth/verify-email/?uid=${uid}&token=${token}`
+        );
+        const data = await res.json();
+
+        if (res.ok) {
+          mensajeEl.textContent =
+            "Tu cuenta ha sido verificada con éxito. Redirigiendo...";
+          setTimeout(() => {
+            window.location.href = "/inicio-sesion";
+          }, 3000);
+        } else {
+          mensajeEl.textContent = `Error: ${data.error || "Error inesperado"}`;
+          loginBtn.classList.remove("hidden");
+        }
+      } catch (err) {
+        mensajeEl.textContent = "Error de red o servidor.";
+        loginBtn.classList.remove("hidden");
+      }
+    }
+
+    verificarCuenta();
+  </script>
+</div>

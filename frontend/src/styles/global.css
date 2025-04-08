@@ -9,32 +9,41 @@ html {
     scroll-behavior: smooth;
 }
 
-/* Estilo general de la barra */
-::-webkit-scrollbar {
+/* Aplica solo a body, divs grandes o contenedores scrollables */
+body::-webkit-scrollbar,
+.scrollable::-webkit-scrollbar {
   width: 20px;
   height: 20px;
 }
 
-/* Fondo del track */
-::-webkit-scrollbar-track {
-  background: #0b0f24; /* igual que el fondo del header */
+body::-webkit-scrollbar-track,
+.scrollable::-webkit-scrollbar-track {
+  background: #0b0f24;
 }
 
-/* Scroll "thumb" (la parte que se mueve) */
-::-webkit-scrollbar-thumb {
-  background: #2563eb; /* azul elegante (Tailwind: blue-600) */
+body::-webkit-scrollbar-thumb,
+.scrollable::-webkit-scrollbar-thumb {
+  background: #2563eb;
   border-radius: 8px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
-/* Hover del thumb */
-::-webkit-scrollbar-thumb:hover {
-  background: #1e40af; /* azul más oscuro (Tailwind: blue-800) */
+body::-webkit-scrollbar-thumb:hover,
+.scrollable::-webkit-scrollbar-thumb:hover {
+  background: #1e40af;
 }
 
-/* Firefox (limitado) */
-* {
-  scrollbar-width: auto; /* ancho del scrollbar */
+/* Firefox solo en scrollable */
+.scrollable {
+  scrollbar-width: auto;
   scrollbar-color: #2563eb #0b0f24;
+}
+
+/* Scroll invisibles pero funcionales solo en los campos de notas */
+.custom-scroll::-webkit-scrollbar {
+  height: 0px;
+}
+.custom-scroll {
+  scrollbar-width: none; /* Firefox */
 }

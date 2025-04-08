@@ -1,16 +1,34 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <title>Nuevo mensaje de contacto</title>
-</head>
-<body style="background-color: #f3f4f6; font-family: sans-serif; padding: 20px;">
-  <div style="max-width: 500px; margin: auto; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);">
-    <h2 style="color: #0b0f24;">Nuevo mensaje de contacto</h2>
-    <p style="color: #333; font-size: 15px;"><strong>Nombre:</strong> {{ nombre }}</p>
-    <p style="color: #333; font-size: 15px;"><strong>Email:</strong> {{ email }}</p>
-    <p style="color: #333; font-size: 15px; margin-top: 20px;"><strong>Mensaje:</strong></p>
-    <p style="background-color: #f9fafb; padding: 15px; border-radius: 5px; color: #111;">{{ mensaje }}</p>
-  </div>
-</body>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Nuevo mensaje de contacto</title>
+  </head>
+  <body style="background-color: #f3f4f6; font-family: 'Segoe UI', sans-serif; padding: 30px;">
+    <div style="max-width: 600px; margin: auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb;">
+      
+      <!-- Cabecera -->
+      <div style="background-color: #0b0f24; padding: 30px; text-align: center;">
+        <img src="https://res.cloudinary.com/dxzhssh9m/image/upload/v1744106922/logo_bzro8r.png" alt="Logo BetTracker" style="height: 60px;" />
+      </div>
+
+      <!-- Contenido -->
+      <div style="padding: 30px;">
+        <h2 style="color: #0b0f24;">📩 Nuevo mensaje de contacto</h2>
+
+        <p style="font-size: 15px; color: #444;"><strong>Asunto:</strong> {{ asunto }}</p>
+        <p style="font-size: 15px; color: #444;"><strong>Nombre:</strong> {{ nombre }}</p>
+        <p style="font-size: 15px; color: #444;"><strong>Email:</strong> {{ email }}</p>
+
+        <p style="margin-top: 20px; font-size: 14px; color: #111;"><strong>Mensaje:</strong></p>
+        <div style="background-color: #f9fafb; padding: 16px; border-radius: 6px; font-size: 14px; color: #333; white-space: pre-wrap;">
+          {{ mensaje }}
+        </div>
+
+        <p style="color: #999; font-size: 12px; margin-top: 40px; text-align: center;">
+          © 2025 BetTracker. Este mensaje fue enviado automáticamente desde el formulario de contacto.
+        </p>
+      </div>
+    </div>
+  </body>
 </html>

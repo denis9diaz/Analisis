@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Bienvenido a BetTracker</title>
+    <title>Verifica tu cuenta</title>
   </head>
   <body style="background-color: #f3f4f6; font-family: 'Segoe UI', sans-serif; padding: 30px;">
     <div style="
@@ -22,18 +22,20 @@
 
       <!-- Contenido -->
       <div style="padding: 30px;">
-        <h2 style="color: #0b0f24; font-size: 22px; margin-bottom: 15px;">¡Bienvenido, {{ username }}!</h2>
+        <h2 style="color: #0b0f24; font-size: 22px; margin-bottom: 15px;">
+          ¡Hola {{ username }}!
+        </h2>
 
-        <p style="color: #333; font-size: 15px; line-height: 1.6;">
-          Gracias por registrarte en <strong>BetTracker</strong>. Estamos encantados de tenerte con nosotros.
+        <p style="color: #444; font-size: 15px; line-height: 1.6;">
+          Gracias por registrarte en <strong>BetTracker</strong>. Antes de empezar, necesitamos que confirmes tu dirección de correo electrónico.
         </p>
 
-        <p style="color: #555; font-size: 14px; line-height: 1.6;">
-          Ya puedes comenzar a crear tus métodos de análisis, registrar partidos y llevar el control de tus apuestas como un profesional.
+        <p style="color: #555; font-size: 14px; margin: 25px 0; line-height: 1.6;">
+          Solo tienes que hacer clic en el botón siguiente para verificar tu cuenta y comenzar a usar todas las funcionalidades de la plataforma.
         </p>
 
         <div style="text-align: center; margin-top: 30px;">
-          <a href="http://localhost:4321" style="
+          <a href="{{ activation_url }}" style="
             background-color: #0D86EA;
             color: white;
             text-decoration: none;
@@ -42,7 +44,7 @@
             font-size: 14px;
             font-weight: 600;
             display: inline-block;
-          ">Empezar a analizar</a>
+          ">Verificar cuenta</a>
         </div>
 
         <p style="color: #999; font-size: 12px; margin-top: 40px; text-align: center;">

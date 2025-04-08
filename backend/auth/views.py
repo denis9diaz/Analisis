@@ -14,6 +14,10 @@ from django.template.loader import render_to_string
 from django.contrib.auth.password_validation import validate_password
 from auth.serializers import RegisterSerializer, UserSerializer
 from django.core.exceptions import ValidationError
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_str
 
 
 # 🔐 Generar token JWT
@@ -39,24 +43,30 @@ def register(request):
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
+        user.is_active = False  # ⛔️ Desactivar hasta que verifique el email
+        user.save()
 
-        # ✉️ Enviar correo de bienvenida (con fallback si falla)
+        # ✉️ Enviar correo de verificación
         try:
-            subject = '¡Bienvenido a BetTracker!'
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            activation_url = f"http://localhost:4321/verificar?uid={uid}&token={token}"
+
+            subject = 'Verifica tu cuenta - BetTracker'
             to = [user.email]
             context = {
                 'username': user.username,
+                'activation_url': activation_url,
             }
 
-            html_content = render_to_string('email/welcome_email.html', context)
-            text_content = f"Bienvenido {user.username}, gracias por unirte a BetTracker."
+            html_content = render_to_string('email/verify_email.html', context)
+            text_content = f"Hola {user.username}, confirma tu cuenta visitando: {activation_url}"
 
             email_msg = EmailMultiAlternatives(subject, text_content, None, to)
             email_msg.attach_alternative(html_content, "text/html")
             email_msg.send()
-
         except Exception as e:
-            print("⚠️ Error al enviar correo de bienvenida:", e)
+            print("⚠️ Error al enviar correo de verificación:", e)
 
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
 
@@ -82,7 +92,16 @@ def login(request):
     user_auth = authenticate(username=user.username, password=password)
 
     if user_auth is None:
-        return Response({"error": "Contraseña incorrecta"}, status=status.HTTP_401_UNAUTHORIZED)
+        if not user.check_password(password):
+            return Response({"error": "Contraseña incorrecta"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if not user.is_active:
+            return Response({"error": "Cuenta sin verificar. Revisa tu correo."}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if not user.is_active:
+        return Response({
+        "error": "Debes verificar tu cuenta desde el correo."
+    }, status=status.HTTP_401_UNAUTHORIZED)
 
     tokens = get_tokens_for_user(user_auth)
     return Response({
@@ -182,9 +201,6 @@ def send_temp_password(request):
         return Response({"message": "Si el correo está registrado, se enviará un mensaje."}, status=200)
 
     temp_password = get_random_string(length=10)
-    print("TEMP PASSWORD:", temp_password)
-    print("USER:", user.username)
-
     try:
         validate_password(temp_password, user=user)
     except serializers.ValidationError:
@@ -198,7 +214,6 @@ def send_temp_password(request):
     context = {
         'username': user.username,
         'temp_password': temp_password,
-        'logo_url': 'https://via.placeholder.com/120x60?text=BetTracker',
     }
 
     html_content = render_to_string('email/temp_password.html', context)
@@ -224,6 +239,7 @@ def send_contact_message(request):
     subject = f"Consulta de contacto - {nombre}"
     to = ['info.bettracker@gmail.com']  # destino final
     context = {
+        'asunto': request.data.get('asunto'),
         'nombre': nombre,
         'email': email,
         'mensaje': mensaje,
@@ -237,3 +253,98 @@ def send_contact_message(request):
     email_msg.send()
 
     return Response({"message": "Mensaje enviado"}, status=200)
+
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def verify_email(request):
+    uidb64 = request.query_params.get('uid')
+    token = request.query_params.get('token')
+
+    print(f"UIDB64 recibido: {uidb64}")
+    print(f"Token recibido: {token}")
+
+    if not uidb64 or not token:
+        return Response({'error': 'Faltan parámetros de verificación.'}, status=400)
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+        print("Usuario encontrado:", user.username)
+    except (User.DoesNotExist, ValueError, TypeError, OverflowError) as e:
+        print("Error en excepción de UID:", str(e))
+        return Response({'error': 'Usuario inválido.'}, status=400)
+
+    token_valido = default_token_generator.check_token(user, token)
+    print("¿Token válido?:", token_valido)
+
+    if not token_valido:
+        return Response({'error': 'Token inválido o expirado.'}, status=400)
+
+    user.is_active = True
+    user.save()
+    print("Usuario activado:", user.username)
+
+    # 📨 Envío de correo de bienvenida después de activar la cuenta
+    try:
+        subject = '¡Bienvenido a BetTracker!'
+        to = [user.email]
+        context = {
+            'username': user.username,
+        }
+
+        html_content = render_to_string('email/welcome_email.html', context)
+        text_content = f"Bienvenido {user.username}, gracias por unirte a BetTracker."
+
+        email_msg = EmailMultiAlternatives(subject, text_content, None, to)
+        email_msg.attach_alternative(html_content, "text/html")
+        email_msg.send()
+
+        print(f"Correo de bienvenida enviado correctamente a {user.email}")
+    except Exception as e:
+        print("⚠️ Error al enviar correo de bienvenida:", e)
+
+    return Response({'message': 'Cuenta activada correctamente'}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def resend_verification_email(request):
+    email = request.data.get('email')
+
+    if not email:
+        return Response({'error': 'Email requerido.'}, status=400)
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({'error': 'No existe una cuenta con este correo.'}, status=404)
+
+    if user.is_active:
+        return Response({'message': 'La cuenta ya está verificada.'}, status=200)
+
+    try:
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        activation_url = f"http://localhost:4321/verificar?uid={uid}&token={token}"
+
+        subject = 'Reenvío de verificación - BetTracker'
+        to = [email]
+        context = {
+            'username': user.username,
+            'activation_url': activation_url,
+        }
+
+        html_content = render_to_string('email/verify_email.html', context)
+        text_content = f"Hola {user.username}, confirma tu cuenta visitando: {activation_url}"
+
+        email_msg = EmailMultiAlternatives(subject, text_content, None, to)
+        email_msg.attach_alternative(html_content, "text/html")
+        email_msg.send()
+    except Exception as e:
+        print("⚠️ Error al reenviar correo de verificación:", e)
+        return Response({'error': 'No se pudo enviar el correo. Intenta más tarde.'}, status=500)
+
+    return Response({'message': 'Correo de verificación reenviado.'}, status=200)

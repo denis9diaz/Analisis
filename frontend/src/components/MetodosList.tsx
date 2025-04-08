@@ -29,7 +29,7 @@ export default function MetodosList() {
 
   return (
     <div className="mb-4">
-      <h3 className="text-xl font-semibold mb-4 text-gray-700">Mis Métodos</h3>
+      <h3 className="text-xl font-semibold mb-4 text-gray-700">Mis métodos</h3>
       <button
         onClick={() => setShowModalMetodo(true)}
         className="mb-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition"
