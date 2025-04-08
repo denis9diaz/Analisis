@@ -22,8 +22,17 @@ class RegisterSerializer(serializers.ModelSerializer):
         return value
 
     def validate_email(self, value):
+        # Validación de formato (usa EmailValidator de Django)
+        from django.core.validators import validate_email
+        try:
+            validate_email(value)
+        except ValidationError:
+            raise serializers.ValidationError("Escribe un correo válido como 'tu@email.com'.")
+
+        # Validación de existencia
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("Este correo electrónico ya está en uso.")
+
         return value
 
     def validate_username(self, value):
