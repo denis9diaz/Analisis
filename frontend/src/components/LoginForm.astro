@@ -53,11 +53,24 @@
       <!-- ✅ Enlace a recuperación -->
       <p class="text-sm text-center text-gray-500 mt-2">
         ¿Olvidaste tu contraseña?
-        <a href="/recuperar-contraseña" class="text-blue-600 hover:underline"
-          >Recupérala aquí</a
-        >
+        <a href="/recuperar-contraseña" class="text-blue-600 hover:underline">
+          Recupérala aquí
+        </a>
       </p>
     </form>
+
+    <!-- ✅ Reenviar verificación -->
+    <div id="resend-verification" class="hidden mt-4 text-center">
+      <p class="text-sm text-gray-600 mb-2">
+        ¿No recibiste el correo de verificación?
+      </p>
+      <button
+        id="resend-btn"
+        class="bg-gray-100 hover:bg-gray-200 text-sm text-gray-800 px-4 py-2 rounded-lg shadow"
+      >
+        Reenviar correo de verificación
+      </button>
+    </div>
   </div>
 </div>
 
@@ -65,8 +78,7 @@
 <div
   id="toast"
   class="fixed bottom-6 right-6 text-white px-4 py-2 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50"
->
-</div>
+></div>
 
 <script type="module">
   document.addEventListener("DOMContentLoaded", () => {
@@ -89,6 +101,9 @@
       const username = document.getElementById("email").value.trim();
       const password = passwordInput.value;
 
+      // Ocultar posible anterior
+      document.getElementById("resend-verification").classList.add("hidden");
+
       try {
         const res = await fetch(`${API_URL}/api/auth/login/`, {
           method: "POST",
@@ -106,10 +121,37 @@
         const data = await res.json();
 
         if (!res.ok) {
+          // Si es un error de verificación, mostrar botón de reenvío
+          if (data.error === "Debes verificar tu cuenta desde el correo.") {
+            document.getElementById("resend-verification").classList.remove("hidden");
+
+            // Enviar el email si hacen clic
+            document
+              .getElementById("resend-btn")
+              .addEventListener("click", async () => {
+                try {
+                  const r = await fetch(`${API_URL}/api/auth/resend-verification/`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: username }),
+                  });
+
+                  if (r.ok) {
+                    showToast("Correo reenviado correctamente", "success");
+                  } else {
+                    showToast("No se pudo reenviar el correo", "error");
+                  }
+                } catch (err) {
+                  showToast("Error al reenviar el correo", "error");
+                }
+              });
+          }
+
           showToast(data.error || "Usuario o contraseña incorrectos", "error");
           return;
         }
 
+        // Login correcto
         localStorage.setItem("access_token", data.access);
         localStorage.setItem("refresh_token", data.refresh);
         localStorage.setItem("username", data.username);

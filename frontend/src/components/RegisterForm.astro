@@ -90,10 +90,25 @@
       <!-- ✅ Enlace para usuarios existentes -->
       <p class="text-sm text-center text-gray-500 mt-2">
         ¿Ya tienes cuenta?
-        <a href="/inicio-sesion" class="text-blue-600 hover:underline">Iniciar sesión</a
+        <a href="/inicio-sesion" class="text-blue-600 hover:underline"
+          >Iniciar sesión</a
         >
       </p>
     </form>
+    <!-- Mensaje de confirmación tras registrarse -->
+    <div id="mensaje-verificacion" class="hidden text-center space-y-4">
+      <h2 class="text-xl font-semibold text-gray-800">¡Revisa tu correo!</h2>
+      <p class="text-gray-600">
+        Hemos enviado un enlace de verificación a tu correo electrónico. Debes
+        confirmar tu cuenta antes de iniciar sesión.
+      </p>
+      <a
+        href="/inicio-sesion"
+        class="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+      >
+        Ir a iniciar sesión
+      </a>
+    </div>
   </div>
 </div>
 
@@ -137,69 +152,51 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const username = usernameInput.value.trim();
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
-      const confirmPassword = confirmInput.value;
+      const username = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
 
       if (password !== confirmPassword) {
-        showToast("Las contraseñas no coinciden", "error");
+        showToast("Las contraseñas no coinciden.", "error");
         return;
       }
 
       try {
-        const res = await fetch(`${API_URL}/api/auth/register/`, {
+        const res = await fetch("http://localhost:8000/api/auth/register/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ username, email, password }),
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+          }),
         });
 
         const contentType = res.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("La respuesta no es JSON. Probablemente es HTML.");
+          throw new Error("La respuesta no es JSON.");
         }
 
         const data = await res.json();
 
-        if (res.ok) {
-          showToast("Registro exitoso. Redirigiendo...", "success");
-          setTimeout(() => {
-            window.location.href = "/inicio-sesion";
-          }, 1500);
-        } else {
-          // Orden de prioridad: password → username → email → otro
-          if (data.password) {
-            const mensajes = Array.isArray(data.password)
-              ? data.password
-              : [data.password];
-            showToast(`Contraseña inválida:\n${mensajes.join("\n")}`, "error");
-          } else if (data.username) {
-            const mensajes = Array.isArray(data.username)
-              ? data.username
-              : [data.username];
-            showToast(mensajes.join("\n"), "error");
-          } else if (data.email) {
-            const mensajes = Array.isArray(data.email)
-              ? data.email
-              : [data.email];
-            showToast(mensajes.join("\n"), "error");
-          } else {
-            showToast("Error en el registro", "error");
-          }
-          console.error("Errores del backend:", data);
+        if (!res.ok) {
+          showToast(
+            data.error || "Error al registrar. Intenta nuevamente.",
+            "error"
+          );
+          return;
         }
+
+        document.getElementById("register-form").classList.add("hidden"); // Ocultamos el formulario
+        document
+          .getElementById("mensaje-verificacion")
+          .classList.remove("hidden"); // Mostramos el mensaje de verificación
       } catch (err) {
         console.error("Error de conexión al backend:", err);
-        if (
-          err instanceof TypeError &&
-          err.message.includes("Failed to fetch")
-        ) {
-          showToast("No se pudo conectar con el servidor", "error");
-        } else {
-          showToast("Error inesperado", "error");
-        }
+        showToast("Error inesperado al registrar", "error");
       }
     });
 
