@@ -98,10 +98,9 @@ def login(request):
         if not user.is_active:
             return Response({"error": "Cuenta sin verificar. Revisa tu correo."}, status=status.HTTP_401_UNAUTHORIZED)
 
-
     if not user.is_active:
         return Response({
-        "error": "Tu cuenta aún no ha sido verificada. Por favor revisa tu correo para activarla. Si no lo encuentras, revisa la carpeta de spam o espera unos minutos. (Pronto podrás reenviar el email desde aquí)."
+        "error": "Debes verificar tu cuenta desde el correo."
     }, status=status.HTTP_401_UNAUTHORIZED)
 
     tokens = get_tokens_for_user(user_auth)
