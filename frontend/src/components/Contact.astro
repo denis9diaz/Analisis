@@ -5,6 +5,7 @@
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">
       Contáctanos
     </h2>
+
     <!-- PÁRRAFO INTRODUCTORIO: al principio visible -->
     <div id="intro-text">
       <p class="text-center text-gray-600 mb-6 text-sm">
@@ -24,8 +25,8 @@
           data-asunto="Información incorrecta"
           class="asunto-btn w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm"
         >
-          <strong class="text-gray-600">Información incorrecta</strong><br
-          /><span class="text-sm text-gray-600"
+          <strong class="text-gray-600">Información incorrecta</strong><br />
+          <span class="text-sm text-gray-600"
             >Errores en partidos, estadísticas, etc.</span
           >
         </button>
@@ -34,8 +35,8 @@
           data-asunto="Problema técnico"
           class="asunto-btn w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm"
         >
-          <strong class="text-gray-600">Problema técnico</strong><br /><span
-            class="text-sm text-gray-600"
+          <strong class="text-gray-600">Problema técnico</strong><br />
+          <span class="text-sm text-gray-600"
             >Fallas en la web o funcionalidades</span
           >
         </button>
@@ -44,8 +45,8 @@
           data-asunto="Sugerencia o mejora"
           class="asunto-btn w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm"
         >
-          <strong class="text-gray-600">Sugerencia o mejora</strong><br /><span
-            class="text-sm text-gray-600"
+          <strong class="text-gray-600">Sugerencia o mejora</strong><br />
+          <span class="text-sm text-gray-600"
             >Ideas o comentarios sobre el proyecto</span
           >
         </button>
@@ -67,6 +68,7 @@
           id="nombre"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-700"
           placeholder="Tu nombre"
+          spellcheck="false"
           required
         />
       </div>
@@ -80,21 +82,37 @@
           id="email"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-700"
           placeholder="tu@email.com"
+          spellcheck="false"
           required
         />
       </div>
 
       <div>
-        <label
-          class="block text-sm font-medium text-gray-700 mb-1"
-          for="mensaje">Mensaje</label
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="mensaje"
+          >Mensaje</label
         >
         <textarea
           id="mensaje"
           rows="5"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-700"
           placeholder="Escribe tu mensaje aquí..."
+          spellcheck="false"
           required></textarea>
+      </div>
+
+      <!-- ✅ Consentimiento -->
+      <div class="flex items-center">
+        <input type="checkbox" id="consentimiento" class="mr-2" required />
+        <label for="consentimiento" class="text-sm text-gray-700">
+          Acepto el procesamiento de <a href="/privacidad" class="text-blue-600 hover:underline">datos personales</a>
+        </label>
+      </div>
+
+      <!-- ✅ Lugar reservado para reCAPTCHA -->
+      <div class="pt-2">
+        <div id="recaptcha" class="text-center border border-dashed border-gray-300 p-4 rounded-lg text-sm text-gray-500">
+          Aquí irá el reCAPTCHA (pendiente de implementación)
+        </div>
       </div>
 
       <button
@@ -108,8 +126,7 @@
     <div
       id="toast"
       class="fixed bottom-6 right-6 text-white px-4 py-2 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50"
-    >
-    </div>
+    ></div>
   </div>
 </div>
 
@@ -122,7 +139,6 @@
   const asuntoInput = document.getElementById("asunto");
   const asuntoTexto = document.getElementById("asunto-texto");
 
-  // ✅ Paso 1 → Mostrar formulario al seleccionar un asunto
   document.querySelectorAll(".asunto-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const asuntoSeleccionado = btn.getAttribute("data-asunto");
@@ -130,13 +146,18 @@
       asuntoTexto.textContent = `Estás contactando por: ${asuntoSeleccionado}`;
       asuntoSelector.classList.add("hidden");
       form.classList.remove("hidden");
-      document.getElementById("intro-text")?.classList.add("hidden"); // ✅ Paso 2: oculta el texto inicial
+      document.getElementById("intro-text")?.classList.add("hidden");
     });
   });
 
-  // ✅ Paso 2 → Enviar mensaje con asunto
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    const consentimiento = document.getElementById("consentimiento");
+    if (!consentimiento.checked) {
+      showToast("Debes aceptar el tratamiento de datos personales", "warning");
+      return;
+    }
 
     const res = await fetch("http://localhost:8000/api/auth/contact/", {
       method: "POST",
@@ -158,6 +179,7 @@
       mensajeInput.value = "";
       form.classList.add("hidden");
       asuntoSelector.classList.remove("hidden");
+      document.getElementById("intro-text")?.classList.remove("hidden");
     } else {
       showToast("No se pudo enviar el mensaje", "error");
     }
