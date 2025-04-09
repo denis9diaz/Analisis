@@ -509,7 +509,7 @@ export default function PartidosList() {
           </tbody>
         </table>
         {/* Controles de paginación */}
-        <div className="flex justify-center mt-4 gap-2 text-sm mb-2">
+        <div className="flex justify-center mt-3 gap-2 text-sm mb-2">
           {Array.from({ length: totalPaginas }, (_, i) => (
             <button
               key={i}

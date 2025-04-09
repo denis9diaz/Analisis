@@ -36,25 +36,28 @@ export default function MetodosList() {
       >
         Añadir método
       </button>
-      <ul className="space-y-2">
-        {metodos.map((metodo) => {
-          const isSelected = metodoSeleccionado?.id === metodo.id;
-          return (
-            <li key={metodo.id}>
-              <button
-                className={`w-full text-left px-4 py-2 rounded-lg shadow-sm border transition duration-200 ${
-                  isSelected
-                    ? "border-blue-600 text-blue-700 font-semibold bg-white shadow"
-                    : "bg-gray-100 text-gray-800 hover:bg-gray-200 border-transparent"
-                }`}
-                onClick={() => handleSelectMetodo(metodo)}
-              >
-                {metodo.nombre}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      {/* Contenedor con scroll */}
+      <div className="max-h-150 overflow-y-auto space-y-2">
+        <ul className="space-y-2">
+          {metodos.map((metodo) => {
+            const isSelected = metodoSeleccionado?.id === metodo.id;
+            return (
+              <li key={metodo.id}>
+                <button
+                  className={`w-full text-left px-4 py-2 rounded-lg shadow-sm border transition duration-200 ${
+                    isSelected
+                      ? "border-blue-600 text-blue-700 font-semibold bg-white shadow"
+                      : "bg-gray-100 text-gray-800 hover:bg-gray-200 border-transparent"
+                  }`}
+                  onClick={() => handleSelectMetodo(metodo)}
+                >
+                  {metodo.nombre}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
 
       <MetodoFormModal
         isOpen={showModalMetodo}
