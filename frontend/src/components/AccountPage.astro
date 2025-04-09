@@ -317,36 +317,37 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
   loadSuscripcion();
 
   async function loadSuscripcion() {
-    const res = await authFetch("/api/general/suscripcion/");
-    const section = document.getElementById("suscripcion-section");
-    const mensaje = document.getElementById("suscripcion-mensaje");
-    const resumen = document.getElementById("resumen-section");
-    const estadisticas = document.getElementById("estadisticas-section");
+  const res = await authFetch("/api/general/suscripcion/");
+  const section = document.getElementById("suscripcion-section");
+  const mensaje = document.getElementById("suscripcion-mensaje");
+  const resumen = document.getElementById("resumen-section");
+  const estadisticas = document.getElementById("estadisticas-section");
 
-    section.style.display = "block";
+  section.style.display = "block";
 
-    if (!res.ok) {
-      mensaje.textContent = "No se pudo cargar tu suscripción.";
-      resumen.innerHTML =
-        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
-      estadisticas.innerHTML =
-        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
-      return;
-    }
-
-    const data = await res.json();
-    if (!data || !data.activa) {
-      mensaje.textContent = "No tienes ninguna suscripción activa.";
-      resumen.innerHTML =
-        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
-      estadisticas.innerHTML =
-        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
-      return;
-    }
-
-    // Si hay suscripción activa, mostramos los datos correctamente
-    mensaje.innerHTML = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Válida hasta: <span class="font-medium">${new Date(data.fecha_fin).toLocaleDateString()}</span>`;
+  if (!res.ok) {
+    mensaje.textContent = "No estás suscrito.";  // Mensaje si no hay suscripción activa
+    resumen.innerHTML =
+      "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
+    estadisticas.innerHTML =
+      "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
+    return;
   }
+
+  const data = await res.json();
+  if (!data || !data.activa) {
+    mensaje.textContent = "No estás suscrito.";  // Cambia este mensaje si no hay suscripción activa
+    resumen.innerHTML =
+      "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
+    estadisticas.innerHTML =
+      "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
+    return;
+  }
+
+  // Si hay suscripción activa, mostramos los datos correctamente
+  mensaje.innerHTML = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Válida hasta: <span class="font-medium">${new Date(data.fecha_fin).toLocaleDateString()}</span>`;
+}
+
 
   // Eliminar cuenta con confirmación
   const deleteLink = document.querySelector('a[href="/eliminar"]');
@@ -394,27 +395,27 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
     gestionarModal.classList.add("hidden");
   });
 
-  // Cancelar suscripción
-  // Mostrar modal de confirmación con la fecha real
-  let fechaFinSuscripcion = null;
+// Cancelar suscripción
+// Mostrar modal de confirmación con la fecha real
+let fechaFinSuscripcion = null;
 
-  cancelarBtn?.addEventListener("click", async () => {
-    const res = await authFetch("/api/general/suscripcion/");
-    if (!res.ok) {
-      showToast("Error al obtener la fecha de tu suscripción", "error");
-      return;
-    }
+cancelarBtn?.addEventListener("click", async () => {
+  const res = await authFetch("/api/general/suscripcion/");
+  if (!res.ok) {
+    showToast("Error al obtener la fecha de tu suscripción", "error");
+    return;
+  }
 
-    const data = await res.json();
-    fechaFinSuscripcion = new Date(data.fecha_fin).toLocaleDateString();
+  const data = await res.json();
+  fechaFinSuscripcion = new Date(data.fecha_fin).toLocaleDateString();
 
-    const texto = document.getElementById("cancelacion-texto");
-    texto.innerHTML = `Tu suscripción seguirá activa hasta el día <strong>${fechaFinSuscripcion}</strong>. ¿Quieres cancelarla?`;
+  const texto = document.getElementById("cancelacion-texto");
+  texto.innerHTML = `Tu suscripción seguirá activa hasta el día <strong>${fechaFinSuscripcion}</strong>. ¿Quieres cancelarla?`;
 
-    document
-      .getElementById("modal-cancelar-confirmacion")
-      .classList.remove("hidden");
-  });
+  document
+    .getElementById("modal-cancelar-confirmacion")
+    .classList.remove("hidden");
+});
 
 // Confirmar cancelación real
 document
@@ -445,19 +446,31 @@ document
     }
   });
 
-
-  // Cerrar modal de confirmación
-  document
-    .getElementById("cancelar-cancelacion")
-    ?.addEventListener("click", () => {
-      document
-        .getElementById("modal-cancelar-confirmacion")
-        .classList.add("hidden");
-    });
-
-  // Renovar / cambiar plan
-  renovarBtn?.addEventListener("click", () => {
-    gestionarModal.classList.add("hidden");
-    window.location.href = "/planes";
+// Cerrar modal de confirmación
+document
+  .getElementById("cancelar-cancelacion")
+  ?.addEventListener("click", () => {
+    document
+      .getElementById("modal-cancelar-confirmacion")
+      .classList.add("hidden");
   });
+
+// Renovar / cambiar plan
+renovarBtn?.addEventListener("click", async () => {
+  // Verificar si la suscripción está cancelada
+  const res = await authFetch("/api/general/suscripcion/");
+  const data = await res.json();
+
+  if (!data.activa) {
+    // Si la suscripción está cancelada, mostrar solo renovar
+    cancelarBtn.classList.add("hidden");
+    renovarBtn.classList.remove("hidden");
+  } else {
+    // Si está activa, permitir la cancelación o renovación
+    cancelarBtn.classList.remove("hidden");
+    renovarBtn.classList.remove("hidden");
+  }
+
+  window.location.href = "/planes"; // Redirigir a la página de planes
+});
 </script>
