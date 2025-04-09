@@ -57,7 +57,7 @@ export default function CheckoutPage() {
           }
 
           const res = await fetch(
-            "http://localhost:8000/api/general/suscripciones/",
+            "http://localhost:8000/api/general/suscripcion/",
             {
               method: "POST",
               headers: {

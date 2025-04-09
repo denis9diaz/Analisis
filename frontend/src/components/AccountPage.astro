@@ -63,13 +63,19 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
         />
         Válida hasta: <span id="suscripcion-fecha" class="font-medium"></span>
       </p>
+      <button
+        id="abrir-gestionar-modal"
+        class="text-sm text-blue-600 hover:underline mt-2"
+      >
+        Gestionar suscripción
+      </button>
     </section>
 
     <!-- 📊 Resumen -->
     <section
-    id="resumen-section"
-    class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm space-y-4"
-  >
+      id="resumen-section"
+      class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm space-y-4"
+    >
       <h2 class="text-lg font-medium text-gray-800">Resumen</h2>
 
       <div class="grid grid-cols-2 gap-4">
@@ -129,6 +135,69 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
         class="text-sm bg-red-800 text-white px-4 py-1.5 rounded hover:bg-red-900"
       >
         Eliminar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Gestionar suscripción -->
+<div
+  id="modal-gestionar"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+>
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full space-y-4">
+    <h2 class="text-lg font-semibold text-gray-800">Gestionar suscripción</h2>
+    <p class="text-sm text-gray-600">
+      Puedes cancelar tu suscripción o cambiar de plan. Si eliges un nuevo plan
+      y aún tienes días activos, se añadirán al total y se actualizará el tipo
+      de suscripción.
+    </p>
+
+    <div class="flex flex-col gap-3">
+      <button
+        id="btn-renovar"
+        class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+      >
+        Renovar / Cambiar de plan
+      </button>
+      <button
+        id="btn-cancelar"
+        class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+      >
+        Cancelar suscripción
+      </button>
+    </div>
+
+    <div class="text-right pt-2">
+      <button id="cerrar-modal" class="text-sm text-gray-500 hover:underline"
+        >Cerrar</button
+      >
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación de cancelación -->
+<div
+  id="modal-cancelar-confirmacion"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+>
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full space-y-4">
+    <h2 class="text-lg font-semibold text-gray-800">
+      ¿Seguro que quieres cancelar?
+    </h2>
+    <p id="cancelacion-texto" class="text-sm text-gray-700">
+      Tu suscripción seguirá activa hasta el día <strong>XX/XX/XXXX</strong>.
+    </p>
+    <div class="flex justify-end gap-4 pt-2">
+      <button
+        id="cancelar-cancelacion"
+        class="text-sm text-gray-600 hover:text-blue-600">Volver atrás</button
+      >
+      <button
+        id="confirmar-cancelacion"
+        class="text-sm bg-red-700 text-white px-4 py-1.5 rounded hover:bg-red-800"
+      >
+        Cancelar suscripción
       </button>
     </div>
   </div>
@@ -248,32 +317,36 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
   loadSuscripcion();
 
   async function loadSuscripcion() {
-  const res = await authFetch("/api/general/suscripcion/");
-  const section = document.getElementById("suscripcion-section");
-  const mensaje = document.getElementById("suscripcion-mensaje");
-  const resumen = document.getElementById("resumen-section");
-  const estadisticas = document.getElementById("estadisticas-section");
+    const res = await authFetch("/api/general/suscripcion/");
+    const section = document.getElementById("suscripcion-section");
+    const mensaje = document.getElementById("suscripcion-mensaje");
+    const resumen = document.getElementById("resumen-section");
+    const estadisticas = document.getElementById("estadisticas-section");
 
-  section.style.display = "block";
+    section.style.display = "block";
 
-  if (!res.ok) {
-    mensaje.textContent = "No se pudo cargar tu suscripción.";
-    resumen.innerHTML = "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
-    estadisticas.innerHTML = "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
-    return;
+    if (!res.ok) {
+      mensaje.textContent = "No se pudo cargar tu suscripción.";
+      resumen.innerHTML =
+        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
+      estadisticas.innerHTML =
+        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
+      return;
+    }
+
+    const data = await res.json();
+    if (!data || !data.activa) {
+      mensaje.textContent = "No tienes ninguna suscripción activa.";
+      resumen.innerHTML =
+        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
+      estadisticas.innerHTML =
+        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
+      return;
+    }
+
+    // Si hay suscripción activa, mostramos los datos correctamente
+    mensaje.innerHTML = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Válida hasta: <span class="font-medium">${new Date(data.fecha_fin).toLocaleDateString()}</span>`;
   }
-
-  const data = await res.json();
-  if (!data || !data.activa) {
-    mensaje.textContent = "No tienes ninguna suscripción activa.";
-    resumen.innerHTML = "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
-    estadisticas.innerHTML = "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
-    return;
-  }
-
-  // Si hay suscripción activa, mostramos los datos correctamente
-  mensaje.innerHTML = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Válida hasta: <span class="font-medium">${new Date(data.fecha_fin).toLocaleDateString()}</span>`;
-}
 
   // Eliminar cuenta con confirmación
   const deleteLink = document.querySelector('a[href="/eliminar"]');
@@ -305,5 +378,86 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
       showToast("Error al eliminar cuenta", "error");
       modal.classList.add("hidden");
     }
+  });
+
+  // Modal gestionar suscripción
+  const gestionarModal = document.getElementById("modal-gestionar");
+  const abrirModalBtn = document.getElementById("abrir-gestionar-modal");
+  const cerrarModalBtn = document.getElementById("cerrar-modal");
+  const cancelarBtn = document.getElementById("btn-cancelar");
+  const renovarBtn = document.getElementById("btn-renovar");
+
+  abrirModalBtn?.addEventListener("click", () => {
+    gestionarModal.classList.remove("hidden");
+  });
+  cerrarModalBtn?.addEventListener("click", () => {
+    gestionarModal.classList.add("hidden");
+  });
+
+  // Cancelar suscripción
+  // Mostrar modal de confirmación con la fecha real
+  let fechaFinSuscripcion = null;
+
+  cancelarBtn?.addEventListener("click", async () => {
+    const res = await authFetch("/api/general/suscripcion/");
+    if (!res.ok) {
+      showToast("Error al obtener la fecha de tu suscripción", "error");
+      return;
+    }
+
+    const data = await res.json();
+    fechaFinSuscripcion = new Date(data.fecha_fin).toLocaleDateString();
+
+    const texto = document.getElementById("cancelacion-texto");
+    texto.innerHTML = `Tu suscripción seguirá activa hasta el día <strong>${fechaFinSuscripcion}</strong>. ¿Quieres cancelarla?`;
+
+    document
+      .getElementById("modal-cancelar-confirmacion")
+      .classList.remove("hidden");
+  });
+
+// Confirmar cancelación real
+document
+  .getElementById("confirmar-cancelacion")
+  ?.addEventListener("click", async () => {
+    const res = await authFetch("/api/general/suscripcion/", {
+      method: "PATCH",
+      body: JSON.stringify({ cancelar: true }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const fechaFin = new Date(data.fecha_fin).toLocaleDateString();
+
+      showToast(
+        `Tu suscripción ha sido cancelada. Seguirá activa hasta el ${fechaFin}.`,
+        "info"
+      );
+
+      document
+        .getElementById("modal-cancelar-confirmacion")
+        .classList.add("hidden");
+      gestionarModal.classList.add("hidden");
+
+      setTimeout(() => window.location.reload(), 3000);
+    } else {
+      showToast("Error al cancelar suscripción", "error");
+    }
+  });
+
+
+  // Cerrar modal de confirmación
+  document
+    .getElementById("cancelar-cancelacion")
+    ?.addEventListener("click", () => {
+      document
+        .getElementById("modal-cancelar-confirmacion")
+        .classList.add("hidden");
+    });
+
+  // Renovar / cambiar plan
+  renovarBtn?.addEventListener("click", () => {
+    gestionarModal.classList.add("hidden");
+    window.location.href = "/planes";
   });
 </script>
