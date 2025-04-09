@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from django.utils import timezone
 from rest_framework.response import Response
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import Liga, MetodoAnalisis, Partido, Suscripcion
@@ -88,6 +89,14 @@ class SuscripcionCreateView(APIView):
             }
         )
         return Response(SuscripcionSerializer(suscripcion).data, status=201)
+
+
+class SuscripcionUsuarioAPIView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SuscripcionSerializer
+
+    def get_object(self):
+        return Suscripcion.objects.filter(usuario=self.request.user, activa=True).order_by('-fecha_fin').first()
 
 
 # Estadísticas del usuario
