@@ -3,6 +3,7 @@ from rest_framework import status
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
+from dateutil.relativedelta import relativedelta
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import Liga, MetodoAnalisis, Partido, Suscripcion
@@ -74,21 +75,54 @@ class SuscripcionCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        plan = request.data.get('plan')
-        if plan not in ['mensual', '3meses', 'anual']:
-            return Response({'error': 'Plan no válido'}, status=400)
+        user = request.user
+        plan = request.data.get("plan")
 
-        # Si ya existe una suscripción, actualizarla
-        suscripcion, created = Suscripcion.objects.update_or_create(
-            usuario=request.user,
-            defaults={
-                'plan': plan,
-                'fecha_inicio': timezone.now().date(),
-                'fecha_fin': None,  # Se recalcula en save()
-                'activa': True
-            }
-        )
-        return Response(SuscripcionSerializer(suscripcion).data, status=201)
+        PLANES_VALIDOS = {
+            "mensual": 1,
+            "trimestral": 3,
+            "anual": 12
+        }
+
+        if plan not in PLANES_VALIDOS:
+            return Response({"error": "Plan no válido"}, status=400)
+
+        meses_a_sumar = PLANES_VALIDOS[plan]
+        hoy = timezone.now().date()
+
+        try:
+            suscripcion = Suscripcion.objects.get(usuario=user)
+
+            if suscripcion.activa and suscripcion.fecha_fin > hoy:
+                # Extiende desde la fecha de finalización actual
+                nueva_fecha_inicio = suscripcion.fecha_fin
+            else:
+                # Reinicia desde hoy
+                nueva_fecha_inicio = hoy
+
+            suscripcion.plan = plan
+            suscripcion.fecha_inicio = nueva_fecha_inicio
+            suscripcion.fecha_fin = nueva_fecha_inicio + relativedelta(months=meses_a_sumar)
+            suscripcion.activa = True
+            suscripcion.save()
+
+        except Suscripcion.DoesNotExist:
+            nueva_fecha_inicio = hoy
+            nueva_fecha_fin = nueva_fecha_inicio + relativedelta(months=meses_a_sumar)
+            suscripcion = Suscripcion.objects.create(
+                usuario=user,
+                plan=plan,
+                fecha_inicio=nueva_fecha_inicio,
+                fecha_fin=nueva_fecha_fin,
+                activa=True
+            )
+
+        return Response({
+            "plan": suscripcion.plan,
+            "fecha_inicio": suscripcion.fecha_inicio,
+            "fecha_fin": suscripcion.fecha_fin,
+            "activa": suscripcion.activa
+        })
 
 
 class SuscripcionUsuarioAPIView(RetrieveAPIView):

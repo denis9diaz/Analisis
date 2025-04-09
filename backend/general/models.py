@@ -65,9 +65,10 @@ class Partido(models.Model):
 class Suscripcion(models.Model):
     PLANES = (
         ('mensual', 'Mensual'),
-        ('3meses', 'Trimestral'),
+        ('trimestral', 'Trimestral'),
         ('anual', 'Anual'),
     )
+
     usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='suscripcion')
     plan = models.CharField(max_length=20, choices=PLANES)
     fecha_inicio = models.DateField(default=timezone.now)
