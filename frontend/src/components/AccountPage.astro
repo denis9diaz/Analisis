@@ -347,7 +347,16 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
     }
 
     // Si hay suscripción activa, mostramos los datos correctamente
-    mensaje.innerHTML = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Válida hasta: <span class="font-medium">${new Date(data.fecha_fin).toLocaleDateString()}</span>`;
+    const fechaTexto = new Date(data.fecha_fin).toLocaleDateString();
+    let mensajeFinal = "";
+
+    if (data.cancelada) {
+      mensajeFinal = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Válida hasta: <span class="font-medium">${fechaTexto}</span>`;
+    } else {
+      mensajeFinal = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Se renovará el día <span class="font-medium">${fechaTexto}</span>`;
+    }
+
+    mensaje.innerHTML = mensajeFinal;
   }
 
   // Eliminar cuenta con confirmación
@@ -394,24 +403,24 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
   });
 
   abrirModalBtn?.addEventListener("click", async () => {
-  const res = await authFetch("/api/general/suscripcion/");
-  const data = await res.json();
+    const res = await authFetch("/api/general/suscripcion/");
+    const data = await res.json();
 
-  const mensajeModal = document.getElementById("mensaje-modal-suscripcion");
+    const mensajeModal = document.getElementById("mensaje-modal-suscripcion");
 
-  if (data.cancelada) {
-    cancelarBtn.classList.add("hidden");
-    const fechaFin = new Date(data.fecha_fin).toLocaleDateString();
-    mensajeModal.innerHTML = `Tu suscripción está cancelada. Puedes seguir usando los servicios de pago hasta el día <strong>${fechaFin}</strong>.`;
-  } else {
-    cancelarBtn.classList.remove("hidden");
-    mensajeModal.textContent =
-      "Puedes cancelar tu suscripción o cambiar de plan. Si eliges un nuevo plan y aún tienes días activos, se añadirán al total y se actualizará el tipo de suscripción.";
-  }
+    if (data.cancelada) {
+      cancelarBtn.classList.add("hidden");
+      const fechaFin = new Date(data.fecha_fin).toLocaleDateString();
+      mensajeModal.innerHTML = `Tu suscripción está cancelada. Puedes seguir usando los servicios de pago hasta el día <strong>${fechaFin}</strong>.`;
+    } else {
+      cancelarBtn.classList.remove("hidden");
+      mensajeModal.textContent =
+        "Puedes cancelar tu suscripción o cambiar de plan. Si eliges un nuevo plan y aún tienes días activos, se añadirán al total y se actualizará el tipo de suscripción.";
+    }
 
-  renovarBtn.classList.remove("hidden");
-  gestionarModal.classList.remove("hidden");
-});
+    renovarBtn.classList.remove("hidden");
+    gestionarModal.classList.remove("hidden");
+  });
 
   // Cancelar suscripción
   // Mostrar modal de confirmación con la fecha real
