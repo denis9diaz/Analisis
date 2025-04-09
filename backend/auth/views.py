@@ -14,6 +14,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth.password_validation import validate_password
 from auth.serializers import RegisterSerializer, UserSerializer
 from django.core.exceptions import ValidationError
+from auth.validators import validate_custom_password
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
@@ -176,8 +177,9 @@ def change_password(request):
 
     try:
         validate_password(new_password, user=user)
-    except ValidationError as e:  # ✅ Usamos el correcto
-        errors['new_password'] = e.messages  # ✅ Formato esperado por el frontend
+        validate_custom_password(new_password)
+    except ValidationError as e:
+        errors['new_password'] = e.messages
 
     if errors:
         return Response(errors, status=400)
@@ -198,7 +200,7 @@ def send_temp_password(request):
     try:
         user = User.objects.get(email=email)
     except User.DoesNotExist:
-        return Response({"message": "Si el correo está registrado, se enviará un mensaje."}, status=200)
+        return Response({"error": "Correo electrónico no registrado."}, status=404)
 
     temp_password = get_random_string(length=10)
     try:

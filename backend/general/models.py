@@ -34,6 +34,11 @@ class Partido(models.Model):
         (None, 'Sin resultado'),
     ]
 
+    EQUIPO_CHOICES = [
+        ("local", "Local"),
+        ("visitante", "Visitante"),
+    ]
+
     metodo = models.ForeignKey(MetodoAnalisis, on_delete=models.CASCADE, related_name='partidos')
     fecha = models.DateField()
     nombre_partido = models.CharField(max_length=255)
@@ -41,13 +46,15 @@ class Partido(models.Model):
     porcentaje_local = models.DecimalField(max_digits=5, decimal_places=2)
     porcentaje_visitante = models.DecimalField(max_digits=5, decimal_places=2)
     porcentaje_general = models.DecimalField(max_digits=5, decimal_places=2)
-    racha_local = models.CharField(max_length=100)
-    racha_visitante = models.CharField(max_length=100)
-    racha_hist_local = models.CharField(max_length=100)
-    racha_hist_visitante = models.CharField(max_length=100)
+    racha_local = models.CharField(max_length=100, null=True, blank=True)
+    racha_visitante = models.CharField(max_length=100, null=True, blank=True)
+    racha_hist_local = models.CharField(max_length=100, null=True, blank=True)
+    racha_hist_visitante = models.CharField(max_length=100, null=True, blank=True)
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES)
     cumplido = models.CharField(max_length=6, choices=RESULTADO_CHOICES, null=True, blank=True)
     notas = models.TextField(blank=True)
-
+    equipo_destacado = models.CharField(
+        max_length=10, choices=EQUIPO_CHOICES, blank=True, null=True
+    )
     def __str__(self):
         return f"{self.nombre_partido} ({self.fecha})"

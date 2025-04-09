@@ -11,6 +11,6 @@ class LigaAdmin(admin.ModelAdmin):
 
 @admin.register(Partido)
 class PartidoAdmin(admin.ModelAdmin):
-    list_display = ('nombre_partido', 'fecha', 'metodo', 'liga', 'estado', 'cumplido')
-    list_filter = ('estado', 'cumplido', 'liga', 'metodo')
+    list_display = ('nombre_partido', 'fecha', 'metodo', 'liga', 'estado', 'cumplido', 'equipo_destacado')
+    list_filter = ('estado', 'cumplido', 'liga', 'metodo', 'equipo_destacado')
     search_fields = ('nombre_partido',)

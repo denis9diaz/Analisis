@@ -9,7 +9,7 @@ LIGAS = [
     ("Jupiler Pro-League", "BE"),
     ("Serie A Betano", "BR"),
     ("Superliga", "DK"),
-    ("Premier League es", "GB-SCT"),
+    ("Premier League ESC", "GB-SCT"),
     ("LaLiga EA Sports", "ES"),
     ("LaLiga Hypermotion", "ES"),
     ("MLS", "US"),
@@ -28,12 +28,15 @@ LIGAS = [
     ("Eliteserien", "NO"),
     ("OBOS-ligaen", "NO"),
     ("Eredivisie", "NL"),
-    ("Keuken Kampioen Divisie", "NL"),
+    ("Keuken Kampioen", "NL"),
     ("Liga Portugal", "PT"),
     ("Allsvenskan", "SE"),
     ("Superettan", "SE"),
     ("Super League", "CH"),
     ("Super Lig", "TR"),
+    ("Champions League", "EU"),
+    ("Europa League", "EU"),
+    ("Conference League", "EU"),
 ]
 
 class Command(BaseCommand):

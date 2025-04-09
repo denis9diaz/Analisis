@@ -1,4 +1,6 @@
-<div class="flex items-start justify-center min-h-screen bg-gray-200 pt-20 px-4">
+<div
+  class="flex items-start justify-center min-h-screen bg-gray-200 pt-20 px-4"
+>
   <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Registro</h2>
     <form id="register-form" class="space-y-5">
@@ -172,6 +174,7 @@
             username,
             email,
             password,
+            password2: confirmPassword,
           }),
         });
 
@@ -183,10 +186,18 @@
         const data = await res.json();
 
         if (!res.ok) {
-          showToast(
-            data.error || "Error al registrar. Intenta nuevamente.",
-            "error"
-          );
+          // Mostrar solo el primer error en orden
+          let mensaje = null;
+
+          if (data.email) mensaje = [].concat(data.email)[0];
+          else if (data.username) mensaje = [].concat(data.username)[0];
+          else if (data.password) mensaje = [].concat(data.password)[0];
+          else if (data.password2) mensaje = [].concat(data.password2)[0];
+          else if (data.non_field_errors)
+            mensaje = [].concat(data.non_field_errors)[0];
+          else mensaje = "Error al registrar. Intenta nuevamente.";
+
+          showToast(mensaje, "error");
           return;
         }
 

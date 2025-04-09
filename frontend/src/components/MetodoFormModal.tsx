@@ -49,7 +49,7 @@ export default function MetodoFormModal({ isOpen, onRequestClose, onMetodoGuarda
       className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full mx-auto mt-24 outline-none text-gray-700"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50"
     >
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Añadir método</h2>
+      <h2 className="text-xl font-semibold mb-6 text-gray-800">Añadir método</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -62,14 +62,14 @@ export default function MetodoFormModal({ isOpen, onRequestClose, onMetodoGuarda
           <button
             type="button"
             onClick={onRequestClose}
-            className="bg-red-500 text-white py-2 px-4 rounded mr-2 hover:bg-red-600"
+            className="bg-red-600 text-white px-3 py-1 rounded mr-2 hover:bg-red-800"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-800"
           >
             {loading ? "Guardando..." : "Guardar"}
           </button>

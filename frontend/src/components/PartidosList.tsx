@@ -24,6 +24,7 @@ type Partido = {
   cumplido: string | null;
   notas: string;
   metodo: number;
+  equipo_destacado?: "local" | "visitante" | null;
 };
 
 const MESES = [
@@ -104,11 +105,59 @@ export default function PartidosList() {
       });
   }, [metodoSeleccionado]);
 
-  const ligasUnicas = Array.from(
-    new Map(
-      partidos.filter((p) => p.liga).map((p) => [p.liga!.nombre, p.liga!])
-    ).values()
-  );
+  const ORDEN_LIGAS = [
+    "Bundesliga",
+    "Bundesliga II",
+    "A-League",
+    "Bundesliga (AT)", // este es para diferenciar si es necesario
+    "Jupiler Pro-League",
+    "Serie A Betano",
+    "Superliga",
+    "Premier League (GB-SCT)",
+    "LaLiga EA Sports",
+    "LaLiga Hypermotion",
+    "MLS",
+    "Meistriliiga",
+    "Esiliiga",
+    "Veikkausliiga",
+    "Ykkosliiga",
+    "Ligue 1",
+    "Premier League",
+    "Championship",
+    "League One",
+    "League Two",
+    "Besta deild karla",
+    "Division 1",
+    "Serie A",
+    "Eliteserien",
+    "OBOS-ligaen",
+    "Eredivisie",
+    "Keuken Kampioen",
+    "Liga Portugal",
+    "Allsvenskan",
+    "Superettan",
+    "Super League",
+    "Super Lig",
+    "Champions League",
+    "Europa League",
+    "Conference League",
+  ];
+
+  const ligasMap = new Map<string, Partido["liga"]>();
+
+  partidos.forEach((p) => {
+    if (p.liga && !ligasMap.has(p.liga.nombre)) {
+      ligasMap.set(
+        p.liga.nombre,
+        p.liga as { id: number; nombre: string; codigo_pais: string }
+      );
+    }
+  });
+
+  const ligasUnicas: { id: number; nombre: string; codigo_pais: string }[] =
+    ORDEN_LIGAS.map((nombre) => ligasMap.get(nombre)).filter(
+      (l): l is { id: number; nombre: string; codigo_pais: string } => !!l
+    );
 
   const opcionesLiga = [
     { value: "TODAS", label: "Todas las ligas" },
@@ -144,6 +193,14 @@ export default function PartidosList() {
     const coincideMes = filtroMes === "TODOS" || p.fecha.startsWith(filtroMes);
     return coincideLiga && coincideEstado && coincideResultado && coincideMes;
   });
+
+  const itemsPorPagina = 11;
+  const [paginaActual, setPaginaActual] = useState(1);
+  const totalPaginas = Math.ceil(partidosFiltrados.length / itemsPorPagina);
+  const partidosPaginados = partidosFiltrados.slice(
+    (paginaActual - 1) * itemsPorPagina,
+    paginaActual * itemsPorPagina
+  );
 
   const total = partidosFiltrados.length;
   const aciertos = partidosFiltrados.filter(
@@ -310,8 +367,9 @@ export default function PartidosList() {
 
       {/* Estadísticas */}
       <div className="mb-4 bg-gray-50 border border-gray-200 rounded-md p-4 shadow-sm text-sm text-gray-700">
-        <p className="mb-1 font-medium">
-          📊 Estadísticas (según filtros aplicados):
+        <p className="mb-1 font-medium flex items-center gap-2">
+          <img src="/2.png" alt="Estadísticas" className="w-5 h-5" />
+          Estadísticas (según filtros aplicados):
         </p>
         <div className="flex flex-wrap gap-4">
           <span>
@@ -338,26 +396,24 @@ export default function PartidosList() {
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
               <th className="px-3 py-2 text-left w-[100px]">Fecha</th>
-              <th className="px-3 py-2 text-left w-[250px]">Partido</th>
               <th className="px-3 py-2 text-left w-[180px]">Liga</th>
+              <th className="px-3 py-2 text-left w-[250px]">Partido</th>
               <th className="px-3 py-2 text-center w-[80px]">% Local</th>
               <th className="px-3 py-2 text-center w-[80px]">% Visit.</th>
               <th className="px-3 py-2 text-center w-[80px]">% Total</th>
               <th className="px-3 py-2 text-center w-[60px]">R.L.</th>
               <th className="px-3 py-2 text-center w-[60px]">R.V.</th>
               <th className="px-3 py-2 text-center w-[50px]">Estado</th>
-              <th className="px-3 py-2 text-center w-[105px]">Resultado</th>
               <th className="px-3 py-2 text-left w-[280px]">Notas</th>
             </tr>
           </thead>
           <tbody>
-            {partidosFiltrados.map((p) => (
+            {partidosPaginados.map((p) => (
               <tr
                 key={p.id}
                 className="hover:bg-gray-50 transition border-t border-gray-200"
               >
                 <td className="px-3 py-2 w-[100px]">{formatFecha(p.fecha)}</td>
-                <td className="px-3 py-2 w-[250px]">{p.nombre_partido}</td>
                 <td className="px-3 py-2 w-[180px]">
                   {p.liga ? (
                     <div className="flex items-center gap-2">
@@ -372,6 +428,29 @@ export default function PartidosList() {
                   ) : (
                     <span className="text-gray-400 italic">Sin liga</span>
                   )}
+                </td>
+                <td className="px-3 py-2 w-[250px]">
+                  {metodoSeleccionado?.nombre === "Team to Score"
+                    ? (() => {
+                        const [local, visitante] =
+                          p.nombre_partido.split(" - ");
+                        return (
+                          <span>
+                            {p.equipo_destacado === "local" ? (
+                              <strong>{local}</strong>
+                            ) : (
+                              local
+                            )}{" "}
+                            -{" "}
+                            {p.equipo_destacado === "visitante" ? (
+                              <strong>{visitante}</strong>
+                            ) : (
+                              visitante
+                            )}
+                          </span>
+                        );
+                      })()
+                    : p.nombre_partido}
                 </td>
                 <td className="px-3 py-2 text-center w-[80px]">
                   {mostrarPorcentaje(p.porcentaje_local)}
@@ -388,25 +467,32 @@ export default function PartidosList() {
                 <td className="px-3 py-2 text-center w-[60px]">
                   {p.racha_visitante} ({p.racha_hist_visitante})
                 </td>
-                <td className="px-3 py-2 text-center w-[50px]">{p.estado}</td>
-                <td className="px-3 py-2 text-center w-[105px]">
-                  <select
-                    value={p.cumplido || ""}
-                    onChange={(e) =>
-                      handleResultadoChange(p.id, e.target.value)
-                    }
-                    className={`px-2 py-1 rounded-md border text-sm shadow-sm w-full ${
-                      p.cumplido === "VERDE"
-                        ? "bg-green-100 text-green-800"
-                        : p.cumplido === "ROJO"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-gray-50 text-gray-600"
-                    }`}
-                  >
-                    <option value="">Sin resultado</option>
-                    <option value="VERDE">Acierto</option>
-                    <option value="ROJO">Fallo</option>
-                  </select>
+                <td
+                  className={`px-3 py-2 text-center w-[105px] rounded-md transition duration-300
+      ${
+        p.cumplido === "VERDE"
+          ? "bg-green-100 text-green-800"
+          : p.cumplido === "ROJO"
+          ? "bg-red-100 text-red-800"
+          : "bg-gray-100 text-gray-600"
+      }`}
+                >
+                  <div className="relative group">
+                    <span className="block cursor-pointer group-hover:opacity-0 transition-opacity">
+                      {p.estado}
+                    </span>
+                    <select
+                      value={p.cumplido || ""}
+                      onChange={(e) =>
+                        handleResultadoChange(p.id, e.target.value)
+                      }
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 cursor-pointer"
+                    >
+                      <option value="">Sin resultado</option>
+                      <option value="VERDE">Acierto</option>
+                      <option value="ROJO">Fallo</option>
+                    </select>
+                  </div>
                 </td>
                 <td className="px-3 py-2 text-left w-[280px]">
                   <textarea
@@ -423,6 +509,22 @@ export default function PartidosList() {
             ))}
           </tbody>
         </table>
+        {/* Controles de paginación */}
+        <div className="flex justify-center mt-3 gap-2 text-sm mb-2">
+          {Array.from({ length: totalPaginas }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setPaginaActual(i + 1)}
+              className={`px-3 py-1 rounded ${
+                paginaActual === i + 1
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
       </div>
 
       <PartidoFormModal
