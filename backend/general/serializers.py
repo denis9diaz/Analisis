@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Liga, MetodoAnalisis, Partido
+from .models import Liga, MetodoAnalisis, Partido, Suscripcion
 
 class LigaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,3 +38,9 @@ class PartidoWriteSerializer(serializers.ModelSerializer):
             'racha_local', 'racha_visitante', 'racha_hist_local', 'racha_hist_visitante',
             'estado', 'cumplido', 'notas', 'equipo_destacado'  # <--- AÑADIR AQUÍ
         ]
+
+class SuscripcionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Suscripcion
+        fields = ['plan', 'fecha_inicio', 'fecha_fin', 'activa']
+        read_only_fields = ['fecha_inicio', 'fecha_fin', 'activa']

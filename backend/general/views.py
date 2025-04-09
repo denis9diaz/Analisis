@@ -1,13 +1,16 @@
 from rest_framework.views import APIView
+from rest_framework import status
+from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import Liga, MetodoAnalisis, Partido
+from .models import Liga, MetodoAnalisis, Partido, Suscripcion
 from .serializers import (
     LigaSerializer,
     MetodoAnalisisSerializer,
     PartidoReadSerializer,
     PartidoWriteSerializer,
+    SuscripcionSerializer,
 )
 
 
@@ -64,6 +67,27 @@ class PartidoListAPIView(APIView):
             partido_actualizado = serializer.save()
             return Response(PartidoReadSerializer(partido_actualizado).data)
         return Response(serializer.errors, status=400)
+
+
+class SuscripcionCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        plan = request.data.get('plan')
+        if plan not in ['mensual', '3meses', 'anual']:
+            return Response({'error': 'Plan no válido'}, status=400)
+
+        # Si ya existe una suscripción, actualizarla
+        suscripcion, created = Suscripcion.objects.update_or_create(
+            usuario=request.user,
+            defaults={
+                'plan': plan,
+                'fecha_inicio': timezone.now().date(),
+                'fecha_fin': None,  # Se recalcula en save()
+                'activa': True
+            }
+        )
+        return Response(SuscripcionSerializer(suscripcion).data, status=201)
 
 
 # Estadísticas del usuario

@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 
 class MetodoAnalisis(models.Model):
     nombre = models.CharField(max_length=255)
@@ -58,3 +60,29 @@ class Partido(models.Model):
     )
     def __str__(self):
         return f"{self.nombre_partido} ({self.fecha})"
+        
+
+class Suscripcion(models.Model):
+    PLANES = (
+        ('mensual', 'Mensual'),
+        ('3meses', 'Trimestral'),
+        ('anual', 'Anual'),
+    )
+    usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='suscripcion')
+    plan = models.CharField(max_length=20, choices=PLANES)
+    fecha_inicio = models.DateField(default=timezone.now)
+    fecha_fin = models.DateField()
+    activa = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.usuario} - {self.plan}"
+
+    def save(self, *args, **kwargs):
+        if not self.fecha_fin:
+            if self.plan == 'mensual':
+                self.fecha_fin = self.fecha_inicio + timedelta(days=30)
+            elif self.plan == '3meses':
+                self.fecha_fin = self.fecha_inicio + timedelta(days=90)
+            elif self.plan == 'anual':
+                self.fecha_fin = self.fecha_inicio + timedelta(days=365)
+        super().save(*args, **kwargs)
