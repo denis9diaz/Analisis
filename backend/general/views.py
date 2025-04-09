@@ -98,15 +98,16 @@ class SuscripcionView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Obtener la suscripción activa del usuario
         suscripcion = Suscripcion.objects.filter(usuario=request.user, activa=True).first()
-        
+
         if not suscripcion:
             return Response({"error": "No tienes una suscripción activa."}, status=400)
 
-        # Devolver detalles de la suscripción
+        suscripcion.save()  # ✅ Esto ejecuta la lógica del save() que ya incluye la renovación automática
+
         serializer = SuscripcionSerializer(suscripcion)
         return Response(serializer.data)
+
 
     def post(self, request):
         user = request.user
