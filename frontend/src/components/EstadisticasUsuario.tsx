@@ -33,7 +33,9 @@ type Stats = {
 export default function EstadisticasUsuario() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [metodos, setMetodos] = useState<Metodo[]>([]);
-  const [metodoSeleccionado, setMetodoSeleccionado] = useState<null | number>(null);
+  const [metodoSeleccionado, setMetodoSeleccionado] = useState<null | number>(
+    null
+  );
 
   const fetchStats = async (metodoId: number | null) => {
     const token = localStorage.getItem("access_token");
@@ -95,7 +97,8 @@ export default function EstadisticasUsuario() {
     return (
       <div className="flex justify-center gap-4 mt-4 text-sm flex-wrap">
         {data.map((entry) => {
-          const porcentaje = total > 0 ? ((entry.value / total) * 100).toFixed(1) : "0.0";
+          const porcentaje =
+            total > 0 ? ((entry.value / total) * 100).toFixed(1) : "0.0";
           return (
             <div key={entry.name} className="flex items-center gap-2">
               <div
@@ -123,7 +126,9 @@ export default function EstadisticasUsuario() {
           className="border border-gray-300 px-3 py-1 rounded text-sm"
           value={metodoSeleccionado ?? ""}
           onChange={(e) =>
-            setMetodoSeleccionado(e.target.value === "" ? null : +e.target.value)
+            setMetodoSeleccionado(
+              e.target.value === "" ? null : +e.target.value
+            )
           }
         >
           <option value="">Todos los métodos</option>
@@ -139,77 +144,87 @@ export default function EstadisticasUsuario() {
         {/* Gráfico de Resultados */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-md font-semibold mb-4">Resultados</h3>
-          <PieChart width={250} height={250}>
-            {resultadoVacio ? (
-              <text
-                x="50%"
-                y="50%"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fill="#999"
-                fontSize={14}
-              >
-                Sin datos
-              </text>
-            ) : (
-              <Pie
-                data={resultadoData}
-                cx="50%"
-                cy="50%"
-                label
-                outerRadius={90}
-                dataKey="value"
-              >
-                {resultadoData.map((entry) => (
-                  <Cell
-                    key={entry.name}
-                    fill={COLORS[entry.name as keyof typeof COLORS]}
-                  />
-                ))}
-              </Pie>
-            )}
-            <Tooltip />
-          </PieChart>
+          <div className="flex flex-col items-center">
+            <PieChart width={250} height={250}>
+              {resultadoVacio ? (
+                <text
+                  x="50%"
+                  y="50%"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill="#999"
+                  fontSize={14}
+                >
+                  Sin datos
+                </text>
+              ) : (
+                <Pie
+                  data={resultadoData}
+                  cx="50%"
+                  cy="50%"
+                  label
+                  outerRadius={90}
+                  dataKey="value"
+                >
+                  {resultadoData.map((entry) => (
+                    <Cell
+                      key={entry.name}
+                      fill={COLORS[entry.name as keyof typeof COLORS]}
+                    />
+                  ))}
+                </Pie>
+              )}
+              <Tooltip />
+            </PieChart>
 
-          {renderLeyenda(resultadoData, resultadoData.reduce((acc, d) => acc + d.value, 0))}
+            {renderLeyenda(
+              resultadoData,
+              resultadoData.reduce((acc, d) => acc + d.value, 0)
+            )}
+          </div>
         </div>
 
         {/* Gráfico de Estados */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-md font-semibold mb-4">Estados</h3>
-          <PieChart width={250} height={250}>
-            {estadoVacio ? (
-              <text
-                x="50%"
-                y="50%"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fill="#999"
-                fontSize={14}
-              >
-                Sin datos
-              </text>
-            ) : (
-              <Pie
-                data={estadoData}
-                cx="50%"
-                cy="50%"
-                label
-                outerRadius={90}
-                dataKey="value"
-              >
-                {estadoData.map((entry) => (
-                  <Cell
-                    key={entry.name}
-                    fill={COLORS[entry.name as keyof typeof COLORS]}
-                  />
-                ))}
-              </Pie>
-            )}
-            <Tooltip />
-          </PieChart>
+          <div className="flex flex-col items-center">
+            <PieChart width={250} height={250}>
+              {estadoVacio ? (
+                <text
+                  x="50%"
+                  y="50%"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill="#999"
+                  fontSize={14}
+                >
+                  Sin datos
+                </text>
+              ) : (
+                <Pie
+                  data={estadoData}
+                  cx="50%"
+                  cy="50%"
+                  label
+                  outerRadius={90}
+                  dataKey="value"
+                >
+                  {estadoData.map((entry) => (
+                    <Cell
+                      key={entry.name}
+                      fill={COLORS[entry.name as keyof typeof COLORS]}
+                    />
+                  ))}
+                </Pie>
+              )}
+              <Tooltip />
+            </PieChart>
 
-          {renderLeyenda(estadoData, estadoData.reduce((acc, d) => acc + d.value, 0))}
+            {renderLeyenda(
+              estadoData,
+              estadoData.reduce((acc, d) => acc + d.value, 0)
+            )}
+          </div>
         </div>
       </div>
     </div>
