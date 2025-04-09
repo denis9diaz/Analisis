@@ -147,7 +147,7 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
 >
   <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full space-y-4">
     <h2 class="text-lg font-semibold text-gray-800">Gestionar suscripción</h2>
-    <p class="text-sm text-gray-600">
+    <p id="mensaje-modal-suscripcion" class="text-sm text-gray-600">
       Puedes cancelar tu suscripción o cambiar de plan. Si eliges un nuevo plan
       y aún tienes días activos, se añadirán al total y se actualizará el tipo
       de suscripción.
@@ -394,20 +394,24 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
   });
 
   abrirModalBtn?.addEventListener("click", async () => {
-    // Obtenemos el estado actualizado de la suscripción
-    const res = await authFetch("/api/general/suscripcion/");
-    const data = await res.json();
+  const res = await authFetch("/api/general/suscripcion/");
+  const data = await res.json();
 
-    // Mostrar u ocultar botón de cancelar según si ya está cancelada
-    if (data.cancelada) {
-      cancelarBtn.classList.add("hidden");
-    } else {
-      cancelarBtn.classList.remove("hidden");
-    }
+  const mensajeModal = document.getElementById("mensaje-modal-suscripcion");
 
-    renovarBtn.classList.remove("hidden"); // Siempre se puede renovar
-    gestionarModal.classList.remove("hidden");
-  });
+  if (data.cancelada) {
+    cancelarBtn.classList.add("hidden");
+    const fechaFin = new Date(data.fecha_fin).toLocaleDateString();
+    mensajeModal.innerHTML = `Tu suscripción está cancelada. Puedes seguir usando los servicios de pago hasta el día <strong>${fechaFin}</strong>.`;
+  } else {
+    cancelarBtn.classList.remove("hidden");
+    mensajeModal.textContent =
+      "Puedes cancelar tu suscripción o cambiar de plan. Si eliges un nuevo plan y aún tienes días activos, se añadirán al total y se actualizará el tipo de suscripción.";
+  }
+
+  renovarBtn.classList.remove("hidden");
+  gestionarModal.classList.remove("hidden");
+});
 
   // Cancelar suscripción
   // Mostrar modal de confirmación con la fecha real
