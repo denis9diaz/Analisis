@@ -395,8 +395,8 @@ export default function PartidosList() {
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
               <th className="px-3 py-2 text-left w-[100px]">Fecha</th>
-              <th className="px-3 py-2 text-left w-[250px]">Partido</th>
               <th className="px-3 py-2 text-left w-[180px]">Liga</th>
+              <th className="px-3 py-2 text-left w-[250px]">Partido</th>
               <th className="px-3 py-2 text-center w-[80px]">% Local</th>
               <th className="px-3 py-2 text-center w-[80px]">% Visit.</th>
               <th className="px-3 py-2 text-center w-[80px]">% Total</th>
@@ -413,6 +413,21 @@ export default function PartidosList() {
                 className="hover:bg-gray-50 transition border-t border-gray-200"
               >
                 <td className="px-3 py-2 w-[100px]">{formatFecha(p.fecha)}</td>
+                <td className="px-3 py-2 w-[180px]">
+                  {p.liga ? (
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={`https://flagcdn.com/w20/${p.liga.codigo_pais.toLowerCase()}.png`}
+                        alt={p.liga.nombre}
+                        width={20}
+                        height={15}
+                      />
+                      {p.liga.nombre}
+                    </div>
+                  ) : (
+                    <span className="text-gray-400 italic">Sin liga</span>
+                  )}
+                </td>
                 <td className="px-3 py-2 w-[250px]">
                   {metodoSeleccionado?.nombre === "Team to Score"
                     ? (() => {
@@ -435,21 +450,6 @@ export default function PartidosList() {
                         );
                       })()
                     : p.nombre_partido}
-                </td>
-                <td className="px-3 py-2 w-[180px]">
-                  {p.liga ? (
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={`https://flagcdn.com/w20/${p.liga.codigo_pais.toLowerCase()}.png`}
-                        alt={p.liga.nombre}
-                        width={20}
-                        height={15}
-                      />
-                      {p.liga.nombre}
-                    </div>
-                  ) : (
-                    <span className="text-gray-400 italic">Sin liga</span>
-                  )}
                 </td>
                 <td className="px-3 py-2 text-center w-[80px]">
                   {mostrarPorcentaje(p.porcentaje_local)}

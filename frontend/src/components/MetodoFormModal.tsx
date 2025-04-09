@@ -62,14 +62,14 @@ export default function MetodoFormModal({ isOpen, onRequestClose, onMetodoGuarda
           <button
             type="button"
             onClick={onRequestClose}
-            className="bg-red-500 text-white py-2 px-4 rounded mr-2 hover:bg-red-600"
+            className="bg-red-600 text-white px-3 py-1 rounded mr-2 hover:bg-red-800"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-800"
           >
             {loading ? "Guardando..." : "Guardar"}
           </button>

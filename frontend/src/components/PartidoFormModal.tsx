@@ -124,7 +124,7 @@ export default function PartidoFormModal({
       className="bg-white p-4 rounded-xl shadow-lg max-w-2xl w-full mx-auto mt-20 max-h-[90vh] overflow-y-auto outline-none text-gray-700"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50"
     >
-      <h2 className="text-xl font-semibold mb-6 text-gray-800">
+      <h2 className="text-xl font-semibold mb-6 text-gray-800 pt-2 ps-2">
         Añadir partido
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -248,17 +248,17 @@ export default function PartidoFormModal({
           onChange={(e) => setNotas(e.target.value)}
           className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end pt-2 pb-2">
           <button
             type="button"
-            className="bg-red-500 text-white px-3 py-1 rounded mr-2 hover:bg-red-600"
+            className="bg-red-600 text-white px-3 py-1 rounded mr-2 hover:bg-red-800"
             onClick={onRequestClose}
           >
             Cancelar
           </button>
           <button
             type="submit"
-            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-800"
           >
             Guardar
           </button>
