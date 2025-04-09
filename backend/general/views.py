@@ -16,6 +16,14 @@ from .serializers import (
 )
 
 
+def verificar_suscripcion_activa(usuario):
+    return Suscripcion.objects.filter(
+        usuario=usuario,
+        activa=True,
+        fecha_fin__gte=timezone.now().date()
+    ).exists()
+
+
 class LigaListAPIView(APIView):
     def get(self, request):
         ligas = Liga.objects.all()
@@ -27,27 +35,39 @@ class MetodoAnalisisListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        if not verificar_suscripcion_activa(request.user):
+            return Response({"error": "Se requiere una suscripción activa para ver tus métodos."}, status=403)
+
         metodos = MetodoAnalisis.objects.filter(usuario=request.user)
         serializer = MetodoAnalisisSerializer(metodos, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        if not verificar_suscripcion_activa(request.user):
+            return Response({"error": "Se requiere una suscripción activa para crear métodos."}, status=403)
+
         serializer = MetodoAnalisisSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             metodo = serializer.save()
             return Response(MetodoAnalisisSerializer(metodo).data, status=201)
         return Response(serializer.errors, status=400)
-        
+
 
 class PartidoListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        partidos = Partido.objects.filter(metodo__usuario=request.user) 
+        if not verificar_suscripcion_activa(request.user):
+            return Response({"error": "Se requiere una suscripción activa para ver partidos."}, status=403)
+
+        partidos = Partido.objects.filter(metodo__usuario=request.user)
         serializer = PartidoReadSerializer(partidos, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        if not verificar_suscripcion_activa(request.user):
+            return Response({"error": "Se requiere una suscripción activa para crear partidos."}, status=403)
+
         serializer = PartidoWriteSerializer(data=request.data)
         if serializer.is_valid():
             partido = serializer.save()
@@ -55,6 +75,9 @@ class PartidoListAPIView(APIView):
         return Response(serializer.errors, status=400)
 
     def patch(self, request):
+        if not verificar_suscripcion_activa(request.user):
+            return Response({"error": "Se requiere una suscripción activa para editar partidos."}, status=403)
+
         partido_id = request.data.get("id")
         if not partido_id:
             return Response({"error": "ID requerido"}, status=400)
@@ -138,6 +161,10 @@ class SuscripcionUsuarioAPIView(RetrieveAPIView):
 @permission_classes([IsAuthenticated])
 def user_stats(request):
     usuario = request.user
+
+    if not verificar_suscripcion_activa(usuario):
+        return Response({"error": "Se requiere una suscripción activa para ver las estadísticas."}, status=403)
+
     metodo_id = request.query_params.get('metodo_id')
 
     partidos = Partido.objects.filter(metodo__usuario=usuario)
