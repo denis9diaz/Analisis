@@ -160,13 +160,15 @@ class SuscripcionView(APIView):
         if not suscripcion:
             return Response({"error": "No tienes una suscripción activa."}, status=400)
 
-        # Aquí no desactivamos la suscripción, solo mantenemos la fecha de finalización
-        # Elimina la suscripción al llegar la fecha de finalización.
+        # Marcar como cancelada (pero sigue activa hasta la fecha_fin)
+        suscripcion.cancelada = True
+        suscripcion.save()
+
         fecha_final = suscripcion.fecha_fin
 
-        # Devolver la fecha de cancelación
         return Response({
             "cancelada": True,
+            "fecha_fin": fecha_final.isoformat(),  # importante para el frontend
             "mensaje": f"Tu suscripción se mantendrá activa hasta el {fecha_final.strftime('%d/%m/%Y')}."
         })
 

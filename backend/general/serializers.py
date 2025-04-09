@@ -41,5 +41,5 @@ class PartidoWriteSerializer(serializers.ModelSerializer):
 class SuscripcionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Suscripcion
-        fields = ['plan', 'fecha_inicio', 'fecha_fin', 'activa']
-        read_only_fields = ['fecha_inicio', 'fecha_fin', 'activa']
+        fields = ['plan', 'fecha_inicio', 'fecha_fin', 'activa', 'cancelada']
+        read_only_fields = ['fecha_inicio', 'fecha_fin', 'activa', 'cancelada']

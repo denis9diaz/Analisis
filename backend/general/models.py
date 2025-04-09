@@ -74,6 +74,7 @@ class Suscripcion(models.Model):
     fecha_inicio = models.DateField(default=timezone.now)
     fecha_fin = models.DateField()
     activa = models.BooleanField(default=True)
+    cancelada = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.usuario} - {self.plan}"
