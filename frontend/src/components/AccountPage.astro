@@ -317,37 +317,38 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
   loadSuscripcion();
 
   async function loadSuscripcion() {
-  const res = await authFetch("/api/general/suscripcion/");
-  const section = document.getElementById("suscripcion-section");
-  const mensaje = document.getElementById("suscripcion-mensaje");
-  const resumen = document.getElementById("resumen-section");
-  const estadisticas = document.getElementById("estadisticas-section");
+    const res = await authFetch("/api/general/suscripcion/");
+    const section = document.getElementById("suscripcion-section");
+    const mensaje = document.getElementById("suscripcion-mensaje");
+    const resumen = document.getElementById("resumen-section");
+    const estadisticas = document.getElementById("estadisticas-section");
 
-  section.style.display = "block";
+    section.style.display = "block";
 
-  if (!res.ok) {
-    mensaje.textContent = "No estás suscrito.";  // Mensaje si no hay suscripción activa
-    resumen.innerHTML =
-      "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
-    estadisticas.innerHTML =
-      "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
-    return;
+    if (!res.ok) {
+      mensaje.textContent = "No estás suscrito."; // Mensaje si no hay suscripción activa
+      abrirModalBtn.style.display = "none";
+      resumen.innerHTML =
+        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
+      estadisticas.innerHTML =
+        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
+      return;
+    }
+
+    const data = await res.json();
+    if (!data || !data.activa) {
+      mensaje.textContent = "No estás suscrito."; // Cambia este mensaje si no hay suscripción activa
+      abrirModalBtn.style.display = "none";
+      resumen.innerHTML =
+        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
+      estadisticas.innerHTML =
+        "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
+      return;
+    }
+
+    // Si hay suscripción activa, mostramos los datos correctamente
+    mensaje.innerHTML = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Válida hasta: <span class="font-medium">${new Date(data.fecha_fin).toLocaleDateString()}</span>`;
   }
-
-  const data = await res.json();
-  if (!data || !data.activa) {
-    mensaje.textContent = "No estás suscrito.";  // Cambia este mensaje si no hay suscripción activa
-    resumen.innerHTML =
-      "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
-    estadisticas.innerHTML =
-      "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
-    return;
-  }
-
-  // Si hay suscripción activa, mostramos los datos correctamente
-  mensaje.innerHTML = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Válida hasta: <span class="font-medium">${new Date(data.fecha_fin).toLocaleDateString()}</span>`;
-}
-
 
   // Eliminar cuenta con confirmación
   const deleteLink = document.querySelector('a[href="/eliminar"]');
@@ -388,89 +389,102 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
   const cancelarBtn = document.getElementById("btn-cancelar");
   const renovarBtn = document.getElementById("btn-renovar");
 
-  abrirModalBtn?.addEventListener("click", () => {
-    gestionarModal.classList.remove("hidden");
-  });
   cerrarModalBtn?.addEventListener("click", () => {
     gestionarModal.classList.add("hidden");
   });
 
-// Cancelar suscripción
-// Mostrar modal de confirmación con la fecha real
-let fechaFinSuscripcion = null;
+  abrirModalBtn?.addEventListener("click", async () => {
+    // Obtenemos el estado actualizado de la suscripción
+    const res = await authFetch("/api/general/suscripcion/");
+    const data = await res.json();
 
-cancelarBtn?.addEventListener("click", async () => {
-  const res = await authFetch("/api/general/suscripcion/");
-  if (!res.ok) {
-    showToast("Error al obtener la fecha de tu suscripción", "error");
-    return;
-  }
+    // Mostrar u ocultar botón de cancelar según si ya está cancelada
+    if (data.cancelada) {
+      cancelarBtn.classList.add("hidden");
+    } else {
+      cancelarBtn.classList.remove("hidden");
+    }
 
-  const data = await res.json();
-  fechaFinSuscripcion = new Date(data.fecha_fin).toLocaleDateString();
+    renovarBtn.classList.remove("hidden"); // Siempre se puede renovar
+    gestionarModal.classList.remove("hidden");
+  });
 
-  const texto = document.getElementById("cancelacion-texto");
-  texto.innerHTML = `Tu suscripción seguirá activa hasta el día <strong>${fechaFinSuscripcion}</strong>. ¿Quieres cancelarla?`;
+  // Cancelar suscripción
+  // Mostrar modal de confirmación con la fecha real
+  let fechaFinSuscripcion = null;
 
+  cancelarBtn?.addEventListener("click", async () => {
+    const res = await authFetch("/api/general/suscripcion/");
+    if (!res.ok) {
+      showToast("Error al obtener la fecha de tu suscripción", "error");
+      return;
+    }
+
+    const data = await res.json();
+    fechaFinSuscripcion = new Date(data.fecha_fin).toLocaleDateString();
+
+    const texto = document.getElementById("cancelacion-texto");
+    texto.innerHTML = `Tu suscripción seguirá activa hasta el día <strong>${fechaFinSuscripcion}</strong>. ¿Quieres cancelarla?`;
+
+    document
+      .getElementById("modal-cancelar-confirmacion")
+      .classList.remove("hidden");
+  });
+
+  // Confirmar cancelación real
   document
-    .getElementById("modal-cancelar-confirmacion")
-    .classList.remove("hidden");
-});
+    .getElementById("confirmar-cancelacion")
+    ?.addEventListener("click", async () => {
+      const res = await authFetch("/api/general/suscripcion/", {
+        method: "PATCH",
+        body: JSON.stringify({ cancelar: true }),
+      });
 
-// Confirmar cancelación real
-document
-  .getElementById("confirmar-cancelacion")
-  ?.addEventListener("click", async () => {
-    const res = await authFetch("/api/general/suscripcion/", {
-      method: "PATCH",
-      body: JSON.stringify({ cancelar: true }),
+      if (res.ok) {
+        const data = await res.json();
+        const fechaFin = new Date(data.fecha_fin).toLocaleDateString();
+
+        showToast(
+          `Tu suscripción ha sido cancelada. Seguirá activa hasta el ${fechaFin}.`,
+          "info"
+        );
+
+        document
+          .getElementById("modal-cancelar-confirmacion")
+          .classList.add("hidden");
+        gestionarModal.classList.add("hidden");
+
+        setTimeout(() => window.location.reload(), 3000);
+      } else {
+        showToast("Error al cancelar suscripción", "error");
+      }
     });
 
-    if (res.ok) {
-      const data = await res.json();
-      const fechaFin = new Date(data.fecha_fin).toLocaleDateString();
-
-      showToast(
-        `Tu suscripción ha sido cancelada. Seguirá activa hasta el ${fechaFin}.`,
-        "info"
-      );
-
+  // Cerrar modal de confirmación
+  document
+    .getElementById("cancelar-cancelacion")
+    ?.addEventListener("click", () => {
       document
         .getElementById("modal-cancelar-confirmacion")
         .classList.add("hidden");
-      gestionarModal.classList.add("hidden");
+    });
 
-      setTimeout(() => window.location.reload(), 3000);
+  // Renovar / cambiar plan
+  renovarBtn?.addEventListener("click", async () => {
+    // Verificar si la suscripción está cancelada
+    const res = await authFetch("/api/general/suscripcion/");
+    const data = await res.json();
+
+    if (data.cancelada) {
+      // Ya ha sido cancelada, no mostrar el botón cancelar
+      cancelarBtn.classList.add("hidden");
     } else {
-      showToast("Error al cancelar suscripción", "error");
+      // Aún no ha sido cancelada, permitir cancelación
+      cancelarBtn.classList.remove("hidden");
     }
+
+    renovarBtn.classList.remove("hidden"); // Siempre se puede renovar
+
+    window.location.href = "/planes"; // Redirigir a la página de planes
   });
-
-// Cerrar modal de confirmación
-document
-  .getElementById("cancelar-cancelacion")
-  ?.addEventListener("click", () => {
-    document
-      .getElementById("modal-cancelar-confirmacion")
-      .classList.add("hidden");
-  });
-
-// Renovar / cambiar plan
-renovarBtn?.addEventListener("click", async () => {
-  // Verificar si la suscripción está cancelada
-  const res = await authFetch("/api/general/suscripcion/");
-  const data = await res.json();
-
-  if (!data.activa) {
-    // Si la suscripción está cancelada, mostrar solo renovar
-    cancelarBtn.classList.add("hidden");
-    renovarBtn.classList.remove("hidden");
-  } else {
-    // Si está activa, permitir la cancelación o renovación
-    cancelarBtn.classList.remove("hidden");
-    renovarBtn.classList.remove("hidden");
-  }
-
-  window.location.href = "/planes"; // Redirigir a la página de planes
-});
 </script>

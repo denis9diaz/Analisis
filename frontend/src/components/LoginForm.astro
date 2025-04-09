@@ -180,7 +180,7 @@
         localStorage.setItem("username", data.username);
         showToast("Inicio de sesión correcto", "success");
         setTimeout(() => {
-          window.location.href = "/analisis";
+          window.location.href = "/";
         }, 1000);
       } catch (err) {
         console.error("Error de conexión al backend:", err);
