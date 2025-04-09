@@ -11,7 +11,6 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
 
 <div class="min-h-screen bg-gray-200 text-black py-20 px-4">
   <div class="max-w-2xl mx-auto space-y-10">
-
     <!-- 🧑 Perfil -->
     <section
       class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm space-y-4"
@@ -50,6 +49,20 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
           disabled
         />
       </div>
+    </section>
+
+    <!-- 💳 Suscripción -->
+    <section
+      id="suscripcion-section"
+      class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm space-y-4"
+      style="display: none;"
+    >
+      <h2 class="text-lg font-medium text-gray-800">Suscripción</h2>
+      <p id="suscripcion-mensaje" class="text-sm text-gray-700">
+        Plan: <strong id="suscripcion-plan" class="text-green-700"></strong><br
+        />
+        Válida hasta: <span id="suscripcion-fecha" class="font-medium"></span>
+      </p>
     </section>
 
     <!-- 📊 Resumen -->
@@ -215,7 +228,9 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
     toast.className =
       "fixed bottom-6 right-6 text-white px-4 py-2 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50";
 
-    const classListToAdd = (colorClasses[type] || colorClasses.success).split(" ");
+    const classListToAdd = (colorClasses[type] || colorClasses.success).split(
+      " "
+    );
     toast.classList.add(...classListToAdd);
     toast.textContent = message;
 
@@ -229,6 +244,28 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
   }
 
   loadUser();
+  loadSuscripcion();
+
+  async function loadSuscripcion() {
+    const res = await authFetch("/api/general/suscripcion/");
+    const section = document.getElementById("suscripcion-section");
+    const mensaje = document.getElementById("suscripcion-mensaje");
+
+    section.style.display = "block";
+
+    if (!res.ok) {
+      mensaje.textContent = "No se pudo cargar tu suscripción.";
+      return;
+    }
+
+    const data = await res.json();
+    if (!data || !data.activa) {
+      mensaje.textContent = "No tienes ninguna suscripción activa.";
+      return;
+    }
+
+    mensaje.innerHTML = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Válida hasta: <span class="font-medium">${new Date(data.fecha_fin).toLocaleDateString()}</span>`;
+  }
 
   // Eliminar cuenta con confirmación
   const deleteLink = document.querySelector('a[href="/eliminar"]');
