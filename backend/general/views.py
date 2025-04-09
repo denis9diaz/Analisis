@@ -109,7 +109,6 @@ class SuscripcionView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        # Crear o renovar suscripción
         user = request.user
         plan = request.data.get("plan")
 
@@ -134,9 +133,11 @@ class SuscripcionView(APIView):
                 nueva_fecha_inicio = suscripcion.fecha_fin
             else:
                 nueva_fecha_inicio = hoy
+
             suscripcion.plan = plan
             suscripcion.fecha_inicio = nueva_fecha_inicio
             suscripcion.fecha_fin = nueva_fecha_inicio + relativedelta(months=meses_a_sumar)
+            suscripcion.cancelada = False  # ✅ Aquí anulamos la cancelación
             suscripcion.save()
         else:
             # Si no tiene una suscripción activa, creamos una nueva
@@ -151,6 +152,7 @@ class SuscripcionView(APIView):
             )
 
         return Response(SuscripcionSerializer(suscripcion).data)
+
 
     def patch(self, request):
         # Cancelar suscripción
