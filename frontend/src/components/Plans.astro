@@ -33,12 +33,13 @@
           ✔ <span class="text-white">Acceso a todos los servicios</span>
         </li>
       </ul>
-      <a
-        href="/checkout?plan=mensual"
-        class="inline-block mt-4 px-6 py-2 text-sm font-semibold rounded-full bg-gradient-to-br from-green-200 via-green-300 to-green-500 text-gray-900 shadow-[0_4px_10px_rgba(0,0,0,0.4)] border border-green-600 transition-all duration-200 ease-in-out relative hover:shadow-[0_6px_20px_rgba(0,0,0,0.5)] hover:from-green-400 hover:to-green-700 active:translate-y-1"
-      >
-        Contratar
-      </a>
+      <button
+      data-plan="mensual"
+      class="boton-contratar inline-block mt-4 px-6 py-2 text-sm font-semibold rounded-full bg-gradient-to-br from-green-200 via-green-300 to-green-500 text-gray-900 shadow-[0_4px_10px_rgba(0,0,0,0.4)] border border-green-600 transition-all duration-200 ease-in-out relative hover:shadow-[0_6px_20px_rgba(0,0,0,0.5)] hover:from-green-400 hover:to-green-700 active:translate-y-1"
+    >
+      Contratar
+    </button>
+    
     </div>
   </div>
 
@@ -79,11 +80,13 @@
           ✔ <span class="text-white">Acceso a todos los servicios</span>
         </li>
       </ul>
-      <a href="/checkout?plan=trimestral"
-        class="inline-block mt-4 px-6 py-2 text-sm font-semibold rounded-full bg-gradient-to-br from-green-200 via-green-300 to-green-500 text-gray-900 shadow-[0_4px_10px_rgba(0,0,0,0.4)] border border-green-600 transition-all duration-200 ease-in-out relative hover:shadow-[0_6px_20px_rgba(0,0,0,0.5)] hover:from-green-400 hover:to-green-700 active:translate-y-1"
-      >
-        Contratar
-      </a>
+      <button
+      data-plan="trimestral"
+      class="boton-contratar inline-block mt-4 px-6 py-2 text-sm font-semibold rounded-full bg-gradient-to-br from-green-200 via-green-300 to-green-500 text-gray-900 shadow-[0_4px_10px_rgba(0,0,0,0.4)] border border-green-600 transition-all duration-200 ease-in-out relative hover:shadow-[0_6px_20px_rgba(0,0,0,0.5)] hover:from-green-400 hover:to-green-700 active:translate-y-1"
+    >
+      Contratar
+    </button>
+    
     </div>
   </div>
 
@@ -124,15 +127,31 @@
           ✔ <span class="text-white">Acceso a todos los servicios</span>
         </li>
       </ul>
-      <a
-        href="/checkout?plan=anual"
-        class="inline-block mt-4 px-6 py-2 text-sm font-semibold rounded-full bg-gradient-to-br from-green-200 via-green-300 to-green-500 text-gray-900 shadow-[0_4px_10px_rgba(0,0,0,0.4)] border border-green-600 transition-all duration-200 ease-in-out relative hover:shadow-[0_6px_20px_rgba(0,0,0,0.5)] hover:from-green-400 hover:to-green-700 active:translate-y-1"
-      >
-        Contratar
-      </a>
+      <button
+      data-plan="anual"
+      class="boton-contratar inline-block mt-4 px-6 py-2 text-sm font-semibold rounded-full bg-gradient-to-br from-green-200 via-green-300 to-green-500 text-gray-900 shadow-[0_4px_10px_rgba(0,0,0,0.4)] border border-green-600 transition-all duration-200 ease-in-out relative hover:shadow-[0_6px_20px_rgba(0,0,0,0.5)] hover:from-green-400 hover:to-green-700 active:translate-y-1"
+    >
+      Contratar
+    </button>
+    
     </div>
   </div>
 </div>
+
+<script is:inline>
+  document.querySelectorAll(".boton-contratar").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const plan = btn.getAttribute("data-plan");
+      const token = localStorage.getItem("access_token");
+
+      if (token) {
+        window.location.href = `/checkout?plan=${plan}`;
+      } else {
+        window.location.href = `/registro`;
+      }
+    });
+  });
+</script>
 
 <style>
   @keyframes wave {
