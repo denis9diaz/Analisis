@@ -16,7 +16,6 @@ class MetodoAnalisisSerializer(serializers.ModelSerializer):
         validated_data['usuario'] = self.context['request'].user
         return super().create(validated_data)
 
-# serializers.py
 class PartidoReadSerializer(serializers.ModelSerializer):
     liga = LigaSerializer(read_only=True)
 

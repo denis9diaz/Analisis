@@ -94,10 +94,22 @@ class PartidoListAPIView(APIView):
         return Response(serializer.errors, status=400)
 
 
-class SuscripcionCreateView(APIView):
+class SuscripcionView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        # Obtener la suscripción activa del usuario
+        suscripcion = Suscripcion.objects.filter(usuario=request.user, activa=True).first()
+        
+        if not suscripcion:
+            return Response({"error": "No tienes una suscripción activa."}, status=400)
+
+        # Devolver detalles de la suscripción
+        serializer = SuscripcionSerializer(suscripcion)
+        return Response(serializer.data)
+
     def post(self, request):
+        # Crear o renovar suscripción
         user = request.user
         plan = request.data.get("plan")
 
@@ -113,23 +125,21 @@ class SuscripcionCreateView(APIView):
         meses_a_sumar = PLANES_VALIDOS[plan]
         hoy = timezone.now().date()
 
-        try:
-            suscripcion = Suscripcion.objects.get(usuario=user)
+        # Verificar si ya existe una suscripción activa
+        suscripcion = Suscripcion.objects.filter(usuario=user, activa=True).first()
 
-            if suscripcion.activa and suscripcion.fecha_fin > hoy:
-                # Extiende desde la fecha de finalización actual
+        if suscripcion:
+            # Si ya tiene una suscripción activa, renovamos
+            if suscripcion.fecha_fin > hoy:
                 nueva_fecha_inicio = suscripcion.fecha_fin
             else:
-                # Reinicia desde hoy
                 nueva_fecha_inicio = hoy
-
             suscripcion.plan = plan
             suscripcion.fecha_inicio = nueva_fecha_inicio
             suscripcion.fecha_fin = nueva_fecha_inicio + relativedelta(months=meses_a_sumar)
-            suscripcion.activa = True
             suscripcion.save()
-
-        except Suscripcion.DoesNotExist:
+        else:
+            # Si no tiene una suscripción activa, creamos una nueva
             nueva_fecha_inicio = hoy
             nueva_fecha_fin = nueva_fecha_inicio + relativedelta(months=meses_a_sumar)
             suscripcion = Suscripcion.objects.create(
@@ -140,20 +150,25 @@ class SuscripcionCreateView(APIView):
                 activa=True
             )
 
+        return Response(SuscripcionSerializer(suscripcion).data)
+
+    def patch(self, request):
+        # Cancelar suscripción
+        user = request.user
+        suscripcion = Suscripcion.objects.filter(usuario=user, activa=True).first()
+
+        if not suscripcion:
+            return Response({"error": "No tienes una suscripción activa."}, status=400)
+
+        # Aquí no desactivamos la suscripción, solo mantenemos la fecha de finalización
+        # Elimina la suscripción al llegar la fecha de finalización.
+        fecha_final = suscripcion.fecha_fin
+
+        # Devolver la fecha de cancelación
         return Response({
-            "plan": suscripcion.plan,
-            "fecha_inicio": suscripcion.fecha_inicio,
-            "fecha_fin": suscripcion.fecha_fin,
-            "activa": suscripcion.activa
+            "cancelada": True,
+            "mensaje": f"Tu suscripción se mantendrá activa hasta el {fecha_final.strftime('%d/%m/%Y')}."
         })
-
-
-class SuscripcionUsuarioAPIView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = SuscripcionSerializer
-
-    def get_object(self):
-        return Suscripcion.objects.filter(usuario=self.request.user, activa=True).order_by('-fecha_fin').first()
 
 
 # Estadísticas del usuario

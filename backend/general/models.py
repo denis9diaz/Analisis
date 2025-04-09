@@ -82,7 +82,7 @@ class Suscripcion(models.Model):
         if not self.fecha_fin:
             if self.plan == 'mensual':
                 self.fecha_fin = self.fecha_inicio + timedelta(days=30)
-            elif self.plan == '3meses':
+            elif self.plan == 'trimestral':
                 self.fecha_fin = self.fecha_inicio + timedelta(days=90)
             elif self.plan == 'anual':
                 self.fecha_fin = self.fecha_inicio + timedelta(days=365)
