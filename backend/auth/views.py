@@ -200,7 +200,7 @@ def send_temp_password(request):
     try:
         user = User.objects.get(email=email)
     except User.DoesNotExist:
-        return Response({"message": "Si el correo está registrado, se enviará un mensaje."}, status=200)
+        return Response({"error": "Correo electrónico no registrado."}, status=404)
 
     temp_password = get_random_string(length=10)
     try:
