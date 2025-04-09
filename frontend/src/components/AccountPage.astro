@@ -67,8 +67,9 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
 
     <!-- 📊 Resumen -->
     <section
-      class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm space-y-4"
-    >
+    id="resumen-section"
+    class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm space-y-4"
+  >
       <h2 class="text-lg font-medium text-gray-800">Resumen</h2>
 
       <div class="grid grid-cols-2 gap-4">
@@ -84,7 +85,7 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
     </section>
 
     <!-- 📈 Gráficos dinámicos -->
-    <section class="space-y-6">
+    <section id="estadisticas-section" class="space-y-6">
       <EstadisticasUsuario client:load />
     </section>
 
@@ -247,25 +248,32 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
   loadSuscripcion();
 
   async function loadSuscripcion() {
-    const res = await authFetch("/api/general/suscripcion/");
-    const section = document.getElementById("suscripcion-section");
-    const mensaje = document.getElementById("suscripcion-mensaje");
+  const res = await authFetch("/api/general/suscripcion/");
+  const section = document.getElementById("suscripcion-section");
+  const mensaje = document.getElementById("suscripcion-mensaje");
+  const resumen = document.getElementById("resumen-section");
+  const estadisticas = document.getElementById("estadisticas-section");
 
-    section.style.display = "block";
+  section.style.display = "block";
 
-    if (!res.ok) {
-      mensaje.textContent = "No se pudo cargar tu suscripción.";
-      return;
-    }
-
-    const data = await res.json();
-    if (!data || !data.activa) {
-      mensaje.textContent = "No tienes ninguna suscripción activa.";
-      return;
-    }
-
-    mensaje.innerHTML = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Válida hasta: <span class="font-medium">${new Date(data.fecha_fin).toLocaleDateString()}</span>`;
+  if (!res.ok) {
+    mensaje.textContent = "No se pudo cargar tu suscripción.";
+    resumen.innerHTML = "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
+    estadisticas.innerHTML = "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
+    return;
   }
+
+  const data = await res.json();
+  if (!data || !data.activa) {
+    mensaje.textContent = "No tienes ninguna suscripción activa.";
+    resumen.innerHTML = "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
+    estadisticas.innerHTML = "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
+    return;
+  }
+
+  // Si hay suscripción activa, mostramos los datos correctamente
+  mensaje.innerHTML = `Plan: <strong class="text-green-700">${data.plan}</strong><br/>Válida hasta: <span class="font-medium">${new Date(data.fecha_fin).toLocaleDateString()}</span>`;
+}
 
   // Eliminar cuenta con confirmación
   const deleteLink = document.querySelector('a[href="/eliminar"]');
