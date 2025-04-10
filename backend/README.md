@@ -1,4 +1,4 @@
-# 🎯 BetTracker - Backend
+# BetTracker - Backend
 
 Este es el backend del proyecto **BetTracker**, una plataforma profesional para registrar y analizar tus apuestas deportivas. Está desarrollado en **Django** y expone una API REST autenticada con **JWT**.
 
@@ -74,3 +74,7 @@ python manage.py runserver
 - `templates/email/`: plantillas HTML para correos
 
 ---
+
+## 🔐 Acceso a administración y documentación
+
+- Accede al panel de administración en: http://localhost:8000/admin/
