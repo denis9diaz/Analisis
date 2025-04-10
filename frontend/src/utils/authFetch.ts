@@ -1,3 +1,5 @@
+const API_URL = import.meta.env.PUBLIC_API_URL;
+
 export async function fetchWithAuth(
     input: RequestInfo,
     init: RequestInit = {},
@@ -25,11 +27,17 @@ export async function fetchWithAuth(
         return Promise.reject("No access token disponible");
     }
 
-    let res = await fetch(input, applyAuth(access));
+    // Resolver URL final si es relativa
+    let finalUrl = input;
+    if (typeof input === "string" && input.startsWith("/")) {
+        finalUrl = `${API_URL}${input}`;
+    }
+
+    let res = await fetch(finalUrl, applyAuth(access));
 
     // Si el access token ha expirado
     if (res.status === 401 && refresh) {
-        const refreshRes = await fetch("/api/auth/token/refresh/", {
+        const refreshRes = await fetch(`${API_URL}/api/auth/token/refresh/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ refresh }),
@@ -41,7 +49,7 @@ export async function fetchWithAuth(
             access = data.access;
 
             // Reintentar la petición original
-            res = await fetch(input, applyAuth(access!));
+            res = await fetch(finalUrl, applyAuth(access!));
         } else {
             if (redirectOnFail) {
                 localStorage.removeItem("access_token");
@@ -62,7 +70,7 @@ export async function silentTokenRefresh() {
     if (!refresh) return;
 
     try {
-        const res = await fetch("/api/auth/token/refresh/", {
+        const res = await fetch(`${API_URL}/api/auth/token/refresh/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ refresh }),

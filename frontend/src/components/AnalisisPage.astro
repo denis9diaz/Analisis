@@ -2,28 +2,34 @@
 import AnalisisWrapper from "./AnalisisWrapper.tsx";
 ---
 
-<script is:inline>
-  const token = localStorage.getItem("access_token");
+<div data-api-url={import.meta.env.PUBLIC_API_URL}>
+  <script is:inline>
+    const token = localStorage.getItem("access_token");
 
-  if (!token) {
-    window.location.href = "/inicio-sesion";
-  } else {
-    fetch("http://localhost:8000/api/general/suscripcion/", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.ok ? res.json() : null)
-      .then((data) => {
-        if (!data || !data.activa) {
-          window.location.href = "/planes"; // o muestra un modal si prefieres
-        }
+    if (!token) {
+      window.location.href = "/inicio-sesion";
+    } else {
+      const API_URL = document
+        .querySelector("[data-api-url]")
+        .getAttribute("data-api-url");
+
+      fetch(`${API_URL}/api/general/suscripcion/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       })
-      .catch(() => {
-        window.location.href = "/planes";
-      });
-  }
-</script>
+        .then((res) => res.ok ? res.json() : null)
+        .then((data) => {
+          if (!data || !data.activa) {
+            window.location.href = "/planes";
+          }
+        })
+        .catch(() => {
+          window.location.href = "/planes";
+        });
+    }
+  </script>
 
-<AnalisisWrapper client:load />
+  <AnalisisWrapper client:load />
+</div>

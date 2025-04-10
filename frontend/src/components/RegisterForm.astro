@@ -1,5 +1,6 @@
 <div
   class="flex items-start justify-center min-h-screen bg-gray-200 pt-20 px-4"
+  data-api-url={import.meta.env.PUBLIC_API_URL}
 >
   <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Registro</h2>
@@ -124,7 +125,9 @@
 
 <script type="module">
   document.addEventListener("DOMContentLoaded", () => {
-    const API_URL = "http://127.0.0.1:8000";
+    const API_URL = document
+      .querySelector("[data-api-url]")
+      .getAttribute("data-api-url");
 
     const form = document.getElementById("register-form");
     const usernameInput = document.getElementById("name");
@@ -166,7 +169,8 @@
       }
 
       try {
-        const res = await fetch("http://localhost:8000/api/auth/register/", {
+        const res = await fetch(`${API_URL}/api/auth/register/`, {
+          // Usar la variable API_URL
           method: "POST",
           headers: {
             "Content-Type": "application/json",

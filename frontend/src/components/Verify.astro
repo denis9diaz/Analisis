@@ -1,5 +1,6 @@
 <div
   class="min-h-screen bg-gray-50 text-gray-800 px-4 py-16 flex items-center justify-center"
+  data-api-url={import.meta.env.PUBLIC_API_URL}
 >
   <section class="max-w-xl mx-auto space-y-6 text-center">
     <h1 class="text-3xl font-bold">Verificación de cuenta</h1>
@@ -31,8 +32,12 @@
       }
 
       try {
+        const API_URL = document
+          .querySelector("[data-api-url]")
+          .getAttribute("data-api-url");
+
         const res = await fetch(
-          `http://localhost:8000/api/auth/verify-email/?uid=${uid}&token=${token}`
+          `${API_URL}/api/auth/verify-email/?uid=${uid}&token=${token}` // Usar la variable API_URL
         );
         const data = await res.json();
 

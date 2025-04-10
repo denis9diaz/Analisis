@@ -1,5 +1,6 @@
 <header
   class="bg-[#0b0f24]/70 text-white backdrop-blur-md p-4 shadow-lg sticky top-0 z-50 transition-colors duration-300"
+  data-api-url={import.meta.env.PUBLIC_API_URL}
 >
   <div
     class="w-full max-w-screen-xl mx-auto px-4 flex items-center justify-between relative"
@@ -72,7 +73,11 @@
       return;
     }
 
-    const res = await fetch("http://localhost:8000/api/auth/validate/", {
+    const API_URL = document
+      .querySelector("header[data-api-url]")
+      .getAttribute("data-api-url");
+
+    const res = await fetch(`${API_URL}/api/auth/validate/`, {
       headers: {
         Authorization: `Bearer ${access}`,
       },

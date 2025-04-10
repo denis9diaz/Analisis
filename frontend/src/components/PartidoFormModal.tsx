@@ -48,7 +48,9 @@ export default function PartidoFormModal({
   >("");
 
   useEffect(() => {
-    fetchWithAuth("http://localhost:8000/api/general/ligas/")
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+
+    fetchWithAuth(`${API_URL}/api/general/ligas/`)
       .then((res) => res.json())
       .then((data: Liga[]) => {
         const options: Option[] = data.map((liga) => ({
@@ -74,7 +76,9 @@ export default function PartidoFormModal({
 
     if (!metodoSeleccionado || !ligaSeleccionada || estado === "") return;
 
-    fetchWithAuth("http://localhost:8000/api/general/partidos/", {
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+
+    fetchWithAuth(`${API_URL}/api/general/partidos/`, {
       method: "POST",
       body: JSON.stringify({
         metodo: metodoSeleccionado.id,
