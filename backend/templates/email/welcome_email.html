@@ -4,40 +4,85 @@
     <meta charset="UTF-8" />
     <title>Bienvenido a BetTracker</title>
   </head>
-  <body style="background-color: #f3f4f6; font-family: 'Segoe UI', sans-serif; padding: 0; margin: 0;">
-
-    <div style="max-width: 500px; margin: auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb;">
-      
+  <body
+    style="
+      background-color: #f3f4f6;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 0;
+      margin: 0;
+    "
+  >
+    <div
+      style="
+        max-width: 500px;
+        margin: auto;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e5e7eb;
+      "
+    >
       <!-- Logo centrado -->
-      <div style="text-align: center; padding: 30px; background-color: #f9f9f9;">
-        <a href="/" style="display: inline-block;">
-          <img src="https://res.cloudinary.com/dxzhssh9m/image/upload/v1744061761/BetTracker_logo_hif7o4.png" alt="Logo BetTracker" style="height: 80px; display: block; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);"/>
+      <div style="text-align: center; padding: 30px; background-color: #f9f9f9">
+        <a href="/" style="display: inline-block">
+          <img
+            src="https://res.cloudinary.com/dxzhssh9m/image/upload/v1744061761/BetTracker_logo_hif7o4.png"
+            alt="Logo BetTracker"
+            style="
+              height: 80px;
+              display: block;
+              border-radius: 12px;
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            "
+          />
         </a>
       </div>
 
       <!-- Contenido -->
-      <div style="padding: 30px;">
-        <h2 style="color: #0b0f24; font-size: 22px; margin-bottom: 15px;">
+      <div style="padding: 30px">
+        <h2 style="color: #0b0f24; font-size: 22px; margin-bottom: 15px">
           ¡Bienvenido, {{ username }}!
         </h2>
 
-        <p style="color: #333; font-size: 15px; line-height: 1.6;">
-          Gracias por registrarte en <strong>BetTracker</strong>. Estamos encantados de tenerte con nosotros.
+        <p style="color: #333; font-size: 15px; line-height: 1.6">
+          Gracias por registrarte en <strong>BetTracker</strong>. Estamos
+          encantados de tenerte con nosotros.
         </p>
 
-        <p style="color: #555; font-size: 14px; line-height: 1.6;">
-          Ya puedes comenzar a crear tus métodos de análisis, registrar partidos y llevar el control de tus apuestas como un profesional.
+        <p style="color: #555; font-size: 14px; line-height: 1.6">
+          Ya puedes comenzar a crear tus métodos de análisis, registrar partidos
+          y llevar el control de tus apuestas como un profesional.
         </p>
 
-        <div style="text-align: center; margin-top: 30px;">
-          <a href="http://localhost:4321/planes" style="background-color: #0D86EA; color: #ffffff !important; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-size: 14px; font-weight: 600; display: inline-block;">Elige un plan</a>
+        <div style="text-align: center; margin-top: 30px">
+          <a
+            href="{{ frontend_url }}/planes"
+            style="
+              background-color: #0d86ea;
+              color: #ffffff !important;
+              text-decoration: none;
+              padding: 12px 24px;
+              border-radius: 6px;
+              font-size: 14px;
+              font-weight: 600;
+              display: inline-block;
+            "
+            >Elige un plan</a
+          >
         </div>
 
-        <p style="color: #999; font-size: 12px; margin-top: 40px; text-align: center;">
+        <p
+          style="
+            color: #999;
+            font-size: 12px;
+            margin-top: 40px;
+            text-align: center;
+          "
+        >
           © 2025 BetTracker. Todos los derechos reservados.
         </p>
       </div>
     </div>
-
   </body>
 </html>

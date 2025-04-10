@@ -2,28 +2,25 @@ from pathlib import Path
 from datetime import timedelta
 from corsheaders.defaults import default_headers, default_methods
 import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(dotenv_path=BASE_DIR / '.env')
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:4321')
+
 # MAILING
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'info.bettracker@gmail.com'
-EMAIL_HOST_PASSWORD = 'zycu mghz nqzf erkv'
-DEFAULT_FROM_EMAIL = 'BetTracker <info.bettracker@gmail.com>'
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d16num@_kq6%ly=)h9c!02cx(br2nm(1a@%-b668!&(t8ojor-'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
