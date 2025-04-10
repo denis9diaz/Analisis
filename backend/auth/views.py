@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
-from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.response import Response
@@ -353,3 +353,19 @@ def resend_verification_email(request):
         return Response({'error': 'No se pudo enviar el correo. Intenta más tarde.'}, status=500)
 
     return Response({'message': 'Correo de verificación reenviado.'}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def token_refresh(request):
+    try:
+        refresh_token = request.data.get('refresh')
+        if not refresh_token:
+            return Response({"error": "Refresh token requerido"}, status=400)
+
+        token = RefreshToken(refresh_token)
+        new_access = str(token.access_token)
+
+        return Response({"access": new_access}, status=200)
+    except TokenError as e:
+        return Response({"error": "Token inválido o expirado"}, status=401)
