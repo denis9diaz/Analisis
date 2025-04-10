@@ -3,6 +3,8 @@ import { useMetodo } from "../context/MetodoContext";
 import PartidoFormModal from "./PartidoFormModal";
 import { fetchWithAuth } from "../utils/authFetch";
 import Select from "react-select";
+import { Trash2 } from "lucide-react";
+import Modal from "react-modal";
 
 type Partido = {
   id: number;
@@ -46,7 +48,9 @@ export default function PartidosList() {
   const { metodoSeleccionado } = useMetodo();
   const [partidos, setPartidos] = useState<Partido[]>([]);
   const [showModal, setShowModal] = useState(false);
-
+  const [partidoAEliminar, setPartidoAEliminar] = useState<Partido | null>(
+    null
+  );
   const [notasTemp, setNotasTemp] = useState<{ [id: number]: string }>({});
 
   const handleNotasChange = (id: number, nuevaNota: string) => {
@@ -77,6 +81,29 @@ export default function PartidosList() {
       delete nuevo[id];
       return nuevo;
     });
+  };
+
+  const eliminarPartido = async () => {
+    if (!partidoAEliminar) return;
+
+    await fetchWithAuth("http://localhost:8000/api/general/partidos/", {
+      method: "DELETE",
+      body: JSON.stringify({ id: partidoAEliminar.id }),
+    });
+
+    setPartidoAEliminar(null);
+
+    // Refrescar la lista de partidos
+    const res = await fetchWithAuth(
+      "http://localhost:8000/api/general/partidos/"
+    );
+    const data: Partido[] = await res.json();
+    const filtrados = data
+      .filter((p) => p.metodo === metodoSeleccionado?.id)
+      .sort(
+        (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+      );
+    setPartidos(filtrados);
   };
 
   const [filtroLiga, setFiltroLiga] = useState("TODAS");
@@ -405,6 +432,7 @@ export default function PartidosList() {
               <th className="px-3 py-2 text-center w-[60px]">R.V.</th>
               <th className="px-3 py-2 text-center w-[50px]">Estado</th>
               <th className="px-3 py-2 text-left w-[280px]">Notas</th>
+              <th className="px-2 py-2 w-[30px]"></th>
             </tr>
           </thead>
           <tbody>
@@ -505,6 +533,14 @@ export default function PartidosList() {
                     className="w-full h-[25px] resize-none border rounded-md p-1 text-sm whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll"
                   />
                 </td>
+                <td className="px-2 py-2 w-[30px] text-center">
+                  <button
+                    onClick={() => setPartidoAEliminar(p)}
+                    className="text-gray-400 hover:text-rose-600 transition"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -544,6 +580,33 @@ export default function PartidosList() {
             });
         }}
       />
+      <Modal
+        isOpen={!!partidoAEliminar}
+        onRequestClose={() => setPartidoAEliminar(null)}
+        className="bg-white p-6 rounded-xl shadow-xl max-w-md mx-auto mt-40"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-start z-50"
+      >
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          ¿Estás seguro que deseas eliminar este partido?
+        </h2>
+        <p className="text-sm text-gray-600 mb-6">
+          Esta acción no se puede deshacer.
+        </p>
+        <div className="flex justify-end pt-2">
+          <button
+            onClick={() => setPartidoAEliminar(null)}
+            className="border border-rose-600 text-rose-600 px-5 py-2 rounded-xl hover:bg-rose-50 transition duration-300 text-sm font-semibold mr-2 cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={eliminarPartido}
+            className="border border-blue-600 text-blue-600 px-5 py-2 rounded-xl hover:bg-blue-50 transition duration-300 text-sm font-semibold cursor-pointer"
+          >
+            Eliminar
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -4,8 +4,25 @@ import AnalisisWrapper from "./AnalisisWrapper.tsx";
 
 <script is:inline>
   const token = localStorage.getItem("access_token");
+
   if (!token) {
     window.location.href = "/inicio-sesion";
+  } else {
+    fetch("http://localhost:8000/api/general/suscripcion/", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (!data || !data.activa) {
+          window.location.href = "/planes"; // o muestra un modal si prefieres
+        }
+      })
+      .catch(() => {
+        window.location.href = "/planes";
+      });
   }
 </script>
 

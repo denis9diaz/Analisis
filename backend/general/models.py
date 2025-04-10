@@ -1,5 +1,9 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
+
 
 class MetodoAnalisis(models.Model):
     nombre = models.CharField(max_length=255)
@@ -58,3 +62,45 @@ class Partido(models.Model):
     )
     def __str__(self):
         return f"{self.nombre_partido} ({self.fecha})"
+        
+
+class Suscripcion(models.Model):
+    PLANES = (
+        ('mensual', 'Mensual'),
+        ('trimestral', 'Trimestral'),
+        ('anual', 'Anual'),
+    )
+
+    usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='suscripcion')
+    plan = models.CharField(max_length=20, choices=PLANES)
+    fecha_inicio = models.DateField(default=timezone.now)
+    fecha_fin = models.DateField()
+    activa = models.BooleanField(default=True)
+    cancelada = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.usuario} - {self.plan}"
+
+    def save(self, *args, **kwargs):
+        hoy = timezone.now().date()
+
+        # Renovación automática: si está activa, no cancelada y ya ha pasado la fecha de fin
+        if self.activa and not self.cancelada and self.fecha_fin < hoy:
+            while self.fecha_fin < hoy:
+                if self.plan == 'mensual':
+                    self.fecha_fin += relativedelta(months=1)
+                elif self.plan == 'trimestral':
+                    self.fecha_fin += relativedelta(months=3)
+                elif self.plan == 'anual':
+                    self.fecha_fin += relativedelta(months=12)
+
+        # Asignar fecha_fin si no existe aún
+        if not self.fecha_fin:
+            if self.plan == 'mensual':
+                self.fecha_fin = self.fecha_inicio + relativedelta(months=1)
+            elif self.plan == 'trimestral':
+                self.fecha_fin = self.fecha_inicio + relativedelta(months=3)
+            elif self.plan == 'anual':
+                self.fecha_fin = self.fecha_inicio + relativedelta(months=12)
+
+        super().save(*args, **kwargs)
