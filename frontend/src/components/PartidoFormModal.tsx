@@ -251,14 +251,14 @@ export default function PartidoFormModal({
         <div className="flex justify-end pt-2 pb-2">
           <button
             type="button"
-            className="bg-red-600 text-white px-3 py-1 rounded mr-2 hover:bg-red-800"
+            className="border border-rose-600 text-rose-600 px-5 py-2 rounded-xl hover:bg-rose-50 transition duration-300 text-sm font-semibold mr-2 cursor-pointer"
             onClick={onRequestClose}
           >
             Cancelar
           </button>
           <button
             type="submit"
-            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-800"
+            className="border border-blue-600 text-blue-600 px-5 py-2 rounded-xl hover:bg-blue-50 transition duration-300 text-sm font-semibold cursor-pointer"
           >
             Guardar
           </button>

@@ -10,7 +10,11 @@ type Props = {
   onMetodoGuardado: () => void;
 };
 
-export default function MetodoFormModal({ isOpen, onRequestClose, onMetodoGuardado }: Props) {
+export default function MetodoFormModal({
+  isOpen,
+  onRequestClose,
+  onMetodoGuardado,
+}: Props) {
   const [nombre, setNombre] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -20,11 +24,14 @@ export default function MetodoFormModal({ isOpen, onRequestClose, onMetodoGuarda
 
     setLoading(true);
     try {
-        const res = await fetchWithAuth("http://localhost:8000/api/general/metodos/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" }, // 👈 AÑADE ESTO
-            body: JSON.stringify({ nombre }),
-          });          
+      const res = await fetchWithAuth(
+        "http://localhost:8000/api/general/metodos/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }, // 👈 AÑADE ESTO
+          body: JSON.stringify({ nombre }),
+        }
+      );
 
       if (res.ok) {
         await res.json();
@@ -49,7 +56,9 @@ export default function MetodoFormModal({ isOpen, onRequestClose, onMetodoGuarda
       className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full mx-auto mt-24 outline-none text-gray-700"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50"
     >
-      <h2 className="text-xl font-semibold mb-6 text-gray-800">Añadir método</h2>
+      <h2 className="text-xl font-semibold mb-6 text-gray-800">
+        Añadir método
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -62,14 +71,18 @@ export default function MetodoFormModal({ isOpen, onRequestClose, onMetodoGuarda
           <button
             type="button"
             onClick={onRequestClose}
-            className="bg-red-600 text-white px-3 py-1 rounded mr-2 hover:bg-red-800"
+            className="border border-rose-600 text-rose-600 px-5 py-2 rounded-xl hover:bg-rose-50 transition duration-300 text-sm font-semibold mr-2 cursor-pointer"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-800"
+            className={`${
+              loading
+                ? "border border-blue-200 text-blue-300 cursor-not-allowed"
+                : "border border-blue-600 text-blue-600 hover:bg-blue-50 cursor-pointer"
+            } px-5 py-2 rounded-xl transition duration-300 text-sm font-semibold`}
           >
             {loading ? "Guardando..." : "Guardar"}
           </button>
