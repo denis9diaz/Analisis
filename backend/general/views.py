@@ -7,6 +7,9 @@ from dateutil.relativedelta import relativedelta
 from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from .models import Liga, MetodoAnalisis, Partido, Suscripcion
 from .serializers import (
     LigaSerializer,
@@ -129,7 +132,7 @@ class SuscripcionView(APIView):
         if not suscripcion:
             return Response({"error": "No tienes una suscripción activa."}, status=400)
 
-        suscripcion.save()  # ✅ Esto ejecuta la lógica del save() que ya incluye la renovación automática
+        suscripcion.save()
 
         serializer = SuscripcionSerializer(suscripcion)
         return Response(serializer.data)
@@ -155,7 +158,7 @@ class SuscripcionView(APIView):
         suscripcion = Suscripcion.objects.filter(usuario=user, activa=True).first()
 
         if suscripcion:
-            # Si ya tiene una suscripción activa, renovamos
+            # Ya tiene una suscripción activa
             if suscripcion.fecha_fin > hoy:
                 nueva_fecha_inicio = suscripcion.fecha_fin
             else:
@@ -164,8 +167,12 @@ class SuscripcionView(APIView):
             suscripcion.plan = plan
             suscripcion.fecha_inicio = nueva_fecha_inicio
             suscripcion.fecha_fin = nueva_fecha_inicio + relativedelta(months=meses_a_sumar)
-            suscripcion.cancelada = False  # ✅ Aquí anulamos la cancelación
+            suscripcion.cancelada = False
             suscripcion.save()
+
+            # ✅ Si estaba cancelada pero se renovó, enviar correo de activación
+            enviar_email_suscripcion(user, plan)
+
         else:
             # Si no tiene una suscripción activa, creamos una nueva
             nueva_fecha_inicio = hoy
@@ -177,6 +184,7 @@ class SuscripcionView(APIView):
                 fecha_fin=nueva_fecha_fin,
                 activa=True
             )
+            enviar_email_suscripcion(user, plan)
 
         return Response(SuscripcionSerializer(suscripcion).data)
 
@@ -192,6 +200,7 @@ class SuscripcionView(APIView):
         # Marcar como cancelada (pero sigue activa hasta la fecha_fin)
         suscripcion.cancelada = True
         suscripcion.save()
+        enviar_email_suscripcion(user, suscripcion.plan, cancelada=True)
 
         fecha_final = suscripcion.fecha_fin
 
@@ -264,3 +273,34 @@ def user_stats(request):
         },
         "cruce_resultado_estado": combinaciones
     })
+
+
+def enviar_email_suscripcion(usuario, plan, cancelada=False):
+    # Buscar la suscripción actual del usuario
+    suscripcion = Suscripcion.objects.filter(usuario=usuario, activa=True).first()
+
+    fecha_fin = suscripcion.fecha_fin.strftime('%d/%m/%Y') if suscripcion else ""
+
+    if cancelada:
+        asunto = "📭 Has cancelado tu suscripción a BetTracker"
+        plantilla = "email/suscription_canceled.html"
+    else:
+        asunto = "🎉 ¡Suscripción activada en BetTracker!"
+        plantilla = "email/suscription_active.html"
+
+    destinatario = usuario.email
+
+    html_content = render_to_string(plantilla, {
+        "username": usuario.username,
+        "plan": plan.capitalize(),
+        "fecha_fin": fecha_fin,
+    })
+
+    email = EmailMultiAlternatives(
+        asunto,
+        "Notificación de BetTracker",
+        None,
+        [destinatario],
+    )
+    email.attach_alternative(html_content, "text/html")
+    email.send()

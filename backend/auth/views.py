@@ -53,7 +53,7 @@ def register(request):
             token = default_token_generator.make_token(user)
             activation_url = f"http://localhost:4321/verificar?uid={uid}&token={token}"
 
-            subject = 'Verifica tu cuenta - BetTracker'
+            subject = '✉️ Verifica tu cuenta - BetTracker'
             to = [user.email]
             context = {
                 'username': user.username,
@@ -211,7 +211,7 @@ def send_temp_password(request):
     user.set_password(temp_password)
     user.save()
 
-    subject = 'Tu contraseña temporal - BetTracker'
+    subject = '🔑 Tu contraseña temporal - BetTracker'
     to = [email]
     context = {
         'username': user.username,
@@ -291,7 +291,7 @@ def verify_email(request):
 
     # 📨 Envío de correo de bienvenida después de activar la cuenta
     try:
-        subject = '¡Bienvenido a BetTracker!'
+        subject = '👋 ¡Bienvenido a BetTracker!'
         to = [user.email]
         context = {
             'username': user.username,

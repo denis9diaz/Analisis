@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Bienvenido a BetTracker</title>
+    <title>Suscripción cancelada</title>
   </head>
   <body style="background-color: #f3f4f6; font-family: 'Segoe UI', sans-serif; padding: 30px;">
     <div style="
@@ -15,21 +15,27 @@
       border: 1px solid #e5e7eb;
     ">
 
-      <!-- Header con fondo -->
+      <!-- Header -->
       <div style="background-color: #0b0f24; padding: 30px; text-align: center;">
         <img src="https://res.cloudinary.com/dxzhssh9m/image/upload/v1744106922/logo_bzro8r.png" alt="Logo BetTracker" style="height: 60px;" />
       </div>
 
       <!-- Contenido -->
       <div style="padding: 30px;">
-        <h2 style="color: #0b0f24; font-size: 22px; margin-bottom: 15px;">¡Bienvenido, {{ username }}!</h2>
+        <h2 style="color: #0b0f24; font-size: 22px; margin-bottom: 15px;">
+          Suscripción cancelada
+        </h2>
 
         <p style="color: #333; font-size: 15px; line-height: 1.6;">
-          Gracias por registrarte en <strong>BetTracker</strong>. Estamos encantados de tenerte con nosotros.
+          Hola {{ username }}, hemos procesado tu solicitud de cancelación para el plan <strong>{{ plan }}</strong>.
         </p>
 
         <p style="color: #555; font-size: 14px; line-height: 1.6;">
-          Ya puedes comenzar a crear tus métodos de análisis, registrar partidos y llevar el control de tus apuestas como un profesional.
+          Podrás seguir disfrutando de las funcionalidades premium hasta el <strong>{{ fecha_fin }}</strong>. Luego de esa fecha, tu cuenta volverá a modo gratuito.
+        </p>
+
+        <p style="color: #999; font-size: 13px; margin-top: 20px;">
+          Puedes renovar tu suscripción en cualquier momento desde tu perfil.
         </p>
 
         <div style="text-align: center; margin-top: 30px;">
@@ -42,7 +48,7 @@
             font-size: 14px;
             font-weight: 600;
             display: inline-block;
-          ">Elige un plan</a>
+          ">Elegir nuevo plan</a>
         </div>
 
         <p style="color: #999; font-size: 12px; margin-top: 40px; text-align: center;">
