@@ -5,6 +5,7 @@ from .views import (
     PartidoListAPIView,
     user_stats,
     SuscripcionView,
+    MetodoAnalisisDetailAPIView,
 )
 
 urlpatterns = [
@@ -13,4 +14,5 @@ urlpatterns = [
     path('partidos/', PartidoListAPIView.as_view(), name='lista-partidos'),
     path('stats/', user_stats, name='user_stats'),
     path('suscripcion/', SuscripcionView.as_view()),
+    path("metodos/<int:pk>/", MetodoAnalisisDetailAPIView.as_view(), name="metodo-detail"),
 ]

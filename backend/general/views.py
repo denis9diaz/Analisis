@@ -4,6 +4,7 @@ from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
 from dateutil.relativedelta import relativedelta
+from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import Liga, MetodoAnalisis, Partido, Suscripcion
@@ -51,6 +52,15 @@ class MetodoAnalisisListAPIView(APIView):
             metodo = serializer.save()
             return Response(MetodoAnalisisSerializer(metodo).data, status=201)
         return Response(serializer.errors, status=400)
+
+        
+class MetodoAnalisisDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        metodo = get_object_or_404(MetodoAnalisis, pk=pk, usuario=request.user)
+        metodo.delete()
+        return Response({"mensaje": "Método eliminado correctamente."}, status=204)
 
 
 class PartidoListAPIView(APIView):
