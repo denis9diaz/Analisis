@@ -53,7 +53,7 @@ class MetodoAnalisisListAPIView(APIView):
             return Response(MetodoAnalisisSerializer(metodo).data, status=201)
         return Response(serializer.errors, status=400)
 
-        
+
 class MetodoAnalisisDetailAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -102,6 +102,22 @@ class PartidoListAPIView(APIView):
             partido_actualizado = serializer.save()
             return Response(PartidoReadSerializer(partido_actualizado).data)
         return Response(serializer.errors, status=400)
+
+    def delete(self, request):
+        if not verificar_suscripcion_activa(request.user):
+            return Response({"error": "Se requiere una suscripción activa para eliminar partidos."}, status=403)
+
+        partido_id = request.data.get("id")
+        if not partido_id:
+            return Response({"error": "ID requerido"}, status=400)
+
+        try:
+            partido = Partido.objects.get(id=partido_id, metodo__usuario=request.user)
+        except Partido.DoesNotExist:
+            return Response({"error": "Partido no encontrado"}, status=404)
+
+        partido.delete()
+        return Response({"mensaje": "Partido eliminado correctamente."}, status=204)
 
 
 class SuscripcionView(APIView):
