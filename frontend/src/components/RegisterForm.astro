@@ -117,8 +117,9 @@
 <!-- ✅ Toast visual -->
 <div
   id="toast"
-  class="fixed bottom-6 right-6 text-white px-4 py-2 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50"
+  class="fixed top-36 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg opacity-0 transition-all duration-300 pointer-events-none z-50 text-sm font-medium bg-white border text-gray-800"
 >
+  Mensaje dinámico
 </div>
 
 <script type="module">
@@ -215,24 +216,26 @@
       const toast = document.getElementById("toast");
       if (!toast) return;
 
-      const colorClasses = {
-        success: "bg-green-600",
-        error: "bg-red-600",
-        info: "bg-blue-600",
-        warning: "bg-yellow-500 text-black",
+      const styleMap = {
+        success: "bg-emerald-100 text-emerald-800 border border-emerald-300",
+        error: "bg-rose-100 text-rose-800 border border-rose-300",
+        info: "bg-blue-100 text-blue-800 border border-blue-300",
+        warning: "bg-yellow-100 text-yellow-800 border border-yellow-300",
       };
 
       toast.className =
-        "fixed bottom-6 right-6 text-white px-4 py-2 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50";
-      toast.classList.add(colorClasses[type] || colorClasses.success);
+        "fixed top-36 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg opacity-0 transition-all duration-300 pointer-events-none z-50 text-sm font-medium";
+
+      toast.classList.add(...(styleMap[type] || styleMap.success).split(" "));
       toast.textContent = message;
+
       toast.classList.remove("opacity-0");
       toast.classList.add("opacity-100");
 
       setTimeout(() => {
-        toast.classList.add("opacity-0");
         toast.classList.remove("opacity-100");
-      }, 2500);
+        toast.classList.add("opacity-0");
+      }, 3000);
     }
   });
 </script>

@@ -90,7 +90,7 @@ export default function CheckoutPage() {
       </button>
       <div
         id="toast-success"
-        className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded shadow-md text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50"
+        className="fixed top-36 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg opacity-0 transition-all duration-300 pointer-events-none z-50 text-sm font-medium bg-emerald-100 text-emerald-800 border border-emerald-300"
       >
         Suscripción activada correctamente
       </div>
