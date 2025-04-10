@@ -38,39 +38,28 @@ import Header from "../components/Header.astro";
     <script is:inline>
       let timeout;
       const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutos
-    
+
       function logout() {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         localStorage.removeItem("username");
         window.location.href = "/";
       }
-    
-      function debounce(fn, delay) {
-        let timer;
-        return (...args) => {
-          clearTimeout(timer);
-          timer = setTimeout(() => fn(...args), delay);
-        };
-      }
-    
-      // 👇 Solo refresca token como máximo cada 5s
-      const debouncedRefresh = debounce(() => {
-        import("/src/utils/authFetch.ts").then(({ silentTokenRefresh }) => {
-          silentTokenRefresh();
-        });
-      }, 5000);
-    
+
       function resetInactivityTimer() {
         clearTimeout(timeout);
-        timeout = setTimeout(logout, INACTIVITY_LIMIT);
-        debouncedRefresh(); // 👈 llamada controlada
+        timeout = setTimeout(() => {
+          console.warn("Sesión expirada por inactividad.");
+          logout();
+        }, INACTIVITY_LIMIT);
       }
-    
+
+      // Escuchar eventos de actividad del usuario
       ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach((event) => {
         window.addEventListener(event, resetInactivityTimer);
       });
-    
+
+      // Inicializar el temporizador de inactividad
       resetInactivityTimer();
     </script>
     

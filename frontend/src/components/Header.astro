@@ -54,7 +54,6 @@
   const menuToggle = document.getElementById("menu-toggle");
 
   const username = localStorage.getItem("username");
-  const access = localStorage.getItem("access_token");
 
   const clearSession = () => {
     localStorage.removeItem("access_token");
@@ -66,10 +65,17 @@
     mobileMenu.classList.toggle("hidden");
   });
 
+  let isCheckingToken = false;
+
   async function checkToken() {
+    if (isCheckingToken) return;
+    isCheckingToken = true;
+
+    const access = localStorage.getItem("access_token");
     if (!access) {
       clearSession();
       showGuestLinks();
+      isCheckingToken = false;
       return;
     }
 
@@ -77,18 +83,26 @@
       .querySelector("header[data-api-url]")
       .getAttribute("data-api-url");
 
-    const res = await fetch(`${API_URL}/api/auth/validate/`, {
-      headers: {
-        Authorization: `Bearer ${access}`,
-      },
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/auth/validate/`, {
+        headers: {
+          Authorization: `Bearer ${access}`,
+        },
+      });
 
-    if (res.ok) {
-      const updatedUsername = localStorage.getItem("username");
-      showUserLinks(updatedUsername);
-    } else {
+      if (res.ok) {
+        const updatedUsername = localStorage.getItem("username");
+        showUserLinks(updatedUsername);
+      } else {
+        clearSession();
+        showGuestLinks();
+      }
+    } catch (err) {
+      console.error("Error al validar el token:", err);
       clearSession();
       showGuestLinks();
+    } finally {
+      isCheckingToken = false;
     }
   }
 

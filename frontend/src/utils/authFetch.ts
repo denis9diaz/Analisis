@@ -1,89 +1,123 @@
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
+let isRefreshing = false; // Estado para evitar múltiples refrescos simultáneos
+let refreshQueue: (() => void)[] = []; // Cola para reintentar peticiones
+
 export async function fetchWithAuth(
-    input: RequestInfo,
-    init: RequestInit = {},
-    redirectOnFail: boolean = true
+  input: RequestInfo,
+  init: RequestInit = {},
+  redirectOnFail: boolean = true
 ) {
-    let access = localStorage.getItem("access_token");
-    const refresh = localStorage.getItem("refresh_token");
+  let access = localStorage.getItem("access_token");
+  const refresh = localStorage.getItem("refresh_token");
 
-    const applyAuth = (token: string) => ({
-        ...init,
-        headers: {
-            ...(init.headers || {}),
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    });
+  const applyAuth = (token: string) => ({
+    ...init,
+    headers: {
+      ...(init.headers || {}),
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
 
-    // Si no hay access token
-    if (!access) {
-        if (redirectOnFail) {
-            localStorage.removeItem("refresh_token");
-            localStorage.removeItem("username");
-            window.location.href = "/";
-        }
-        return Promise.reject("No access token disponible");
+  if (!access) {
+    if (redirectOnFail) {
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("username");
+      window.location.href = "/";
     }
+    return Promise.reject("No access token disponible");
+  }
 
-    // Resolver URL final si es relativa
-    let finalUrl = input;
-    if (typeof input === "string" && input.startsWith("/")) {
-        finalUrl = `${API_URL}${input}`;
-    }
+  let finalUrl = input;
+  if (typeof input === "string" && input.startsWith("/")) {
+    finalUrl = `${API_URL}${input}`;
+  }
 
-    let res = await fetch(finalUrl, applyAuth(access));
+  let res = await fetch(finalUrl, applyAuth(access));
 
-    // Si el access token ha expirado
-    if (res.status === 401 && refresh) {
+  if (res.status === 401 && refresh) {
+    if (!isRefreshing) {
+      isRefreshing = true;
+
+      try {
         const refreshRes = await fetch(`${API_URL}/api/auth/token/refresh/`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ refresh }),
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh }),
         });
 
         if (refreshRes.ok) {
-            const data = await refreshRes.json();
-            localStorage.setItem("access_token", data.access);
-            access = data.access;
+          const data = await refreshRes.json();
+          localStorage.setItem("access_token", data.access);
+          access = data.access;
 
-            // Reintentar la petición original
-            res = await fetch(finalUrl, applyAuth(access!));
+          // Reintentar las peticiones en cola
+          refreshQueue.forEach((cb) => cb());
+          refreshQueue = [];
         } else {
-            if (redirectOnFail) {
-                localStorage.removeItem("access_token");
-                localStorage.removeItem("refresh_token");
-                localStorage.removeItem("username");
-                window.location.href = "/";
-            }
-            return Promise.reject("Sesión expirada");
+          if (redirectOnFail) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            localStorage.removeItem("username");
+            window.location.href = "/";
+          }
+          return Promise.reject("Sesión expirada. Refresh token inválido.");
         }
+      } catch (err) {
+        console.error("Error al refrescar el token:", err);
+        if (redirectOnFail) {
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          localStorage.removeItem("username");
+          window.location.href = "/";
+        }
+        return Promise.reject("Error al refrescar el token.");
+      } finally {
+        isRefreshing = false;
+      }
     }
 
-    return res;
+    // Esperar a que el token sea refrescado
+    return new Promise((resolve) => {
+      refreshQueue.push(() => resolve(fetch(finalUrl, applyAuth(access!))));
+    });
+  }
+
+  return res;
 }
 
 export async function silentTokenRefresh() {
-    const refresh = localStorage.getItem("refresh_token");
+  const refresh = localStorage.getItem("refresh_token");
 
-    if (!refresh) return;
+  if (!refresh) {
+    console.warn("No refresh token disponible.");
+    return;
+  }
 
-    try {
-        const res = await fetch(`${API_URL}/api/auth/token/refresh/`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ refresh }),
-        });
+  try {
+    const res = await fetch(`${API_URL}/api/auth/token/refresh/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh }),
+    });
 
-        if (res.ok) {
-            const data = await res.json();
-            localStorage.setItem("access_token", data.access);
-            console.info("Access token refrescado en segundo plano.");
-        } else {
-            console.warn("No se pudo refrescar el token en segundo plano.");
-        }
-    } catch (err) {
-        console.error("Error al refrescar token en segundo plano:", err);
+    if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem("access_token", data.access);
+      console.info("Access token refrescado en segundo plano.");
+    } else {
+      console.warn("No se pudo refrescar el token en segundo plano.");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("username");
+      window.location.href = "/";
     }
+  } catch (err) {
+    console.error("Error al refrescar token en segundo plano:", err);
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("username");
+    window.location.href = "/";
+  }
 }
