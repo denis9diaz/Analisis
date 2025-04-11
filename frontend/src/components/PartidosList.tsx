@@ -419,8 +419,8 @@ export default function PartidosList() {
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
               <th className="px-3 py-2 text-left w-[100px]">Fecha</th>
-              <th className="px-3 py-2 text-left w-[180px]">Liga</th>
-              <th className="px-3 py-2 text-left w-[250px]">Partido</th>
+              <th className="px-3 py-2 text-left w-[170px]">Liga</th>
+              <th className="px-3 py-2 text-left w-[260px]">Partido</th>
               <th className="px-3 py-2 text-center w-[80px]">% Local</th>
               <th className="px-3 py-2 text-center w-[80px]">% Visit.</th>
               <th className="px-3 py-2 text-center w-[80px]">% Total</th>
@@ -438,7 +438,7 @@ export default function PartidosList() {
                 className="hover:bg-gray-50 transition border-t border-gray-200"
               >
                 <td className="px-3 py-2 w-[100px]">{formatFecha(p.fecha)}</td>
-                <td className="px-3 py-2 w-[180px]">
+                <td className="px-3 py-2 w-[170px]">
                   {p.liga ? (
                     <div className="flex items-center gap-2">
                       <img
@@ -453,7 +453,7 @@ export default function PartidosList() {
                     <span className="text-gray-400 italic">Sin liga</span>
                   )}
                 </td>
-                <td className="px-3 py-2 w-[250px]">
+                <td className="px-3 py-2 w-[260px]">
                   {metodoSeleccionado?.nombre === "Team to Score"
                     ? (() => {
                         const [local, visitante] =
