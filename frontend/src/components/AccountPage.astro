@@ -9,7 +9,10 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
   }
 </script>
 
-<div class="min-h-screen bg-gray-200 text-black py-20 px-4">
+<div
+  class="min-h-screen bg-gray-200 text-black py-20 px-4"
+  data-api-url={import.meta.env.PUBLIC_API_URL}
+>
   <div class="max-w-2xl mx-auto space-y-10">
     <!-- 🧑 Perfil -->
     <section
@@ -205,8 +208,12 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
   <script type="module">
     const access = localStorage.getItem("access_token");
 
+    const API_URL = document
+      .querySelector("[data-api-url]")
+      .getAttribute("data-api-url");
+
     const authFetch = (url, options = {}) => {
-      return fetch(`http://localhost:8000${url}`, {
+      return fetch(`${API_URL}${url}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${access}`,
@@ -318,6 +325,7 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
       const res = await authFetch("/api/general/suscripcion/");
       const section = document.getElementById("suscripcion-section");
       const mensaje = document.getElementById("suscripcion-mensaje");
+      const abrirModalBtn = document.getElementById("abrir-gestionar-modal");
       const resumen = document.getElementById("resumen-section");
       const estadisticas = document.getElementById("estadisticas-section");
 

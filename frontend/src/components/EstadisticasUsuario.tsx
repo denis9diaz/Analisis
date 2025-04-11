@@ -39,9 +39,11 @@ export default function EstadisticasUsuario() {
 
   const fetchStats = async (metodoId: number | null) => {
     const token = localStorage.getItem("access_token");
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+
     const url = metodoId
-      ? `http://localhost:8000/api/general/stats/?metodo_id=${metodoId}`
-      : `http://localhost:8000/api/general/stats/`;
+      ? `${API_URL}/api/general/stats/?metodo_id=${metodoId}`
+      : `${API_URL}/api/general/stats/`;
 
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
@@ -52,8 +54,9 @@ export default function EstadisticasUsuario() {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+    const API_URL = import.meta.env.PUBLIC_API_URL;
 
-    fetch("http://localhost:8000/api/general/metodos/", {
+    fetch(`${API_URL}/api/general/metodos/`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

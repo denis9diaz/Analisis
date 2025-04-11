@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
-from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.response import Response
@@ -19,6 +19,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_str
+from django.conf import settings
 
 
 # 🔐 Generar token JWT
@@ -51,7 +52,7 @@ def register(request):
         try:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            activation_url = f"http://localhost:4321/verificar?uid={uid}&token={token}"
+            activation_url = f"{settings.FRONTEND_URL}/verificar?uid={uid}&token={token}"
 
             subject = '✉️ Verifica tu cuenta - BetTracker'
             to = [user.email]
@@ -214,8 +215,9 @@ def send_temp_password(request):
     subject = '🔑 Tu contraseña temporal - BetTracker'
     to = [email]
     context = {
-        'username': user.username,
-        'temp_password': temp_password,
+    'username': user.username,
+    'temp_password': temp_password,
+    'frontend_url': settings.FRONTEND_URL,
     }
 
     html_content = render_to_string('email/temp_password.html', context)
@@ -295,6 +297,7 @@ def verify_email(request):
         to = [user.email]
         context = {
             'username': user.username,
+            'frontend_url': settings.FRONTEND_URL,
         }
 
         html_content = render_to_string('email/welcome_email.html', context)
@@ -330,7 +333,7 @@ def resend_verification_email(request):
     try:
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
-        activation_url = f"http://localhost:4321/verificar?uid={uid}&token={token}"
+        activation_url = f"{settings.FRONTEND_URL}/verificar?uid={uid}&token={token}"
 
         subject = 'Reenvío de verificación - BetTracker'
         to = [email]
@@ -350,3 +353,19 @@ def resend_verification_email(request):
         return Response({'error': 'No se pudo enviar el correo. Intenta más tarde.'}, status=500)
 
     return Response({'message': 'Correo de verificación reenviado.'}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def token_refresh(request):
+    try:
+        refresh_token = request.data.get('refresh')
+        if not refresh_token:
+            return Response({"error": "Refresh token requerido"}, status=400)
+
+        token = RefreshToken(refresh_token)
+        new_access = str(token.access_token)
+
+        return Response({"access": new_access}, status=200)
+    except TokenError as e:
+        return Response({"error": "Token inválido o expirado"}, status=401)

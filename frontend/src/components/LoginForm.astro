@@ -1,5 +1,6 @@
 <div
   class="flex items-start justify-center min-h-screen bg-gray-200 pt-20 px-4"
+  data-api-url={import.meta.env.PUBLIC_API_URL}
 >
   <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">
@@ -86,7 +87,11 @@
 
 <script type="module">
   document.addEventListener("DOMContentLoaded", () => {
-    const API_URL = "http://127.0.0.1:8000";
+
+    const API_URL = document
+      .querySelector("[data-api-url]")
+      .getAttribute("data-api-url");
+    console.log("PUBLIC_API_URL:", API_URL); // Verifica si se imprime correctamente
 
     const form = document.getElementById("login-form");
 

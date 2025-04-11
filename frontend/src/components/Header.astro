@@ -1,5 +1,6 @@
 <header
   class="bg-[#0b0f24]/70 text-white backdrop-blur-md p-4 shadow-lg sticky top-0 z-50 transition-colors duration-300"
+  data-api-url={import.meta.env.PUBLIC_API_URL}
 >
   <div
     class="w-full max-w-screen-xl mx-auto px-4 flex items-center justify-between relative"
@@ -53,7 +54,6 @@
   const menuToggle = document.getElementById("menu-toggle");
 
   const username = localStorage.getItem("username");
-  const access = localStorage.getItem("access_token");
 
   const clearSession = () => {
     localStorage.removeItem("access_token");
@@ -65,25 +65,44 @@
     mobileMenu.classList.toggle("hidden");
   });
 
+  let isCheckingToken = false;
+
   async function checkToken() {
+    if (isCheckingToken) return;
+    isCheckingToken = true;
+
+    const access = localStorage.getItem("access_token");
     if (!access) {
       clearSession();
       showGuestLinks();
+      isCheckingToken = false;
       return;
     }
 
-    const res = await fetch("http://localhost:8000/api/auth/validate/", {
-      headers: {
-        Authorization: `Bearer ${access}`,
-      },
-    });
+    const API_URL = document
+      .querySelector("header[data-api-url]")
+      .getAttribute("data-api-url");
 
-    if (res.ok) {
-      const updatedUsername = localStorage.getItem("username");
-      showUserLinks(updatedUsername);
-    } else {
+    try {
+      const res = await fetch(`${API_URL}/api/auth/validate/`, {
+        headers: {
+          Authorization: `Bearer ${access}`,
+        },
+      });
+
+      if (res.ok) {
+        const updatedUsername = localStorage.getItem("username");
+        showUserLinks(updatedUsername);
+      } else {
+        clearSession();
+        showGuestLinks();
+      }
+    } catch (err) {
+      console.error("Error al validar el token:", err);
       clearSession();
       showGuestLinks();
+    } finally {
+      isCheckingToken = false;
     }
   }
 

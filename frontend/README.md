@@ -1,48 +1,61 @@
-# Astro Starter Kit: Basics
+# BetTracker - Frontend
 
-```sh
-npm create astro@latest -- --template basics
+Frontend del proyecto **BetTracker**, una plataforma profesional para registrar y analizar tus apuestas deportivas. Está desarrollado utilizando **Astro**, con componentes en **React** y estilos en **TailwindCSS**.
+
+---
+
+## ✨ Tecnologías utilizadas
+
+- **Astro**: Framework para crear sitios rápidos y optimizados.
+- **React + TypeScript**: Para construir los componentes interactivos con tipado estático.
+- **TailwindCSS**: Para los estilos responsivos y personalizados.
+- **JWT (manejo de sesión)**: El frontend gestiona los tokens emitidos por el backend para mantener la autenticación del usuario.
+- **React-Select**: Para la selección de ligas con banderas.
+
+---
+
+## ✅ Requisitos previos
+
+- Tener **Node.js** instalado (preferiblemente la versión LTS).
+- Tener **npm** (gestor de paquetes de Node.js) instalado en el sistema.
+
+---
+
+## ⚙️ Pasos para levantar el frontend (modo desarrollo)
+
+### 1. Clona el repositorio
+```bash
+git clone https://github.com/denis9diaz/Analisis.git
+cd frontend
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+### 2. Instala las dependencias
+```bash
+npm install
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+### 3. Crea el archivo `.env`
+Dentro de la carpeta `frontend`, crea un archivo llamado `.env` y define las siguientes variables:
+```bash
+"datos del .env"
+```
 
-## 🧞 Commands
+### 4. Ejecuta el servidor de desarrollo
+```bash
+npm run dev
+```
 
-All commands are run from the root of the project, from a terminal:
+### 5. Construye para producción
+```bash
+npm run build
+```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+### 6. Revisa el sitio de producción localmente
+```bash
+npm run preview
+```
 
-## 👀 Want to learn more?
+## 🔐 Autenticación
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Este frontend interactúa con el backend a través de una API REST autenticada con JWT. 
+Las credenciales de los usuarios se almacenan y gestionan utilizando tokens Access y Refresh.

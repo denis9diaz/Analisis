@@ -294,6 +294,7 @@ def enviar_email_suscripcion(usuario, plan, cancelada=False):
         "username": usuario.username,
         "plan": plan.capitalize(),
         "fecha_fin": fecha_fin,
+        "frontend_url": settings.FRONTEND_URL,
     })
 
     email = EmailMultiAlternatives(

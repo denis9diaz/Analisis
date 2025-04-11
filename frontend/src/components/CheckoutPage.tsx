@@ -56,8 +56,11 @@ export default function CheckoutPage() {
             return;
           }
 
+          const API_URL = import.meta.env.PUBLIC_API_URL;
+
           const res = await fetch(
-            "http://localhost:8000/api/general/suscripcion/",
+            `${API_URL}/api/general/suscripcion/`,
+
             {
               method: "POST",
               headers: {

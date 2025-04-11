@@ -61,13 +61,11 @@ export default function PartidosList() {
     const nuevaNota = notasTemp[id];
     if (nuevaNota === undefined) return;
 
-    const res = await fetchWithAuth(
-      "http://localhost:8000/api/general/partidos/",
-      {
-        method: "PATCH",
-        body: JSON.stringify({ id, notas: nuevaNota }),
-      }
-    );
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+    const res = await fetchWithAuth(`${API_URL}/api/general/partidos/`, {
+      method: "PATCH",
+      body: JSON.stringify({ id, notas: nuevaNota }),
+    });
 
     const partidoActualizado: Partido = await res.json();
     setPartidos((prev) =>
@@ -86,7 +84,8 @@ export default function PartidosList() {
   const eliminarPartido = async () => {
     if (!partidoAEliminar) return;
 
-    await fetchWithAuth("http://localhost:8000/api/general/partidos/", {
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+    await fetchWithAuth(`${API_URL}/api/general/partidos/`, {
       method: "DELETE",
       body: JSON.stringify({ id: partidoAEliminar.id }),
     });
@@ -94,9 +93,7 @@ export default function PartidosList() {
     setPartidoAEliminar(null);
 
     // Refrescar la lista de partidos
-    const res = await fetchWithAuth(
-      "http://localhost:8000/api/general/partidos/"
-    );
+    const res = await fetchWithAuth(`${API_URL}/api/general/partidos/`);
     const data: Partido[] = await res.json();
     const filtrados = data
       .filter((p) => p.metodo === metodoSeleccionado?.id)
@@ -119,7 +116,8 @@ export default function PartidosList() {
   useEffect(() => {
     if (!metodoSeleccionado) return;
 
-    fetchWithAuth("http://localhost:8000/api/general/partidos/")
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+    fetchWithAuth(`${API_URL}/api/general/partidos/`)
       .then((res) => res.json())
       .then((data: Partido[]) => {
         console.log("📦 Datos recibidos del backend:", data);
@@ -240,13 +238,11 @@ export default function PartidosList() {
   const porcentaje = total > 0 ? ((aciertos / total) * 100).toFixed(1) : "0";
 
   const handleResultadoChange = async (id: number, nuevoResultado: string) => {
-    const res = await fetchWithAuth(
-      "http://localhost:8000/api/general/partidos/",
-      {
-        method: "PATCH",
-        body: JSON.stringify({ id, cumplido: nuevoResultado || null }),
-      }
-    );
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+    const res = await fetchWithAuth(`${API_URL}/api/general/partidos/`, {
+      method: "PATCH",
+      body: JSON.stringify({ id, cumplido: nuevoResultado || null }),
+    });
 
     const partidoActualizado: Partido = await res.json();
     setPartidos((prev) =>
@@ -567,7 +563,8 @@ export default function PartidosList() {
         isOpen={showModal}
         onRequestClose={() => setShowModal(false)}
         onPartidoGuardado={() => {
-          fetchWithAuth("http://localhost:8000/api/general/partidos/")
+          const API_URL = import.meta.env.PUBLIC_API_URL;
+          fetchWithAuth(`${API_URL}/api/general/partidos/`)
             .then((res) => res.json())
             .then((data: Partido[]) => {
               const filtrados = data
@@ -580,6 +577,7 @@ export default function PartidosList() {
             });
         }}
       />
+
       <Modal
         isOpen={!!partidoAEliminar}
         onRequestClose={() => setPartidoAEliminar(null)}

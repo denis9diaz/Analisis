@@ -24,14 +24,13 @@ export default function MetodoFormModal({
 
     setLoading(true);
     try {
-      const res = await fetchWithAuth(
-        "http://localhost:8000/api/general/metodos/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" }, // 👈 AÑADE ESTO
-          body: JSON.stringify({ nombre }),
-        }
-      );
+      const API_URL = import.meta.env.PUBLIC_API_URL;
+
+      const res = await fetchWithAuth(`${API_URL}/api/general/metodos/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre }),
+      });
 
       if (res.ok) {
         await res.json();

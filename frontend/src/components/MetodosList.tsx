@@ -21,7 +21,9 @@ export default function MetodosList() {
   }, []);
 
   const cargarMetodos = () => {
-    fetchWithAuth("http://localhost:8000/api/general/metodos/")
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+
+    fetchWithAuth(`${API_URL}/api/general/metodos/`)
       .then((res) => res.json())
       .then((data) => setMetodos(data));
   };
@@ -32,7 +34,9 @@ export default function MetodosList() {
 
   const eliminarMetodo = () => {
     if (!metodoAEliminar) return;
-    fetchWithAuth(`http://localhost:8000/api/general/metodos/${metodoAEliminar.id}/`, {
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+
+    fetchWithAuth(`${API_URL}/api/general/metodos/${metodoAEliminar.id}/`, {
       method: "DELETE",
     }).then(() => {
       setMetodoAEliminar(null);
@@ -99,7 +103,8 @@ export default function MetodosList() {
           ¿Estás seguro que deseas eliminar este método?
         </h2>
         <p className="text-sm text-gray-600 mb-6">
-          Si lo eliminas, perderás todos los partidos asociados y no podrás recuperarlos.
+          Si lo eliminas, perderás todos los partidos asociados y no podrás
+          recuperarlos.
         </p>
         <div className="flex justify-end pt-2">
           <button
