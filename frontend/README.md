@@ -9,7 +9,7 @@ Frontend del proyecto **BetTracker**, una plataforma profesional para registrar 
 - **Astro**: Framework para crear sitios rápidos y optimizados.
 - **React + TypeScript**: Para construir los componentes interactivos con tipado estático.
 - **TailwindCSS**: Para los estilos responsivos y personalizados.
-- **JWT**: Para la autenticación y manejo de sesión del usuario.
+- **JWT (manejo de sesión)**: El frontend gestiona los tokens emitidos por el backend para mantener la autenticación del usuario.
 - **React-Select**: Para la selección de ligas con banderas.
 
 ---
