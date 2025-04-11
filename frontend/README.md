@@ -1,13 +1,13 @@
 # BetTracker - Frontend
 
-Este es el frontend del proyecto **BetTracker**, una plataforma profesional para registrar y analizar tus apuestas deportivas. Está desarrollado utilizando **Astro**, con componentes en **React** y estilos en **TailwindCSS**.
+Frontend del proyecto **BetTracker**, una plataforma profesional para registrar y analizar tus apuestas deportivas. Está desarrollado utilizando **Astro**, con componentes en **React** y estilos en **TailwindCSS**.
 
 ---
 
 ## ✨ Tecnologías utilizadas
 
 - **Astro**: Framework para crear sitios rápidos y optimizados.
-- **React**: Para la construcción de los componentes interactivos.
+- **React + TypeScript**: Para construir los componentes interactivos con tipado estático.
 - **TailwindCSS**: Para los estilos responsivos y personalizados.
 - **JWT**: Para la autenticación y manejo de sesión del usuario.
 - **React-Select**: Para la selección de ligas con banderas.
@@ -25,8 +25,8 @@ Este es el frontend del proyecto **BetTracker**, una plataforma profesional para
 
 ### 1. Clona el repositorio
 ```bash
-git clone https://github.com/denis9diaz/bettracker.git
-cd bettracker/frontend
+git clone https://github.com/denis9diaz/Analisis.git
+cd frontend
 ```
 
 ### 2. Instala las dependencias
@@ -34,26 +34,23 @@ cd bettracker/frontend
 npm install
 ```
 
-### 3. Ejecuta el servidor de desarrollo
+### 3. Crea el archivo `.env`
+Dentro de la carpeta `frontend`, crea un archivo llamado `.env` y define las siguientes variables:
+```bash
+"datos del .env"
+```
+
+### 4. Ejecuta el servidor de desarrollo
 ```bash
 npm run dev
 ```
 
-## ✅ Requisitos previos
-
-- Tener **Node.js** instalado (preferiblemente la versión LTS).
-- Tener **npm** (gestor de paquetes de Node.js) instalado en el sistema.
-
-Esto iniciará el servidor de desarrollo en http://localhost:4321
-
----
-
-### 4. Construye para producción
+### 5. Construye para producción
 ```bash
 npm run build
 ```
 
-### 5. Revisa el sitio de producción localmente
+### 6. Revisa el sitio de producción localmente
 ```bash
 npm run preview
 ```
