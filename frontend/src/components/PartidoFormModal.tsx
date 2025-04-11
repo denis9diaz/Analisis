@@ -94,7 +94,7 @@ export default function PartidoFormModal({
         racha_hist_visitante: rachaHistVisitante,
         estado,
         notas,
-        equipo_a_destacar: equipoDestacado || null,
+        equipo_destacado: equipoDestacado || null,
       }),
     })
       .then((res) => res.json())

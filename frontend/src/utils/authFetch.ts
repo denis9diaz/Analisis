@@ -7,7 +7,7 @@ export async function fetchWithAuth(
   input: RequestInfo,
   init: RequestInit = {},
   redirectOnFail: boolean = true
-) {
+): Promise<Response> {
   let access = localStorage.getItem("access_token");
   const refresh = localStorage.getItem("refresh_token");
 
