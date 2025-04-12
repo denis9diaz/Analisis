@@ -5,6 +5,8 @@ import { fetchWithAuth } from "../utils/authFetch";
 import Select from "react-select";
 import { Trash2 } from "lucide-react";
 import Modal from "react-modal";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 type Partido = {
   id: number;
@@ -131,41 +133,40 @@ export default function PartidosList() {
   }, [metodoSeleccionado]);
 
   const ORDEN_LIGAS = [
-    "Bundesliga",
-    "Bundesliga II",
-    "A-League",
-    "Bundesliga (AT)", // este es para diferenciar si es necesario
-    "Jupiler Pro-League",
-    "Serie A Betano",
-    "Superliga",
-    "Premier League (GB-SCT)",
-    "LaLiga EA Sports",
-    "LaLiga Hypermotion",
-    "MLS",
-    "Meistriliiga",
-    "Esiliiga",
-    "Veikkausliiga",
-    "Ykkosliiga",
-    "Ligue 1",
-    "Premier League",
-    "Championship",
-    "League One",
-    "League Two",
-    "Besta deild karla",
-    "Division 1",
-    "Serie A",
-    "Eliteserien",
-    "OBOS-ligaen",
-    "Eredivisie",
-    "Keuken Kampioen",
-    "Liga Portugal",
-    "Allsvenskan",
-    "Superettan",
-    "Super League",
-    "Super Lig",
-    "Champions League",
-    "Europa League",
-    "Conference League",
+    { id: 124, nombre: "Bundesliga", codigo_pais: "DE" },
+    { id: 125, nombre: "Bundesliga II", codigo_pais: "DE" },
+    { id: 126, nombre: "A-League", codigo_pais: "AU" },
+    { id: 127, nombre: "Jupiler Pro-League", codigo_pais: "BE" },
+    { id: 128, nombre: "Serie A Betano", codigo_pais: "BR" },
+    { id: 129, nombre: "Superliga", codigo_pais: "DK" },
+    { id: 130, nombre: "Premier League ESC", codigo_pais: "GB-SCT" },
+    { id: 131, nombre: "LaLiga EA Sports", codigo_pais: "ES" },
+    { id: 132, nombre: "LaLiga Hypermotion", codigo_pais: "ES" },
+    { id: 133, nombre: "MLS", codigo_pais: "US" },
+    { id: 134, nombre: "Meistriliiga", codigo_pais: "EE" },
+    { id: 135, nombre: "Esiliiga", codigo_pais: "EE" },
+    { id: 136, nombre: "Veikkausliiga", codigo_pais: "FI" },
+    { id: 137, nombre: "Ykkosliiga", codigo_pais: "FI" },
+    { id: 138, nombre: "Ligue 1", codigo_pais: "FR" },
+    { id: 139, nombre: "Premier League", codigo_pais: "GB-ENG" },
+    { id: 140, nombre: "Championship", codigo_pais: "GB-ENG" },
+    { id: 141, nombre: "League One", codigo_pais: "GB-ENG" },
+    { id: 142, nombre: "League Two", codigo_pais: "GB-ENG" },
+    { id: 143, nombre: "Besta deild karla", codigo_pais: "IS" },
+    { id: 144, nombre: "Division 1", codigo_pais: "IS" },
+    { id: 145, nombre: "Serie A", codigo_pais: "IT" },
+    { id: 146, nombre: "Eliteserien", codigo_pais: "NO" },
+    { id: 147, nombre: "OBOS-ligaen", codigo_pais: "NO" },
+    { id: 148, nombre: "Eredivisie", codigo_pais: "NL" },
+    { id: 149, nombre: "Keuken Kampioen", codigo_pais: "NL" },
+    { id: 150, nombre: "Liga Portugal", codigo_pais: "PT" },
+    { id: 151, nombre: "Allsvenskan", codigo_pais: "SE" },
+    { id: 152, nombre: "Superettan", codigo_pais: "SE" },
+    { id: 153, nombre: "Super League", codigo_pais: "CH" },
+    { id: 154, nombre: "Super Lig", codigo_pais: "TR" },
+    { id: 155, nombre: "Champions League", codigo_pais: "EU" },
+    { id: 156, nombre: "Europa League", codigo_pais: "EU" },
+    { id: 157, nombre: "Conference League", codigo_pais: "EU" },
   ];
 
   const ligasMap = new Map<string, Partido["liga"]>();
@@ -180,9 +181,18 @@ export default function PartidosList() {
   });
 
   const ligasUnicas: { id: number; nombre: string; codigo_pais: string }[] =
-    ORDEN_LIGAS.map((nombre) => ligasMap.get(nombre)).filter(
-      (l): l is { id: number; nombre: string; codigo_pais: string } => !!l
-    );
+    ORDEN_LIGAS.map((liga) => {
+      const ligaEncontrada = Array.from(ligasMap.values()).find(
+        (l) => l?.nombre === liga.nombre
+      );
+      return (
+        ligaEncontrada || {
+          id: -1,
+          nombre: liga.nombre,
+          codigo_pais: liga.codigo_pais, // Código de país genérico si no está en el mapa
+        }
+      );
+    });
 
   const opcionesLiga = [
     { value: "TODAS", label: "Todas las ligas" },
@@ -191,11 +201,10 @@ export default function PartidosList() {
       label: (
         <div className="flex items-center gap-2">
           <img
-            src={`https://flagcdn.com/w20/${liga.codigo_pais.toLowerCase()}.png`}
-            alt={liga.nombre}
-            className="inline"
-            width={20}
-            height={15}
+            src={`https://flagcdn.com/w40/${liga.codigo_pais.toLowerCase()}.png`}
+            alt={liga.codigo_pais}
+            className="inline-block h-4 w-6 object-cover"
+            onError={(e) => (e.currentTarget.src = "/flags/placeholder.png")} // Use placeholder if flag fails to load
           />
           <span>{liga.nombre}</span>
         </div>
@@ -207,6 +216,23 @@ export default function PartidosList() {
     const numero = parseFloat(valor);
     return isNaN(numero) ? "-" : `${numero.toFixed(1)}%`;
   };
+
+  const opcionesLigaEditable = ORDEN_LIGAS.map((liga) => ({
+    value: liga.id, // Ensure value is a number
+    label: (
+      <div className="flex items-center gap-2">
+        <img
+          src={`https://flagcdn.com/w20/${liga.codigo_pais.toLowerCase()}.png`}
+          alt={liga.nombre}
+          className="inline"
+          width={20}
+          height={15}
+        />
+        <span>{liga.nombre}</span>
+      </div>
+    ),
+    data: liga,
+  }));
 
   const partidosFiltrados = partidos.filter((p) => {
     const coincideLiga =
@@ -250,6 +276,67 @@ export default function PartidosList() {
         p.id === id ? { ...p, cumplido: partidoActualizado.cumplido } : p
       )
     );
+  };
+
+  const handlePartidoChange = async (id: number, nuevoNombre: string) => {
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+    const res = await fetchWithAuth(`${API_URL}/api/general/partidos/`, {
+      method: "PATCH",
+      body: JSON.stringify({ id, nombre_partido: nuevoNombre }),
+    });
+
+    const partidoActualizado: Partido = await res.json();
+    setPartidos((prev) =>
+      prev.map((p) =>
+        p.id === id
+          ? { ...p, nombre_partido: partidoActualizado.nombre_partido }
+          : p
+      )
+    );
+  };
+
+  const handleFechaChange = async (id: number, nuevaFecha: Date) => {
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+    const res = await fetchWithAuth(`${API_URL}/api/general/partidos/`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        id,
+        fecha: nuevaFecha.toISOString().split("T")[0],
+      }),
+    });
+
+    const partidoActualizado: Partido = await res.json();
+    setPartidos((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, fecha: partidoActualizado.fecha } : p
+      )
+    );
+  };
+
+  const handleLigaChange = async (id: number, nuevaLigaId: number) => {
+    console.log("Actualizando liga con ID:", nuevaLigaId); // Verifica el ID que se envía
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+    try {
+      const res = await fetchWithAuth(`${API_URL}/api/general/partidos/`, {
+        method: "PATCH",
+        body: JSON.stringify({ id, liga: nuevaLigaId }), // Asegúrate de enviar el ID correcto
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Error al actualizar la liga:", errorData);
+        return;
+      }
+
+      const partidoActualizado: Partido = await res.json();
+      setPartidos((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, liga: partidoActualizado.liga } : p
+        )
+      );
+    } catch (error) {
+      console.error("Error al actualizar la liga:", error);
+    }
   };
 
   if (!metodoSeleccionado) return null;
@@ -437,44 +524,60 @@ export default function PartidosList() {
                 key={p.id}
                 className="hover:bg-gray-50 transition border-t border-gray-200"
               >
-                <td className="px-3 py-2 w-[100px]">{formatFecha(p.fecha)}</td>
+                <td className="px-3 py-2 w-[100px]">
+                  <DatePicker
+                    selected={new Date(p.fecha)}
+                    onChange={(date) => date && handleFechaChange(p.id, date)}
+                    dateFormat="dd/MM/yyyy"
+                    className="w-full bg-transparent text-sm"
+                  />
+                </td>
                 <td className="px-3 py-2 w-[170px]">
-                  {p.liga ? (
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={`https://flagcdn.com/w20/${p.liga.codigo_pais.toLowerCase()}.png`}
-                        alt={p.liga.nombre}
-                        width={20}
-                        height={15}
-                      />
-                      {p.liga.nombre}
-                    </div>
-                  ) : (
-                    <span className="text-gray-400 italic">Sin liga</span>
-                  )}
+                  <Select
+                    options={opcionesLigaEditable}
+                    value={
+                      p.liga
+                        ? {
+                            value: p.liga.id,
+                            label: (
+                              <div className="flex items-center gap-2">
+                                <img
+                                  src={`https://flagcdn.com/w20/${p.liga.codigo_pais.toLowerCase()}.png`}
+                                  alt={p.liga.nombre}
+                                  className="inline"
+                                  width={20}
+                                  height={15}
+                                />
+                                <span>{p.liga.nombre}</span>
+                              </div>
+                            ),
+                          }
+                        : null
+                    }
+                    onChange={(selectedOption) => {
+                      if (selectedOption) {
+                        handleLigaChange(p.id, selectedOption.value);
+                      }
+                    }}
+                    placeholder="Selecciona una liga"
+                    isClearable={false} // Disable the clearable option to remove the "X" icon
+                    classNamePrefix="react-select"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        border: "none", // Sin bordes
+                        boxShadow: "none", // Sin sombra
+                      }),
+                    }}
+                  />
                 </td>
                 <td className="px-3 py-2 w-[260px]">
-                  {metodoSeleccionado?.nombre === "Team to Score"
-                    ? (() => {
-                        const [local, visitante] =
-                          p.nombre_partido.split(" - ");
-                        return (
-                          <span>
-                            {p.equipo_destacado === "local" ? (
-                              <strong>{local}</strong>
-                            ) : (
-                              local
-                            )}{" "}
-                            -{" "}
-                            {p.equipo_destacado === "visitante" ? (
-                              <strong>{visitante}</strong>
-                            ) : (
-                              visitante
-                            )}
-                          </span>
-                        );
-                      })()
-                    : p.nombre_partido}
+                  <input
+                    type="text"
+                    value={p.nombre_partido}
+                    onChange={(e) => handlePartidoChange(p.id, e.target.value)}
+                    className="w-full bg-transparent text-sm"
+                  />
                 </td>
                 <td className="px-3 py-2 text-center w-[80px]">
                   {mostrarPorcentaje(p.porcentaje_local)}
@@ -518,7 +621,7 @@ export default function PartidosList() {
                     </select>
                   </div>
                 </td>
-                <td className="px-3 py-2 text-left w-[280px]">
+                <td className="px-3 py-2 text-left w-[280px]" title={p.notas}>
                   <textarea
                     value={
                       notasTemp[p.id] !== undefined ? notasTemp[p.id] : p.notas
@@ -529,6 +632,7 @@ export default function PartidosList() {
                     className="w-full h-[25px] resize-none border rounded-md p-1 text-sm whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll"
                   />
                 </td>
+
                 <td className="px-2 py-2 w-[30px] text-center">
                   <button
                     onClick={() => setPartidoAEliminar(p)}
