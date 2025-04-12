@@ -21,73 +21,57 @@ class Command(BaseCommand):
             return
 
         partidos_data = [
-            ("03/04/2025", "Chelsea - Tottenham", 98.0, 95.5, 96.8, "2", "3", "1", "2", "NO", "Los dos a 1 de su racha histórica"),
-            ("04/04/2025", "Augsburgo - Bayern Munich", 99.7, 93.3, 96.5, "3", "-", "0", "1", "LIVE", ""),
-            ("04/04/2025", "Vittese - Jong AZ", 93.7, 98.8, 96.3, "1", "2", "2", "-", "LIVE", ""),
-            ("04/04/2025", "TOP Oss - Venlo", 98.6, 98.0, 98.3, "3", "3", "1", "1", "LIVE", ""),
-            ("05/04/2025", "Rotherham - Blackpool", 91.0, 97.2, 94.1, "1", "1", "2", "2", "LIVE", ""),
-            ("06/04/2025", "Atalanta - Lazio", 99.9, 76.5, 88.2, "3", "-", "0", "1", "LIVE", "Nada que decir, racha horrible de la Atalanta"),
-            ("06/04/2025", "St. Gallen - Servette", 99.2, 91.4, 95.3, "1", "1", "1", "3", "LIVE", ""),
-            ("06/04/2025", "Silkeborg - Lyngby", 97.4, 98.8, 98.1, "2", "2", "1", "1", "LIVE", ""),
-            ("07/04/2025", "Leicester - Newcastle", 99.8, 96.9, 98.4, "7", "-", "1", "2", "NO", "Leicester recién ascendido y Newcastle a 1 de su racha histórica"),
-            ("07/04/2025", "Jong Utrecht - Den Haag", 92.2, 97.5, 94.9, "2", "2", "2", "2", "LIVE", ""),
+            ("12/04/2025", "Brighton - Leicester", 94.5, 100.0, 97.3, "1 (2)", "0 (0)", "LIVE", ""),
+            ("12/04/2025", "PSV - Almere", 99.9, 91.6, 95.8, "1 (-)", "1 (2)", "LIVE", ""),
+            ("12/04/2025", "Sheffield Wed. - Oxford", 97.2, 85.0, 91.1, "2 (2)", "0 (1)", "LIVE", ""),
         ]
 
         liga_mapping = {
             "Premier League": ("Premier League", "GB-ENG"),
-            "Bundesliga": ("Bundesliga", "DE"),
             "Eredivisie": ("Eredivisie", "NL"),
-            "Keuken Kampioen": ("Keuken Kampioen", "NL"),
             "Championship": ("Championship", "GB-ENG"),
-            "Serie A": ("Serie A", "IT"),
-            "Super League": ("Super League", "CH"),
-            "Superliga": ("Superliga", "DK"),
         }
 
         def detectar_liga(nombre_partido):
             nombre = nombre_partido.lower()
-            if any(e in nombre for e in ["chelsea", "tottenham", "leicester", "newcastle"]):
+            if any(e in nombre for e in ["brighton", "leicester"]):
                 return liga_mapping["Premier League"]
-            if any(e in nombre for e in ["augsburgo", "bayern"]):
-                return liga_mapping["Bundesliga"]
-            if any(e in nombre for e in ["vittese", "jong az", "top oss", "venlo", "jong utrecht", "den haag"]):
-                return liga_mapping["Keuken Kampioen"]
-            if any(e in nombre for e in ["rotherham", "blackpool"]):
+            if any(e in nombre for e in ["psv", "almere"]):
+                return liga_mapping["Eredivisie"]
+            if any(e in nombre for e in ["sheffield", "oxford"]):
                 return liga_mapping["Championship"]
-            if any(e in nombre for e in ["atalanta", "lazio"]):
-                return liga_mapping["Serie A"]
-            if any(e in nombre for e in ["st. gallen", "servette"]):
-                return liga_mapping["Super League"]
-            if any(e in nombre for e in ["silkeborg", "lyngby"]):
-                return liga_mapping["Superliga"]
             return None
+
+        def extraer_racha(valor):
+            return valor.split(" ")[0] if valor and " " in valor else valor
 
         creados = 0
 
         for datos in partidos_data:
             try:
                 fecha = datetime.strptime(datos[0], "%d/%m/%Y").date()
-                liga_info = detectar_liga(datos[1])
-                liga = None
-                if liga_info:
-                    liga = Liga.objects.filter(nombre=liga_info[0], codigo_pais=liga_info[1]).first()
-                    if not liga:
-                        self.stderr.write(f"\n⚠️ Liga no encontrada para partido {datos[1]}: {liga_info}")
+                nombre_partido = datos[1]
+                liga_info = detectar_liga(nombre_partido)
+                liga = Liga.objects.filter(nombre=liga_info[0], codigo_pais=liga_info[1]).first() if liga_info else None
+                if not liga:
+                    self.stderr.write(f"\n⚠️ Liga no encontrada para partido {nombre_partido}: {liga_info}")
 
                 Partido.objects.create(
                     metodo=metodo,
                     fecha=fecha,
-                    nombre_partido=datos[1],
+                    nombre_partido=nombre_partido,
                     liga=liga,
                     porcentaje_local=datos[2],
                     porcentaje_visitante=datos[3],
                     porcentaje_general=datos[4],
-                    racha_local=datos[5],
-                    racha_hist_local=datos[6],
-                    racha_visitante=datos[7],
-                    racha_hist_visitante=datos[8],
-                    estado=datos[9],
-                    notas=datos[10],
+                    racha_local=extraer_racha(datos[5]),
+                    racha_hist_local=None,
+                    racha_visitante=extraer_racha(datos[6]),
+                    racha_hist_visitante=None,
+                    estado=datos[7],
+                    notas=datos[8],
+                    cumplido=None,
+                    equipo_destacado="local",
                 )
                 creados += 1
             except Exception as e:

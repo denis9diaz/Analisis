@@ -6,7 +6,7 @@ from datetime import datetime
 User = get_user_model()
 
 class Command(BaseCommand):
-    help = 'Importa partidos para el método Over 0.5 HT - Both'
+    help = 'Importa partidos del 12/04/2025 para el método Over 0.5 HT - Both'
 
     def handle(self, *args, **options):
         try:
@@ -17,67 +17,39 @@ class Command(BaseCommand):
 
         metodo = MetodoAnalisis.objects.filter(nombre="Over 0.5 HT - Both", usuario=user).first()
         if not metodo:
-            self.stderr.write("\n❌ El método 'Over 0.5 HT - Both' no existe para el usuario 'denis.analisis'.\n")
+            self.stderr.write("\n❌ El método 'Over 0.5 HT - Both' no existe para el usuario.\n")
             return
 
         partidos_data = [
-            ("01/04/2025", "Wolves - West Ham", 80.6, 98.7, 89.7, "0", "2", "2", "4", "NO", "Los dos equipos lejos de su racha histórica"),
-            ("01/04/2025", "Crewe - Grimsby", 97.7, 99.9, 98.8, "2", "4", "4", "-", "LIVE", ""),
-            ("04/04/2025", "Augsburgo - Bayern Munich", 98.2, 82.0, 90.1, "2", "4", "0", "2", "NO", "Los dos a 2 de su racha histórica"),
-            ("04/04/2025", "Maastricht - Excelsior", 99.5, 68.8, 84.2, "3", "-", "0", "3", "NO", "Equipos muy unders este año y Excelsior recién ascendido"),
-            ("05/04/2025", "Leipzig - Hoffenheim", 93.1, 99.6, 96.4, "1", "2", "2", "2", "LIVE", ""),
-            ("06/04/2025", "Vancouver Whitecaps - Colorado Rapids", 94.8, 96.4, 95.6, "1", "2", "1", "1", "LIVE", ""),
-            ("06/04/2025", "Tottenham - Southampton", 99.6, 83.3, 91.5, "2", "2", "0", "2", "LIVE", ""),
-            ("06/04/2025", "Villarreal - Athletic Club", 80.3, 99.3, 89.8, "0", "2", "4", "-", "LIVE", "Lo único que puedo apuntar es que el Villarreal estaba a 2 de su racha histórica y el Athletic bastante under este año"),
-            ("08/04/2025", "Shrewsbury - Reading", 94.9, 97.8, 96.4, "2", "3", "2", "3", "NO", "Los dos equipos a 1 de su racha histórica"),
-            ("08/04/2025", "Huddersfield - Wycombe", 91.0, 96.8, 93.9, "1", "2", "5", "-", "LIVE", ""),
+            # fecha, nombre_partido, %local, %visitante, %general, racha_local, racha_hist_local, racha_visitante, racha_hist_visitante, estado, notas
+            ("12/04/2025", "Hertha - Darmstadt", 96.9, 97.7, 97.3, "1", "2", "2", "2", "LIVE", ""),
+            ("12/04/2025", "Doncaster - Wimbledon", 95.8, 98.2, 97.0, "1", "2", "4", "4", "NO", "Wimbledon demasiado under (53%) y Doncaster a 1 de su racha. Se juegan mucho"),
+            ("12/04/2025", "Portsmouth - Derby County", 96.8, 97.7, 97.3, "2", "3", "2", "3", "NO", "Los dos vienen de otra categoría. Derby a 1 de su racha histórica. Se juegan mucho. Equipos unders y liga under"),
+            ("12/04/2025", "Zaragoza - Eibar", 97.6, 99.9, 98.8, "3", "4", "4", "-", "NO", "Liga descartada"),
         ]
 
         liga_mapping = {
-            "Premier League": ("Premier League", "GB-ENG"),
-            "Championship": ("Championship", "GB-ENG"),
-            "Bundesliga": ("Bundesliga", "DE"),
-            "Keuken Kampioen": ("Keuken Kampioen", "NL"),
-            "MLS": ("MLS", "US"),
-            "LaLiga EA Sports": ("LaLiga EA Sports", "ES"),
-            "League One": ("League One", "GB-ENG"),
-            "League Two": ("League Two", "GB-ENG"),
+            "Hertha - Darmstadt": ("Bundesliga II", "DE"),
+            "Doncaster - Wimbledon": ("League Two", "GB-ENG"),
+            "Portsmouth - Derby County": ("Championship", "GB-ENG"),
+            "Zaragoza - Eibar": ("LaLiga Hypermotion", "ES"),
         }
-
-        def detectar_liga(nombre_partido):
-            nombre = nombre_partido.lower()
-            if any(equipo in nombre for equipo in ["tottenham", "west ham", "southampton"]):
-                return liga_mapping["Premier League"]
-            if any(equipo in nombre for equipo in ["wolves", "reading", "crewe", "grimsby", "huddersfield", "wycombe", "shrewsbury"]):
-                return liga_mapping["Championship"]
-            if any(equipo in nombre for equipo in ["augsburgo", "bayern", "leipzig", "hoffenheim"]):
-                return liga_mapping["Bundesliga"]
-            if any(equipo in nombre for equipo in ["maastricht", "excelsior"]):
-                return liga_mapping["Keuken Kampioen"]
-            if any(equipo in nombre for equipo in ["vancouver", "colorado"]):
-                return liga_mapping["MLS"]
-            if any(equipo in nombre for equipo in ["villarreal", "athletic"]):
-                return liga_mapping["LaLiga EA Sports"]
-            if any(equipo in nombre for equipo in ["crewe", "grimsby"]):
-                return liga_mapping["League Two"]
-            return None
 
         creados = 0
 
         for datos in partidos_data:
             try:
                 fecha = datetime.strptime(datos[0], "%d/%m/%Y").date()
-                liga_info = detectar_liga(datos[1])
-                liga = None
-                if liga_info:
-                    liga = Liga.objects.filter(nombre=liga_info[0], codigo_pais=liga_info[1]).first()
-                    if not liga:
-                        self.stderr.write(f"\n⚠️ Liga no encontrada para partido {datos[1]}: {liga_info}")
+                nombre_partido = datos[1]
+                liga_nombre, codigo_pais = liga_mapping.get(nombre_partido, (None, None))
+                liga = Liga.objects.filter(nombre=liga_nombre, codigo_pais=codigo_pais).first() if liga_nombre else None
+                if not liga:
+                    self.stderr.write(f"\n⚠️ Liga no encontrada para partido {nombre_partido}: {liga_nombre} ({codigo_pais})")
 
                 Partido.objects.create(
                     metodo=metodo,
                     fecha=fecha,
-                    nombre_partido=datos[1],
+                    nombre_partido=nombre_partido,
                     liga=liga,
                     porcentaje_local=datos[2],
                     porcentaje_visitante=datos[3],
