@@ -12,7 +12,9 @@ type Metodo = {
 
 export default function MetodosList() {
   const [metodos, setMetodos] = useState<Metodo[]>([]);
-  const { metodoSeleccionado, setMetodoSeleccionado } = useMetodo();
+  const { metodoSeleccionado, setMetodoSeleccionado, modoNotas, setModoNotas } =
+    useMetodo();
+
   const [showModalMetodo, setShowModalMetodo] = useState(false);
   const [metodoAEliminar, setMetodoAEliminar] = useState<Metodo | null>(null);
 
@@ -29,6 +31,7 @@ export default function MetodosList() {
   };
 
   const handleSelectMetodo = (metodo: Metodo) => {
+    setModoNotas(false); // salir del modo notas si se selecciona un método
     setMetodoSeleccionado(metodo);
   };
 
@@ -51,40 +54,61 @@ export default function MetodosList() {
     <div className="mb-4">
       <h3 className="text-xl font-semibold mb-4 text-gray-700">Mis métodos</h3>
 
-      <button
-        onClick={() => setShowModalMetodo(true)}
-        className="mb-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition"
-      >
-        Añadir método
-      </button>
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => setShowModalMetodo(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
+        >
+          Añadir método
+        </button>
 
-      <div className="max-h-150 overflow-y-auto space-y-2">
-        <ul className="space-y-2">
-          {metodos.map((metodo) => {
-            const isSelected = metodoSeleccionado?.id === metodo.id;
-            return (
-              <li key={metodo.id} className="flex items-center justify-between">
-                <button
-                  className={`flex-1 text-left px-4 py-2 rounded-lg shadow-sm border transition duration-200 ${
-                    isSelected
-                      ? "border-blue-600 text-blue-700 font-semibold bg-white shadow"
-                      : "bg-gray-100 text-gray-800 hover:bg-gray-200 border-transparent"
-                  }`}
-                  onClick={() => handleSelectMetodo(metodo)}
-                >
-                  {metodo.nombre}
-                </button>
-                <button
-                  className="ml-2 text-gray-500 hover:text-rose-600 transition"
-                  onClick={() => setMetodoAEliminar(metodo)}
-                >
-                  <Trash2 size={18} />
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        <button
+          onClick={() => {
+            setModoNotas(!modoNotas); // ✅ usamos el valor actual directamente
+            setMetodoSeleccionado(null);
+          }}
+          className={`${
+            modoNotas
+              ? "bg-green-700 hover:bg-green-800"
+              : "bg-green-600 hover:bg-green-700"
+          } text-white font-semibold py-2 px-4 rounded shadow`}
+        >
+          {modoNotas ? "Métodos" : "Notas"}
+        </button>
       </div>
+
+      {!modoNotas && (
+        <div className="max-h-150 overflow-y-auto space-y-2">
+          <ul className="space-y-2">
+            {metodos.map((metodo) => {
+              const isSelected = metodoSeleccionado?.id === metodo.id;
+              return (
+                <li
+                  key={metodo.id}
+                  className="flex items-center justify-between"
+                >
+                  <button
+                    className={`flex-1 text-left px-4 py-2 rounded-lg shadow-sm border transition duration-200 ${
+                      isSelected
+                        ? "border-blue-600 text-blue-700 font-semibold bg-white shadow"
+                        : "bg-gray-100 text-gray-800 hover:bg-gray-200 border-transparent"
+                    }`}
+                    onClick={() => handleSelectMetodo(metodo)}
+                  >
+                    {metodo.nombre}
+                  </button>
+                  <button
+                    className="ml-2 text-gray-500 hover:text-rose-600 transition"
+                    onClick={() => setMetodoAEliminar(metodo)}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       <MetodoFormModal
         isOpen={showModalMetodo}
@@ -92,7 +116,6 @@ export default function MetodosList() {
         onMetodoGuardado={cargarMetodos}
       />
 
-      {/* Modal de confirmación */}
       <Modal
         isOpen={!!metodoAEliminar}
         onRequestClose={() => setMetodoAEliminar(null)}

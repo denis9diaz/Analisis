@@ -11,6 +11,8 @@ type MetodoContextType = {
   setMetodoSeleccionado: (metodo: Metodo | null) => void;
   showMetodoModal: boolean;
   setShowMetodoModal: (show: boolean) => void;
+  modoNotas: boolean;
+  setModoNotas: (v: boolean) => void;
 };
 
 const MetodoContext = createContext<MetodoContextType | undefined>(undefined);
@@ -18,6 +20,7 @@ const MetodoContext = createContext<MetodoContextType | undefined>(undefined);
 export function MetodoProvider({ children }: { children: ReactNode }) {
   const [metodoSeleccionado, setMetodoSeleccionado] = useState<Metodo | null>(null);
   const [showMetodoModal, setShowMetodoModal] = useState(false);
+  const [modoNotas, setModoNotas] = useState(false);
 
   return (
     <MetodoContext.Provider
@@ -26,6 +29,8 @@ export function MetodoProvider({ children }: { children: ReactNode }) {
         setMetodoSeleccionado,
         showMetodoModal,
         setShowMetodoModal,
+        modoNotas,
+        setModoNotas,
       }}
     >
       {children}

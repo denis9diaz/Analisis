@@ -1,17 +1,16 @@
 import { MetodoProvider } from "../context/MetodoContext";
 import MetodosList from "./MetodosList";
 import PartidosList from "./PartidosList";
+import NotasList from "./NotasList";
 import EmptyStateAnalisis from "./EmptyStateAnalisis";
 import { useMetodo } from "../context/MetodoContext";
 
-function PartidosConMetodo() {
-  const { metodoSeleccionado } = useMetodo();
+function ContenidoAnalisis() {
+  const { metodoSeleccionado, modoNotas } = useMetodo();
 
-  return metodoSeleccionado ? (
-    <PartidosList />
-  ) : (
-    <EmptyStateAnalisis />
-  );
+  if (!metodoSeleccionado && !modoNotas) return <EmptyStateAnalisis />;
+
+  return modoNotas ? <NotasList /> : <PartidosList />;
 }
 
 export default function AnalisisWrapper() {
@@ -23,7 +22,7 @@ export default function AnalisisWrapper() {
             <MetodosList />
           </div>
           <div className="flex-1">
-            <PartidosConMetodo />
+            <ContenidoAnalisis />
           </div>
         </div>
       </div>
