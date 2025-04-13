@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Liga, MetodoAnalisis, Partido, Suscripcion
+from .models import Liga, MetodoAnalisis, Partido, Suscripcion, NotaAnalisis
 
 class LigaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,3 +43,13 @@ class SuscripcionSerializer(serializers.ModelSerializer):
         model = Suscripcion
         fields = ['plan', 'fecha_inicio', 'fecha_fin', 'activa', 'cancelada']
         read_only_fields = ['fecha_inicio', 'fecha_fin', 'activa', 'cancelada']
+
+class NotaAnalisisSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NotaAnalisis
+        fields = ['id', 'usuario', 'fecha', 'equipo', 'tipo', 'analizar', 'stake', 'estado', 'cumplido', 'notas']
+        read_only_fields = ['id', 'usuario']
+
+    def create(self, validated_data):
+        validated_data['usuario'] = self.context['request'].user
+        return super().create(validated_data)

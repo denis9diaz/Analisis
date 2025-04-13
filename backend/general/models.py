@@ -62,7 +62,43 @@ class Partido(models.Model):
     )
     def __str__(self):
         return f"{self.nombre_partido} ({self.fecha})"
-        
+
+
+class NotaAnalisis(models.Model):
+    TIPO_CHOICES = [
+        ('LOCAL', 'Local'),
+        ('VISITANTE', 'Visitante'),
+    ]
+
+    ESTADO_CHOICES = [
+        ('APOSTADO', 'Apostado'),
+        ('LIVE', 'Live'),
+        ('NO', 'No'),
+    ]
+
+    RESULTADO_CHOICES = [
+        ('VERDE', 'Cumplido'),
+        ('ROJO', 'No cumplido'),
+        (None, 'Sin resultado'),
+    ]
+
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='notas_analisis'
+    )
+    fecha = models.DateField()
+    equipo = models.CharField(max_length=255)
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    analizar = models.TextField()
+    stake = models.CharField(max_length=20, blank=True)
+    estado = models.CharField(max_length=50, choices=ESTADO_CHOICES, default='NO')
+    cumplido = models.CharField(max_length=10, choices=RESULTADO_CHOICES, null=True, blank=True)
+    notas = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.equipo} ({self.fecha})"
+
 
 class Suscripcion(models.Model):
     PLANES = (

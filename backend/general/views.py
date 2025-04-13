@@ -10,13 +10,14 @@ from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from .models import Liga, MetodoAnalisis, Partido, Suscripcion
+from .models import Liga, MetodoAnalisis, Partido, Suscripcion, NotaAnalisis
 from .serializers import (
     LigaSerializer,
     MetodoAnalisisSerializer,
     PartidoReadSerializer,
     PartidoWriteSerializer,
     SuscripcionSerializer,
+    NotaAnalisisSerializer,
 )
 
 
@@ -305,3 +306,43 @@ def enviar_email_suscripcion(usuario, plan, cancelada=False):
     )
     email.attach_alternative(html_content, "text/html")
     email.send()
+
+
+class NotaAnalisisListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        notas = NotaAnalisis.objects.filter(usuario=request.user).order_by('-fecha')
+        serializer = NotaAnalisisSerializer(notas, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = NotaAnalisisSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            nota = serializer.save()
+            return Response(NotaAnalisisSerializer(nota).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request):
+        try:
+            nota = NotaAnalisis.objects.get(id=request.data.get('id'), usuario=request.user)
+        except NotaAnalisis.DoesNotExist:
+            return Response({"error": "Nota no encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = NotaAnalisisSerializer(nota, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            nota = serializer.save()
+            return Response(NotaAnalisisSerializer(nota).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NotaAnalisisDeleteAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        try:
+            nota = NotaAnalisis.objects.get(id=pk, usuario=request.user)
+            nota.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except NotaAnalisis.DoesNotExist:
+            return Response({"error": "Nota no encontrada."}, status=status.HTTP_404_NOT_FOUND)
