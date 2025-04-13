@@ -171,7 +171,7 @@ export default function PartidosList() {
     { id: 193, nombre: "Champions League", codigo_pais: "EU" },
     { id: 194, nombre: "Europa League", codigo_pais: "EU" },
     { id: 195, nombre: "Conference League", codigo_pais: "EU" },
-  ];  
+  ];
 
   const ligasMap = new Map<string, Partido["liga"]>();
 
@@ -221,22 +221,22 @@ export default function PartidosList() {
     return isNaN(numero) ? "-" : `${numero.toFixed(1)}%`;
   };
 
-  const opcionesLigaEditable = ORDEN_LIGAS.map((liga) => ({
-    value: liga.id, // Ensure value is a number
-    label: (
-      <div className="flex items-center gap-2">
-        <img
-          src={`https://flagcdn.com/w20/${liga.codigo_pais.toLowerCase()}.png`}
-          alt={liga.nombre}
-          className="inline"
-          width={20}
-          height={15}
-        />
-        <span>{liga.nombre}</span>
-      </div>
-    ),
-    data: liga,
-  }));
+  const opcionesLigaEditable: { value: string; label: JSX.Element }[] =
+    ORDEN_LIGAS.map((liga) => ({
+      value: liga.nombre,
+      label: (
+        <div className="flex items-center gap-2">
+          <img
+            src={`https://flagcdn.com/w20/${liga.codigo_pais.toLowerCase()}.png`}
+            alt={liga.nombre}
+            className="inline"
+            width={20}
+            height={15}
+          />
+          <span>{liga.nombre}</span>
+        </div>
+      ),
+    }));
 
   const partidosFiltrados = partidos.filter((p) => {
     const coincideLiga =
@@ -554,37 +554,31 @@ export default function PartidosList() {
                   <Select
                     options={opcionesLigaEditable}
                     value={
-                      p.liga
-                        ? {
-                            value: p.liga.id,
-                            label: (
-                              <div className="flex items-center gap-1">
-                                <img
-                                  src={`https://flagcdn.com/w20/${p.liga.codigo_pais.toLowerCase()}.png`}
-                                  alt={p.liga.nombre}
-                                  className="inline"
-                                  width={20}
-                                  height={15}
-                                />
-                                <span>{p.liga.nombre}</span>
-                              </div>
-                            ),
-                          }
+                      p.liga?.nombre
+                        ? opcionesLigaEditable.find(
+                            (opt) => opt.value === p.liga?.nombre
+                          ) ?? null
                         : null
                     }
                     onChange={(selectedOption) => {
                       if (selectedOption) {
-                        handleLigaChange(p.id, selectedOption.value);
+                        const ligaElegida = ORDEN_LIGAS.find(
+                          (liga) => liga.nombre === selectedOption.value
+                        );
+                        if (ligaElegida) {
+                          handleLigaChange(p.id, ligaElegida.id);
+                        }
                       }
                     }}
+                    isSearchable
                     placeholder="Selecciona una liga"
-                    isClearable={false} // Disable the clearable option to remove the "X" icon
+                    isClearable={false}
                     classNamePrefix="react-select"
                     styles={{
                       control: (base) => ({
                         ...base,
-                        border: "none", // Sin bordes
-                        boxShadow: "none", // Sin sombra
+                        border: "none",
+                        boxShadow: "none",
                         cursor: "pointer",
                       }),
                     }}
