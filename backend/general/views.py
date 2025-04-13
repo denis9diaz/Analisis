@@ -347,6 +347,7 @@ class NotaAnalisisDeleteAPIView(APIView):
         except NotaAnalisis.DoesNotExist:
             return Response({"error": "Nota no encontrada."}, status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def notas_stats(request):
