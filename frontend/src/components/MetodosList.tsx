@@ -69,8 +69,8 @@ export default function MetodosList() {
           }}
           className={`${
             modoNotas
-              ? "bg-green-700 hover:bg-green-800"
-              : "bg-green-600 hover:bg-green-700"
+              ? "bg-purple-800 hover:bg-purple-700"
+              : "bg-purple-800 hover:bg-purple-700"
           } text-white font-semibold py-2 px-4 rounded shadow`}
         >
           {modoNotas ? "Métodos" : "Notas"}

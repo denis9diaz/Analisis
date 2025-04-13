@@ -10,6 +10,7 @@ export type Nota = {
   fecha: string;
   estado: string;
   cumplido: string | null;
+  stake?: number | string;
   liga?: { nombre: string };
 };
 
@@ -19,6 +20,7 @@ type Props = {
   filtroEstado: string;
   filtroResultado: string;
   filtroMes: string;
+  filtroStake: string; // ✅ NUEVO
 };
 
 export default function NotasEstadisticas({
@@ -27,6 +29,7 @@ export default function NotasEstadisticas({
   filtroEstado,
   filtroResultado,
   filtroMes,
+  filtroStake, // ✅ NUEVO
 }: Props) {
   const notasFiltradas = notas.filter((n) => {
     const coincideLiga =
@@ -34,10 +37,10 @@ export default function NotasEstadisticas({
     const coincideEstado = filtroEstado === "TODOS" || n.estado === filtroEstado;
     const coincideResultado =
       filtroResultado === "TODOS" || (n.cumplido || "") === filtroResultado;
-    const coincideMes =
-      filtroMes === "TODOS" || n.fecha.startsWith(filtroMes);
+    const coincideMes = filtroMes === "TODOS" || n.fecha.startsWith(filtroMes);
+    const coincideStake = filtroStake === "TODOS" || String(n.stake) === filtroStake;
 
-    return coincideLiga && coincideEstado && coincideResultado && coincideMes;
+    return coincideLiga && coincideEstado && coincideResultado && coincideMes && coincideStake;
   });
 
   const total = notasFiltradas.length;
@@ -49,7 +52,7 @@ export default function NotasEstadisticas({
   const porcentaje = total > 0 ? ((aciertos / total) * 100).toFixed(1) : "0";
 
   return (
-    <div className="mb-4 bg-gray-50 border border-gray-200 rounded-md p-4 shadow-sm text-sm text-gray-700">
+    <div className="mb-4 bg-white border border-gray-200 rounded-md p-4 shadow-sm text-sm text-gray-700">
       <p className="mb-1 font-medium flex items-center gap-2">
         <img src="/2.png" alt="Estadísticas" className="w-5 h-5" />
         Estadísticas (según filtros aplicados):

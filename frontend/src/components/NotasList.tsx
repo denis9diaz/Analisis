@@ -5,6 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { fetchWithAuth } from "../utils/authFetch";
 import NotasEstadisticas from "./NotasEstadisticas";
 import Select from "react-select";
+import { Trash2 } from "lucide-react";
 
 const MESES = [
   { value: "2025-01", label: "Enero 2025" },
@@ -26,6 +27,7 @@ export default function NotasList() {
   const [filtroEstado, setFiltroEstado] = useState("TODOS");
   const [filtroResultado, setFiltroResultado] = useState("TODOS");
   const [filtroMes, setFiltroMes] = useState("TODOS");
+  const [filtroStake, setFiltroStake] = useState("TODOS");
 
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({
@@ -44,7 +46,14 @@ export default function NotasList() {
     const API_URL = import.meta.env.PUBLIC_API_URL;
     fetchWithAuth(`${API_URL}/api/general/notas/`)
       .then((res) => res.json())
-      .then(setNotas);
+      .then((data) =>
+        setNotas(
+          data.sort(
+            (a: { fecha: string }, b: { fecha: string }) =>
+              new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+          )
+        )
+      );
   };
 
   useEffect(fetchNotas, []);
@@ -55,7 +64,12 @@ export default function NotasList() {
       method: "POST",
       body: JSON.stringify({
         ...form,
-        fecha: form.fecha.toISOString().split("T")[0],
+        fecha:
+          form.fecha.getFullYear() +
+          "-" +
+          String(form.fecha.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(form.fecha.getDate()).padStart(2, "0"),
       }),
     });
     if (res.ok) {
@@ -107,7 +121,10 @@ export default function NotasList() {
     const coincideResultado =
       filtroResultado === "TODOS" || (n.cumplido || "") === filtroResultado;
     const coincideMes = filtroMes === "TODOS" || n.fecha.startsWith(filtroMes);
-    return coincideEstado && coincideResultado && coincideMes;
+    const coincideStake =
+      filtroStake === "TODOS" || String(n.stake) === filtroStake;
+
+    return coincideEstado && coincideResultado && coincideMes && coincideStake;
   });
 
   const itemsPorPagina = 13;
@@ -171,6 +188,26 @@ export default function NotasList() {
           </div>
           <div className="min-w-[200px]">
             <Select
+              options={[
+                { value: "TODOS", label: "Todos los stakes" },
+                ...Array.from({ length: 10 }, (_, i) => ({
+                  value: String(i + 1),
+                  label: `Stake ${i + 1}`,
+                })),
+              ]}
+              value={{
+                value: filtroStake,
+                label:
+                  filtroStake === "TODOS"
+                    ? "Todos los stakes"
+                    : `Stake ${filtroStake}`,
+              }}
+              onChange={(op) => op && setFiltroStake(op.value)}
+              classNamePrefix="react-select"
+            />
+          </div>
+          <div className="min-w-[200px]">
+            <Select
               options={[{ value: "TODOS", label: "Todos los meses" }, ...MESES]}
               value={
                 filtroMes === "TODOS"
@@ -190,6 +227,7 @@ export default function NotasList() {
         filtroLiga="TODAS"
         filtroEstado={filtroEstado}
         filtroResultado={filtroResultado}
+        filtroStake={filtroStake}
         filtroMes={filtroMes}
       />
 
@@ -204,6 +242,7 @@ export default function NotasList() {
             <th className="px-2 py-1 text-left w-[90px]">Stake</th>
             <th className="px-2 py-1 text-left w-[110px]">Estado</th>
             <th className="px-2 py-1 text-left w-[280px]">Notas</th>
+            <th className="px-2 py-1 text-center w-[40px]"></th>
           </tr>
         </thead>
         <tbody>
@@ -315,6 +354,28 @@ export default function NotasList() {
                   spellCheck={false}
                   className="w-full h-[25px] resize-none border rounded-md p-1 text-sm whitespace-nowrap overflow-x-auto overflow-y-hidden bg-transparent custom-scroll"
                 />
+              </td>
+              <td className="px-2 py-1 w-[40px] text-center">
+                <button
+                  onClick={async () => {
+                    const API_URL = import.meta.env.PUBLIC_API_URL;
+                    const res = await fetchWithAuth(
+                      `${API_URL}/api/general/notas/${n.id}/`,
+                      {
+                        method: "DELETE",
+                      }
+                    );
+                    if (res.ok) {
+                      setNotas((prev) =>
+                        prev.filter((nota) => nota.id !== n.id)
+                      );
+                    }
+                  }}
+                  className="text-gray-400 hover:text-rose-600 transition"
+                  title="Eliminar"
+                >
+                  <Trash2 size={16} />
+                </button>
               </td>
             </tr>
           ))}
