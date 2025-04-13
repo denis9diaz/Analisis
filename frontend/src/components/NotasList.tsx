@@ -141,7 +141,7 @@ export default function NotasList() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 text-gray-700">
         <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow cursor-pointer"
         >
           Añadir nota
         </button>
@@ -161,6 +161,10 @@ export default function NotasList() {
               }}
               onChange={(op) => op && setFiltroEstado(op.value)}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+              }}
             />
           </div>
           <div className="min-w-[200px]">
@@ -184,6 +188,10 @@ export default function NotasList() {
               }}
               onChange={(op) => op && setFiltroResultado(op.value)}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+              }}
             />
           </div>
           <div className="min-w-[200px]">
@@ -204,6 +212,10 @@ export default function NotasList() {
               }}
               onChange={(op) => op && setFiltroStake(op.value)}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+              }}
             />
           </div>
           <div className="min-w-[200px]">
@@ -216,6 +228,10 @@ export default function NotasList() {
               }
               onChange={(op) => op && setFiltroMes(op.value)}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+              }}
             />
           </div>
         </div>
@@ -256,7 +272,7 @@ export default function NotasList() {
                     handleEdit(n.id, "fecha", date.toISOString().split("T")[0])
                   }
                   onBlur={() => guardarCampo(n.id)}
-                  className="bg-transparent w-full text-sm leading-tight"
+                  className="bg-transparent w-full text-sm leading-tight cursor-pointer"
                   dateFormat="dd/MM/yyyy"
                 />
               </td>
@@ -266,7 +282,7 @@ export default function NotasList() {
                   defaultValue={n.equipo}
                   onChange={(e) => handleEdit(n.id, "equipo", e.target.value)}
                   onBlur={() => guardarCampo(n.id)}
-                  className="bg-transparent w-full text-sm leading-tight"
+                  className="bg-transparent w-full text-sm leading-tight cursor-pointer"
                 />
               </td>
               <td className="px-2 py-1 w-[110px]">
@@ -274,7 +290,7 @@ export default function NotasList() {
                   value={tempEdits[n.id]?.tipo || n.tipo}
                   onChange={(e) => handleEdit(n.id, "tipo", e.target.value)}
                   onBlur={() => guardarCampo(n.id)}
-                  className="bg-transparent w-full text-sm leading-tight"
+                  className="bg-transparent w-full text-sm leading-tight cursor-pointer"
                 >
                   <option value="LOCAL">Local</option>
                   <option value="VISITANTE">Visitante</option>
@@ -286,7 +302,7 @@ export default function NotasList() {
                   defaultValue={n.analizar}
                   onChange={(e) => handleEdit(n.id, "analizar", e.target.value)}
                   onBlur={() => guardarCampo(n.id)}
-                  className="bg-transparent w-full text-sm leading-tight"
+                  className="bg-transparent w-full text-sm leading-tight cursor-pointer"
                 />
               </td>
               <td className="px-2 py-1 w-[90px]">
@@ -295,7 +311,7 @@ export default function NotasList() {
                   defaultValue={n.stake}
                   onChange={(e) => handleEdit(n.id, "stake", e.target.value)}
                   onBlur={() => guardarCampo(n.id)}
-                  className="bg-transparent w-full text-sm leading-tight"
+                  className="bg-transparent w-full text-sm leading-tight cursor-pointer"
                 />
               </td>
               <td
@@ -371,7 +387,7 @@ export default function NotasList() {
                       );
                     }
                   }}
-                  className="text-gray-400 hover:text-rose-600 transition"
+                  className="text-gray-400 hover:text-rose-600 transition cursor-pointer"
                   title="Eliminar"
                 >
                   <Trash2 size={16} />
@@ -388,7 +404,7 @@ export default function NotasList() {
           <button
             key={i}
             onClick={() => setPaginaActual(i + 1)}
-            className={`px-3 py-1 rounded ${
+            className={`px-3 py-1 rounded cursor-pointer ${
               paginaActual === i + 1
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 text-gray-700"

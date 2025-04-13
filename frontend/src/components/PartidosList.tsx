@@ -365,7 +365,7 @@ export default function PartidosList() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 text-gray-700">
         <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition cursor-pointer"
         >
           Añadir partido
         </button>
@@ -418,6 +418,10 @@ export default function PartidosList() {
                 }
               }}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+              }}
             />
           </div>
 
@@ -441,6 +445,10 @@ export default function PartidosList() {
                 }
               }}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+              }}
             />
           </div>
 
@@ -470,6 +478,10 @@ export default function PartidosList() {
                 }
               }}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+              }}
             />
           </div>
 
@@ -488,6 +500,10 @@ export default function PartidosList() {
                 }
               }}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+              }}
             />
           </div>
         </div>
@@ -685,7 +701,7 @@ export default function PartidosList() {
                 <td className="px-2 py-2 w-[30px] text-center">
                   <button
                     onClick={() => setPartidoAEliminar(p)}
-                    className="text-gray-400 hover:text-rose-600 transition"
+                    className="text-gray-400 hover:text-rose-600 transition cursor-pointer"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -700,7 +716,7 @@ export default function PartidosList() {
             <button
               key={i}
               onClick={() => setPaginaActual(i + 1)}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 py-1 rounded cursor-pointer ${
                 paginaActual === i + 1
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 text-gray-700"

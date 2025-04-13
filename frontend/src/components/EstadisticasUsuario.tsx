@@ -126,7 +126,7 @@ export default function EstadisticasUsuario() {
       <div className="flex gap-3 items-center flex-wrap">
         <label className="text-sm text-gray-700">Filtrar por método:</label>
         <select
-          className="border border-gray-300 px-3 py-1 rounded text-sm"
+          className="border border-gray-300 px-3 py-1 rounded text-sm cursor-pointer"
           value={metodoSeleccionado ?? ""}
           onChange={(e) =>
             setMetodoSeleccionado(

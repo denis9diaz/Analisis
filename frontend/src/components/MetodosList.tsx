@@ -57,21 +57,24 @@ export default function MetodosList() {
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setShowModalMetodo(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow cursor-pointer"
         >
           Añadir método
         </button>
 
         <button
           onClick={() => {
-            setModoNotas(!modoNotas); // ✅ usamos el valor actual directamente
+            setModoNotas(!modoNotas);
             setMetodoSeleccionado(null);
           }}
-          className={`${
-            modoNotas
-              ? "bg-purple-800 hover:bg-purple-700"
-              : "bg-purple-800 hover:bg-purple-700"
-          } text-white font-semibold py-2 px-4 rounded shadow`}
+          className="text-white font-semibold py-2 px-4 rounded shadow cursor-pointer"
+          style={{ backgroundColor: "#190E2D" }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = "#190E2D")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = "#2c1c49")
+          }
         >
           {modoNotas ? "Métodos" : "Notas"}
         </button>
@@ -88,7 +91,7 @@ export default function MetodosList() {
                   className="flex items-center justify-between"
                 >
                   <button
-                    className={`flex-1 text-left px-4 py-2 rounded-lg shadow-sm border transition duration-200 ${
+                    className={`flex-1 text-left px-4 py-2 rounded-lg shadow-sm border transition duration-200 cursor-pointer ${
                       isSelected
                         ? "border-blue-600 text-blue-700 font-semibold bg-white shadow"
                         : "bg-gray-100 text-gray-800 hover:bg-gray-200 border-transparent"
@@ -97,8 +100,9 @@ export default function MetodosList() {
                   >
                     {metodo.nombre}
                   </button>
+
                   <button
-                    className="ml-2 text-gray-500 hover:text-rose-600 transition"
+                    className="ml-2 text-gray-500 hover:text-rose-600 transition cursor-pointer"
                     onClick={() => setMetodoAEliminar(metodo)}
                   >
                     <Trash2 size={18} />
