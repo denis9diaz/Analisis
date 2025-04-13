@@ -49,6 +49,9 @@ const MESES = [
 export default function PartidosList() {
   const { metodoSeleccionado } = useMetodo();
   const [partidos, setPartidos] = useState<Partido[]>([]);
+  const [editandoNombreId, setEditandoNombreId] = useState<number | null>(null);
+  const [nombreTemp, setNombreTemp] = useState<{ [id: number]: string }>({});
+
   const [showModal, setShowModal] = useState(false);
   const [partidoAEliminar, setPartidoAEliminar] = useState<Partido | null>(
     null
@@ -252,6 +255,20 @@ export default function PartidosList() {
     (paginaActual - 1) * itemsPorPagina,
     paginaActual * itemsPorPagina
   );
+
+  const renderNombrePartido = (partido: Partido) => {
+    const [local, visitante] = partido.nombre_partido.split(" - ");
+    const destacado = partido.equipo_destacado;
+
+    if (!local || !visitante) return partido.nombre_partido;
+
+    return (
+      <>
+        {destacado === "local" ? <strong>{local}</strong> : local} -{" "}
+        {destacado === "visitante" ? <strong>{visitante}</strong> : visitante}
+      </>
+    );
+  };
 
   const total = partidosFiltrados.length;
   const aciertos = partidosFiltrados.filter(
@@ -529,7 +546,7 @@ export default function PartidosList() {
                     selected={new Date(p.fecha)}
                     onChange={(date) => date && handleFechaChange(p.id, date)}
                     dateFormat="dd/MM/yyyy"
-                    className="w-full bg-transparent text-sm"
+                    className="w-full bg-transparent text-sm cursor-pointer"
                   />
                 </td>
                 <td className="px-3 py-2 w-[170px]">
@@ -567,18 +584,55 @@ export default function PartidosList() {
                         ...base,
                         border: "none", // Sin bordes
                         boxShadow: "none", // Sin sombra
+                        cursor: "pointer",
                       }),
                     }}
                   />
                 </td>
                 <td className="px-3 py-2 w-[260px]">
-                  <input
-                    type="text"
-                    value={p.nombre_partido}
-                    onChange={(e) => handlePartidoChange(p.id, e.target.value)}
-                    className="w-full bg-transparent text-sm"
-                  />
+                  {editandoNombreId === p.id ? (
+                    <input
+                      type="text"
+                      value={nombreTemp[p.id] ?? p.nombre_partido}
+                      onChange={(e) =>
+                        setNombreTemp((prev) => ({
+                          ...prev,
+                          [p.id]: e.target.value,
+                        }))
+                      }
+                      onBlur={() => {
+                        setEditandoNombreId(null);
+                        if (
+                          nombreTemp[p.id] !== undefined &&
+                          nombreTemp[p.id] !== p.nombre_partido
+                        ) {
+                          handlePartidoChange(p.id, nombreTemp[p.id]);
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          (e.target as HTMLInputElement).blur();
+                        }
+                      }}
+                      className="w-full bg-transparent text-sm border rounded px-1"
+                      autoFocus
+                    />
+                  ) : (
+                    <div
+                      onClick={() => {
+                        setEditandoNombreId(p.id);
+                        setNombreTemp((prev) => ({
+                          ...prev,
+                          [p.id]: p.nombre_partido,
+                        }));
+                      }}
+                      className="cursor-pointer"
+                    >
+                      {renderNombrePartido(p)}
+                    </div>
+                  )}
                 </td>
+
                 <td className="px-3 py-2 text-center w-[80px]">
                   {mostrarPorcentaje(p.porcentaje_local)}
                 </td>
