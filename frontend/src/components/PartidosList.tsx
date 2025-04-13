@@ -522,17 +522,17 @@ export default function PartidosList() {
         <table className="min-w-full text-sm text-gray-800 border-collapse table-fixed">
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
-              <th className="px-3 py-2 text-left w-[100px]">Fecha</th>
-              <th className="px-3 py-2 text-left w-[170px]">Liga</th>
-              <th className="px-3 py-2 text-left w-[260px]">Partido</th>
-              <th className="px-3 py-2 text-center w-[80px]">% Local</th>
-              <th className="px-3 py-2 text-center w-[80px]">% Visit.</th>
-              <th className="px-3 py-2 text-center w-[80px]">% Total</th>
-              <th className="px-3 py-2 text-center w-[60px]">R.L.</th>
-              <th className="px-3 py-2 text-center w-[60px]">R.V.</th>
-              <th className="px-3 py-2 text-center w-[50px]">Estado</th>
-              <th className="px-3 py-2 text-left w-[280px]">Notas</th>
-              <th className="px-2 py-2 w-[30px]"></th>
+              <th className="px-3 py-1 text-left w-[100px]">Fecha</th>
+              <th className="px-3 py-1 text-left w-[170px]">Liga</th>
+              <th className="px-3 py-1 text-left w-[260px]">Partido</th>
+              <th className="px-3 py-1 text-center w-[80px]">% Local</th>
+              <th className="px-3 py-1 text-center w-[80px]">% Visit.</th>
+              <th className="px-3 py-1 text-center w-[80px]">% Total</th>
+              <th className="px-3 py-1 text-center w-[60px]">R.L.</th>
+              <th className="px-3 py-1 text-center w-[60px]">R.V.</th>
+              <th className="px-3 py-1 text-center w-[50px]">Estado</th>
+              <th className="px-3 py-1 text-left w-[280px]">Notas</th>
+              <th className="px-1 py-1 w-[30px]"></th>
             </tr>
           </thead>
           <tbody>
@@ -541,7 +541,7 @@ export default function PartidosList() {
                 key={p.id}
                 className="hover:bg-gray-50 transition border-t border-gray-200"
               >
-                <td className="px-3 py-2 w-[100px]">
+                <td className="px-3 py-1 w-[100px]">
                   <DatePicker
                     selected={new Date(p.fecha)}
                     onChange={(date) => date && handleFechaChange(p.id, date)}
@@ -549,7 +549,7 @@ export default function PartidosList() {
                     className="w-full bg-transparent text-sm cursor-pointer"
                   />
                 </td>
-                <td className="px-3 py-2 w-[170px]">
+                <td className="px-3 py-1 w-[170px]">
                   <Select
                     options={opcionesLigaEditable}
                     value={
@@ -557,7 +557,7 @@ export default function PartidosList() {
                         ? {
                             value: p.liga.id,
                             label: (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1">
                                 <img
                                   src={`https://flagcdn.com/w20/${p.liga.codigo_pais.toLowerCase()}.png`}
                                   alt={p.liga.nombre}
@@ -589,7 +589,7 @@ export default function PartidosList() {
                     }}
                   />
                 </td>
-                <td className="px-3 py-2 w-[260px]">
+                <td className="px-3 py-1 w-[260px]">
                   {editandoNombreId === p.id ? (
                     <input
                       type="text"
@@ -633,23 +633,23 @@ export default function PartidosList() {
                   )}
                 </td>
 
-                <td className="px-3 py-2 text-center w-[80px]">
+                <td className="px-3 py-1 text-center w-[80px]">
                   {mostrarPorcentaje(p.porcentaje_local)}
                 </td>
-                <td className="px-3 py-2 text-center w-[80px]">
+                <td className="px-3 py-1 text-center w-[80px]">
                   {mostrarPorcentaje(p.porcentaje_visitante)}
                 </td>
-                <td className="px-3 py-2 text-center w-[80px]">
+                <td className="px-3 py-1 text-center w-[80px]">
                   {mostrarPorcentaje(p.porcentaje_general)}
                 </td>
-                <td className="px-3 py-2 text-center w-[60px]">
+                <td className="px-3 py-1 text-center w-[60px]">
                   {p.racha_local} ({p.racha_hist_local})
                 </td>
-                <td className="px-3 py-2 text-center w-[60px]">
+                <td className="px-3 py-1 text-center w-[60px]">
                   {p.racha_visitante} ({p.racha_hist_visitante})
                 </td>
                 <td
-                  className={`px-3 py-2 text-center w-[105px] rounded-md transition duration-300
+                  className={`px-3 py-1 text-center w-[105px] rounded-md transition duration-300
       ${
         p.cumplido === "VERDE"
           ? "bg-green-100 text-green-800"
