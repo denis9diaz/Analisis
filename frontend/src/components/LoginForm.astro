@@ -91,7 +91,6 @@
     const API_URL = document
       .querySelector("[data-api-url]")
       .getAttribute("data-api-url");
-    console.log("PUBLIC_API_URL:", API_URL); // Verifica si se imprime correctamente
 
     const form = document.getElementById("login-form");
 
@@ -186,7 +185,7 @@
         localStorage.setItem("username", data.username);
         showToast("Inicio de sesión correcto", "success");
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = "/analisis";
         }, 1000);
       } catch (err) {
         console.error("Error de conexión al backend:", err);
