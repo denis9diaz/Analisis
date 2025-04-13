@@ -5,7 +5,7 @@ LIGAS = [
     ("Bundesliga", "DE"),
     ("Bundesliga II", "DE"),
     ("A-League", "AU"),
-    ("Bundesliga", "AT"),
+    ("Bundesliga AUS", "AT"),
     ("Jupiler Pro-League", "BE"),
     ("Serie A Betano", "BR"),
     ("Superliga", "DK"),
