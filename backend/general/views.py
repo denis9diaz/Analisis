@@ -346,3 +346,36 @@ class NotaAnalisisDeleteAPIView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except NotaAnalisis.DoesNotExist:
             return Response({"error": "Nota no encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def notas_stats(request):
+    usuario = request.user
+
+    if not verificar_suscripcion_activa(usuario):
+        return Response({"error": "Se requiere una suscripción activa para ver las estadísticas."}, status=403)
+
+    notas = NotaAnalisis.objects.filter(usuario=usuario)
+
+    total = notas.count()
+    verdes = notas.filter(cumplido='VERDE').count()
+    rojos = notas.filter(cumplido='ROJO').count()
+    sin_resultado = notas.filter(cumplido__isnull=True).count() + notas.filter(cumplido='').count()
+
+    live = notas.filter(estado='LIVE').count()
+    apostado = notas.filter(estado='APOSTADO').count()
+    no = notas.filter(estado='NO').count()
+
+    return Response({
+        "total": total,
+        "resultados": {
+            "VERDE": verdes,
+            "ROJO": rojos,
+            "SIN_RESULTADO": sin_resultado
+        },
+        "estados": {
+            "LIVE": live,
+            "APOSTADO": apostado,
+            "NO": no
+        }
+    })

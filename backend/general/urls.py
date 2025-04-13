@@ -7,7 +7,8 @@ from .views import (
     SuscripcionView,
     MetodoAnalisisDetailAPIView,
     NotaAnalisisListCreateAPIView,
-    NotaAnalisisDeleteAPIView 
+    NotaAnalisisDeleteAPIView,
+    notas_stats,
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     path('metodos/<int:pk>/', MetodoAnalisisDetailAPIView.as_view(), name='metodo-detail'),
     path('notas/', NotaAnalisisListCreateAPIView.as_view(), name='notas-list-create'),
     path('notas/<int:pk>/', NotaAnalisisDeleteAPIView.as_view(), name='notas-delete'),
+    path("stats_notas/", notas_stats),
 ]
