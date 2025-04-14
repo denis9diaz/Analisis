@@ -136,7 +136,7 @@ export default function NotasList() {
   );
 
   return (
-    <div className="bg-white rounded-lg shadow p-2">
+    <div className="p-2">
       {/* Filtros + Añadir */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 text-gray-700">
         <button
