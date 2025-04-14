@@ -101,6 +101,7 @@ export async function silentTokenRefresh() {
   }
 
   try {
+    console.log("Intentando refrescar el token...");
     const res = await fetch(`${API_URL}/api/auth/token/refresh/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -111,14 +112,14 @@ export async function silentTokenRefresh() {
       const data = await res.json();
       localStorage.setItem("access_token", data.access);
     
-      // 🔥 NUEVO
+      // 🔥 NUEVO: Guarda también el nuevo refresh token si lo manda
       if (data.refresh) {
         localStorage.setItem("refresh_token", data.refresh);
       }
     
       console.info("Access token refrescado en segundo plano.");
     } else {
-      console.warn("No se pudo refrescar el token en segundo plano.");
+      console.warn("No se pudo refrescar el token en segundo plano. Eliminando credenciales...");
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
       localStorage.removeItem("username");

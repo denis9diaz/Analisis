@@ -40,45 +40,46 @@ import Header from "../components/Header.astro";
     <script is:inline>
       let timeout;
       const INACTIVITY_LIMIT = 10 * 60 * 1000;
-      const REFRESH_INTERVAL = 8 * 60 * 1000;
+      const REFRESH_INTERVAL = 8 * 60 * 1000; // Refrescar antes de que expire el token
       const ACTIVE_THRESHOLD = 9 * 60 * 1000;
-    
+
       let lastActivity = Date.now();
-    
+
       function logout() {
+        console.warn("Sesión expirada. Cerrando sesión...");
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         localStorage.removeItem("username");
         window.location.href = "/";
       }
-    
+
       function resetInactivityTimer() {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
           console.warn("Sesión expirada por inactividad.");
           logout();
         }, INACTIVITY_LIMIT);
-    
+
         lastActivity = Date.now();
       }
-    
+
       ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach((event) => {
         window.addEventListener(event, resetInactivityTimer);
       });
-    
+
       resetInactivityTimer();
-    
+
       // Esperar hasta que window.silentTokenRefresh esté disponible
       const waitForSilentTokenRefresh = setInterval(() => {
         if (typeof window.silentTokenRefresh === "function") {
           console.log("✅ silentTokenRefresh está disponible. Iniciando refresh automático.");
-    
+
           clearInterval(waitForSilentTokenRefresh);
-    
+
           // Ahora sí, activar el setInterval real
           setInterval(() => {
             const timeSinceLastActivity = Date.now() - lastActivity;
-    
+
             if (timeSinceLastActivity < ACTIVE_THRESHOLD) {
               console.log("Usuario activo. Refrescando token...");
               window.silentTokenRefresh();
