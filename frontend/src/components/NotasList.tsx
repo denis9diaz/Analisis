@@ -135,6 +135,94 @@ export default function NotasList() {
     paginaActual * itemsPorPagina
   );
 
+  const renderBotonesPaginacion = () => {
+    const botones = [];
+    const maxVisible = 5;
+
+    if (totalPaginas <= maxVisible + 2) {
+      for (let i = 1; i <= totalPaginas; i++) {
+        botones.push(
+          <button
+            key={i}
+            onClick={() => setPaginaActual(i)}
+            className={`px-3 py-1 rounded cursor-pointer ${
+              paginaActual === i
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {i}
+          </button>
+        );
+      }
+    } else {
+      botones.push(
+        <button
+          key={1}
+          onClick={() => setPaginaActual(1)}
+          className={`px-3 py-1 rounded cursor-pointer ${
+            paginaActual === 1
+              ? "bg-blue-600 text-white"
+              : "bg-gray-100 text-gray-700"
+          }`}
+        >
+          1
+        </button>
+      );
+
+      if (paginaActual > 3) {
+        botones.push(
+          <span key="startDots" className="px-2">
+            ...
+          </span>
+        );
+      }
+
+      const start = Math.max(2, paginaActual - 1);
+      const end = Math.min(totalPaginas - 1, paginaActual + 1);
+
+      for (let i = start; i <= end; i++) {
+        botones.push(
+          <button
+            key={i}
+            onClick={() => setPaginaActual(i)}
+            className={`px-3 py-1 rounded cursor-pointer ${
+              paginaActual === i
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {i}
+          </button>
+        );
+      }
+
+      if (paginaActual < totalPaginas - 2) {
+        botones.push(
+          <span key="endDots" className="px-2">
+            ...
+          </span>
+        );
+      }
+
+      botones.push(
+        <button
+          key={totalPaginas}
+          onClick={() => setPaginaActual(totalPaginas)}
+          className={`px-3 py-1 rounded cursor-pointer ${
+            paginaActual === totalPaginas
+              ? "bg-blue-600 text-white"
+              : "bg-gray-100 text-gray-700"
+          }`}
+        >
+          {totalPaginas}
+        </button>
+      );
+    }
+
+    return botones;
+  };
+
   return (
     <div className="p-2">
       {/* Filtros + Añadir */}
@@ -447,20 +535,8 @@ export default function NotasList() {
       </div>
 
       {/* Paginación */}
-      <div className="flex justify-center mt-4 mb-2 gap-2">
-        {Array.from({ length: totalPaginas }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => setPaginaActual(i + 1)}
-            className={`px-3 py-1 rounded cursor-pointer ${
-              paginaActual === i + 1
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700"
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
+      <div className="flex justify-center mt-4 mb-2 gap-2 flex-wrap">
+        {renderBotonesPaginacion()}
       </div>
 
       {/* Modal */}
