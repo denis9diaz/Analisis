@@ -20,6 +20,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_str
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 
 # 🔐 Generar token JWT
@@ -76,6 +77,7 @@ def register(request):
 
 
 # 🔓 Login
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
