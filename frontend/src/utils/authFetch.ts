@@ -51,7 +51,12 @@ export async function fetchWithAuth(
           const data = await refreshRes.json();
           localStorage.setItem("access_token", data.access);
           access = data.access;
-
+        
+          // 🔥 NUEVO: guarda también el nuevo refresh token si lo manda
+          if (data.refresh) {
+            localStorage.setItem("refresh_token", data.refresh);
+          }
+        
           // Reintentar las peticiones en cola
           refreshQueue.forEach((cb) => cb());
           refreshQueue = [];
@@ -105,6 +110,12 @@ export async function silentTokenRefresh() {
     if (res.ok) {
       const data = await res.json();
       localStorage.setItem("access_token", data.access);
+    
+      // 🔥 NUEVO
+      if (data.refresh) {
+        localStorage.setItem("refresh_token", data.refresh);
+      }
+    
       console.info("Access token refrescado en segundo plano.");
     } else {
       console.warn("No se pudo refrescar el token en segundo plano.");
@@ -120,4 +131,10 @@ export async function silentTokenRefresh() {
     localStorage.removeItem("username");
     window.location.href = "/";
   }
+}
+
+// Expone la función globalmente para que pueda ser usada desde Astro
+if (typeof window !== "undefined") {
+  // @ts-ignore
+  window.silentTokenRefresh = silentTokenRefresh;
 }

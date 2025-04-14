@@ -2,8 +2,38 @@
 import EstadisticasGenerales from "../components/EstadisticasGenerales.tsx";
 ---
 
-<div class="min-h-screen bg-gray-100 py-16 px-4 text-gray-900">
-  <div class="max-w-4xl mx-auto">
-    <EstadisticasGenerales client:load />
+<div data-api-url={import.meta.env.PUBLIC_API_URL}>
+  <script is:inline>
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+      window.location.href = "/inicio-sesion";
+    } else {
+      const API_URL = document
+        .querySelector("[data-api-url]")
+        .getAttribute("data-api-url");
+
+      fetch(`${API_URL}/api/general/suscripcion/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => res.ok ? res.json() : null)
+        .then((data) => {
+          if (!data || !data.activa) {
+            window.location.href = "/planes";
+          }
+        })
+        .catch(() => {
+          window.location.href = "/planes";
+        });
+    }
+  </script>
+
+  <div class="min-h-screen bg-gray-100 py-16 px-4 text-gray-900">
+    <div class="max-w-4xl mx-auto">
+      <EstadisticasGenerales client:load />
+    </div>
   </div>
 </div>

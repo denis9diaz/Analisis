@@ -38,30 +38,48 @@ import Header from "../components/Header.astro";
     <script is:inline>
       let timeout;
       const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutos
-
+      const REFRESH_INTERVAL = 8 * 60 * 1000; // Cada 8 minutos
+      const ACTIVE_THRESHOLD = 9 * 60 * 1000; // Considerar inactivo si pasó más de 9 min sin actividad
+    
+      let lastActivity = Date.now();
+    
       function logout() {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         localStorage.removeItem("username");
         window.location.href = "/";
       }
-
+    
       function resetInactivityTimer() {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
           console.warn("Sesión expirada por inactividad.");
           logout();
         }, INACTIVITY_LIMIT);
+    
+        lastActivity = Date.now(); // Actualiza el tiempo de última actividad
       }
-
+    
       // Escuchar eventos de actividad del usuario
       ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach((event) => {
         window.addEventListener(event, resetInactivityTimer);
       });
-
+    
       // Inicializar el temporizador de inactividad
       resetInactivityTimer();
-    </script>
+    
+      // Refrescar el token automáticamente si el usuario está activo
+      setInterval(() => {
+        const timeSinceLastActivity = Date.now() - lastActivity;
+    
+        if (timeSinceLastActivity < ACTIVE_THRESHOLD) {
+          console.log("Usuario activo. Refrescando token...");
+          window.silentTokenRefresh?.(); // Esto debe estar disponible globalmente
+        } else {
+          console.log("Usuario inactivo. No se refresca token.");
+        }
+      }, REFRESH_INTERVAL);
+    </script>    
     
   </body>
 </html>
