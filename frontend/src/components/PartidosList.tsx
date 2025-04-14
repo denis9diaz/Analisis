@@ -360,7 +360,7 @@ export default function PartidosList() {
   if (!metodoSeleccionado) return null;
 
   return (
-    <div className="p-1">
+    <div className="bg-white rounded-lg shadow p-2">
       {/* Filtros */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 text-gray-700">
         <button
@@ -710,22 +710,22 @@ export default function PartidosList() {
             ))}
           </tbody>
         </table>
-        {/* Controles de paginación */}
-        <div className="flex justify-center mt-3 gap-2 text-sm mb-2">
-          {Array.from({ length: totalPaginas }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setPaginaActual(i + 1)}
-              className={`px-3 py-1 rounded cursor-pointer ${
-                paginaActual === i + 1
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
+      </div>
+      {/* Controles de paginación */}
+      <div className="flex justify-center mt-3 gap-2 text-sm mb-2">
+        {Array.from({ length: totalPaginas }, (_, i) => (
+          <button
+            key={i}
+            onClick={() => setPaginaActual(i + 1)}
+            className={`px-3 py-1 rounded cursor-pointer ${
+              paginaActual === i + 1
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
       </div>
 
       <PartidoFormModal

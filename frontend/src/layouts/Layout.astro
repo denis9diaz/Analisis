@@ -34,12 +34,14 @@ import Header from "../components/Header.astro";
     <Header />
     <slot />
 
+  <!-- 👇 Importa el archivo que define silentTokenRefresh global -->
+    <script type="module" src="/src/main.ts"></script>
     <!-- 👇 Script para logout automático tras 10 minutos de inactividad -->
     <script is:inline>
       let timeout;
-      const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutos
-      const REFRESH_INTERVAL = 8 * 60 * 1000; // Cada 8 minutos
-      const ACTIVE_THRESHOLD = 9 * 60 * 1000; // Considerar inactivo si pasó más de 9 min sin actividad
+      const INACTIVITY_LIMIT = 10 * 60 * 1000;
+      const REFRESH_INTERVAL = 8 * 60 * 1000;
+      const ACTIVE_THRESHOLD = 9 * 60 * 1000;
     
       let lastActivity = Date.now();
     
@@ -57,35 +59,38 @@ import Header from "../components/Header.astro";
           logout();
         }, INACTIVITY_LIMIT);
     
-        lastActivity = Date.now(); // Actualiza el tiempo de última actividad
+        lastActivity = Date.now();
       }
     
-      // Escuchar eventos de actividad del usuario
       ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach((event) => {
         window.addEventListener(event, resetInactivityTimer);
       });
     
-      // Inicializar el temporizador de inactividad
       resetInactivityTimer();
     
-      // Refrescar el token automáticamente si el usuario está activo
-      setInterval(() => {
-        const timeSinceLastActivity = Date.now() - lastActivity;
+      // Esperar hasta que window.silentTokenRefresh esté disponible
+      const waitForSilentTokenRefresh = setInterval(() => {
+        if (typeof window.silentTokenRefresh === "function") {
+          console.log("✅ silentTokenRefresh está disponible. Iniciando refresh automático.");
     
-        if (timeSinceLastActivity < ACTIVE_THRESHOLD) {
-          console.log("Usuario activo. Intentando refrescar token...");
+          clearInterval(waitForSilentTokenRefresh);
     
-          if (typeof window.silentTokenRefresh === "function") {
-            window.silentTokenRefresh();
-          } else {
-            console.warn("silentTokenRefresh aún no está disponible.");
-          }
+          // Ahora sí, activar el setInterval real
+          setInterval(() => {
+            const timeSinceLastActivity = Date.now() - lastActivity;
     
+            if (timeSinceLastActivity < ACTIVE_THRESHOLD) {
+              console.log("Usuario activo. Refrescando token...");
+              window.silentTokenRefresh();
+            } else {
+              console.log("Usuario inactivo. No se refresca token.");
+            }
+          }, REFRESH_INTERVAL);
         } else {
-          console.log("Usuario inactivo. No se refresca token.");
+          console.log("⏳ Esperando a que silentTokenRefresh esté disponible...");
         }
-      }, REFRESH_INTERVAL);
-    </script>    
+      }, 500);
+    </script>     
     
   </body>
 </html>
