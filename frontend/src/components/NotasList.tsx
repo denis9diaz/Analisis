@@ -248,7 +248,7 @@ export default function NotasList() {
       />
 
       {/* Tabla */}
-      <div className="overflow-x-auto rounded-lg shadow-md bg-white">
+      <div className="rounded-lg shadow-md bg-white">
         <table className="min-w-full text-sm text-gray-700 border-collapse table-fixed">
           <thead className="bg-blue-600 text-white text-sm leading-tight">
             <tr>
@@ -327,18 +327,52 @@ export default function NotasList() {
                   />
                 </td>
                 <td
-                  className={`px-2 py-1 w-[110px] text-center rounded-md transition duration-300 ${
-                    n.cumplido === "VERDE"
-                      ? "bg-green-100 text-green-800"
-                      : n.cumplido === "ROJO"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
+                  className={`relative px-2 py-1 w-[110px] text-center rounded-md transition duration-300 group
+    ${
+      n.cumplido === "VERDE"
+        ? "bg-green-100 text-green-800"
+        : n.cumplido === "ROJO"
+        ? "bg-red-100 text-red-800"
+        : "bg-gray-100 text-gray-600"
+    }`}
                 >
-                  <div className="relative group">
-                    <span className="block cursor-pointer group-hover:opacity-0 transition-opacity">
-                      {n.estado}
-                    </span>
+                  {/* Texto visible por defecto */}
+                  <span className="block pointer-events-none transition-opacity duration-200 group-hover:opacity-0">
+                    {n.estado}
+                  </span>
+
+                  {/* Selects visibles sólo al hacer hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 flex flex-col justify-center gap-[2px] transition-opacity px-[4px]">
+                    <select
+                      value={n.estado}
+                      onChange={async (e) => {
+                        const API_URL = import.meta.env.PUBLIC_API_URL;
+                        const res = await fetchWithAuth(
+                          `${API_URL}/api/general/notas/`,
+                          {
+                            method: "PATCH",
+                            body: JSON.stringify({
+                              id: n.id,
+                              estado: e.target.value,
+                            }),
+                          }
+                        );
+                        if (res.ok) {
+                          const actualizada = await res.json();
+                          setNotas((prev) =>
+                            prev.map((nota) =>
+                              nota.id === n.id ? actualizada : nota
+                            )
+                          );
+                        }
+                      }}
+                      className="text-xs border border-gray-300 rounded w-full"
+                    >
+                      <option value="NO">NO</option>
+                      <option value="LIVE">LIVE</option>
+                      <option value="APOSTADO">APOSTADO</option>
+                    </select>
+
                     <select
                       value={n.cumplido || ""}
                       onChange={async (e) => {
@@ -362,7 +396,7 @@ export default function NotasList() {
                           );
                         }
                       }}
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 cursor-pointer"
+                      className="text-xs border border-gray-300 rounded w-full"
                     >
                       <option value="">Sin resultado</option>
                       <option value="VERDE">Acierto</option>
@@ -370,6 +404,7 @@ export default function NotasList() {
                     </select>
                   </div>
                 </td>
+
                 <td className="px-2 py-1 w-[280px]">
                   <textarea
                     value={

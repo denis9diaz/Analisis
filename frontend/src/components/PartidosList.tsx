@@ -501,7 +501,7 @@ export default function PartidosList() {
       </div>
 
       {/* Tabla */}
-      <div className="overflow-x-auto rounded-lg shadow-md bg-white">
+      <div className="rounded-lg shadow-md bg-white">
         <table className="min-w-full text-sm text-gray-800 border-collapse table-fixed">
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
@@ -606,25 +606,60 @@ export default function PartidosList() {
                   {p.racha_visitante} ({p.racha_hist_visitante})
                 </td>
                 <td
-                  className={`px-1 py-1 text-center w-[105px] rounded-md transition duration-300
-            ${
-              p.cumplido === "VERDE"
-                ? "bg-green-100 text-green-800"
-                : p.cumplido === "ROJO"
-                ? "bg-red-100 text-red-800"
-                : "bg-gray-100 text-gray-600"
-            }`}
+                  className={`relative px-1 py-1 text-center w-[105px] rounded-md transition duration-300 group
+    ${
+      p.cumplido === "VERDE"
+        ? "bg-green-100 text-green-800"
+        : p.cumplido === "ROJO"
+        ? "bg-red-100 text-red-800"
+        : "bg-gray-100 text-gray-600"
+    }`}
                 >
-                  <div className="relative group">
-                    <span className="block cursor-pointer group-hover:opacity-0 transition-opacity">
-                      {p.estado}
-                    </span>
+                  {/* Texto visible por defecto */}
+                  <span className="block pointer-events-none transition-opacity duration-200 group-hover:opacity-0">
+                    {p.estado}
+                  </span>
+
+                  {/* Selects visibles sólo al hacer hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 flex flex-col justify-center gap-[2px] transition-opacity px-[4px]">
+                    <select
+                      value={p.estado}
+                      onChange={(e) => {
+                        const API_URL = import.meta.env.PUBLIC_API_URL;
+                        fetchWithAuth(`${API_URL}/api/general/partidos/`, {
+                          method: "PATCH",
+                          body: JSON.stringify({
+                            id: p.id,
+                            estado: e.target.value,
+                          }),
+                        })
+                          .then((res) => res.json())
+                          .then((partidoActualizado: Partido) => {
+                            setPartidos((prev) =>
+                              prev.map((item) =>
+                                item.id === p.id
+                                  ? {
+                                      ...item,
+                                      estado: partidoActualizado.estado,
+                                    }
+                                  : item
+                              )
+                            );
+                          });
+                      }}
+                      className="text-xs border border-gray-300 rounded w-full"
+                    >
+                      <option value="NO">NO</option>
+                      <option value="LIVE">LIVE</option>
+                      <option value="APOSTADO">APOSTADO</option>
+                    </select>
+
                     <select
                       value={p.cumplido || ""}
                       onChange={(e) =>
                         handleResultadoChange(p.id, e.target.value)
                       }
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 cursor-pointer"
+                      className="text-xs border border-gray-300 rounded w-full"
                     >
                       <option value="">Sin resultado</option>
                       <option value="VERDE">Acierto</option>
@@ -632,6 +667,7 @@ export default function PartidosList() {
                     </select>
                   </div>
                 </td>
+
                 <td className="px-2 py-1 text-left w-[280px]" title={p.notas}>
                   <textarea
                     value={
