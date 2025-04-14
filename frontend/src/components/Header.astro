@@ -109,21 +109,20 @@
   window.checkToken = checkToken;
 
   function showUserLinks(username) {
-    // Centro nav: Planes + Análisis
     const centerButtons = `
-  <!-- Escritorio -->
-  <div class="hidden md:flex gap-2">
-    <a href="/planes" class="w-32 text-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Planes</a>
-    <a href="/analisis" class="w-32 text-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Análisis</a>
-    <a href="/estadisticas" class="w-32 text-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Estadísticas</a>
-  </div>
+<!-- Escritorio -->
+<div class="hidden md:flex gap-6 items-center">
+  <a href="/planes" class="w-32 text-center text-white font-medium hover:underline hover:opacity-90 transition">Planes</a>
+  <a href="/analisis" class="w-32 text-center text-white font-medium hover:underline hover:opacity-90 transition">Análisis</a>
+  <a href="/estadisticas" class="w-32 text-center text-white font-medium hover:underline hover:opacity-90 transition">Estadísticas</a>
+</div>
 
-  <!-- Móvil -->
-  <div class="grid grid-cols-1 gap-2 text-center md:hidden mb-2">
-    <a href="/planes" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Planes</a>
-    <a href="/analisis" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Análisis</a>
-    <a href="/estadisticas" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Estadísticas</a>
-  </div>`;
+<!-- Móvil -->
+<div class="grid grid-cols-1 gap-2 text-center md:hidden mb-2">
+  <a href="/planes" class="text-white font-medium hover:underline transition">Planes</a>
+  <a href="/analisis" class="text-white font-medium hover:underline transition">Análisis</a>
+  <a href="/estadisticas" class="text-white font-medium hover:underline transition">Estadísticas</a>
+</div>`;
 
     centerNav.innerHTML = centerButtons;
     mobileCenterNav.innerHTML = centerButtons;
@@ -178,9 +177,9 @@
 
   function showGuestLinks() {
     const centerButtons = `
-    <div class="hidden md:flex gap-2">
-      <a href="/planes" class="w-32 text-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Planes</a>
-    </div>`;
+<div class="hidden md:flex gap-6 items-center">
+  <a href="/planes" class="w-32 text-center text-white font-medium hover:underline hover:opacity-90 transition">Planes</a>
+</div>`;
 
     const rightButtons = `
     <div class="hidden md:flex gap-2 items-center">
@@ -189,11 +188,11 @@
     </div>`;
 
     const mobileButtons = `
-    <div class="grid grid-cols-1 gap-2 text-center">
-      <a href="/planes" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Planes</a>
-      <a href="/inicio-sesion" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition">Iniciar sesión</a>
-      <a href="/registro" class="px-4 py-2 text-white font-medium hover:underline">Registrarse</a>
-    </div>`;
+<div class="grid grid-cols-1 gap-2 text-center">
+  <a href="/planes" class="text-white font-medium hover:underline transition">Planes</a>
+  <a href="/inicio-sesion" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition">Iniciar sesión</a>
+  <a href="/registro" class="px-4 py-2 text-white font-medium hover:underline">Registrarse</a>
+</div>`;
 
     centerNav.innerHTML = centerButtons;
     rightNav.innerHTML = rightButtons;

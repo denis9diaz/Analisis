@@ -347,7 +347,7 @@ export default function PartidosList() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 text-gray-700">
         <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition cursor-pointer"
         >
           Añadir partido
         </button>
@@ -400,6 +400,11 @@ export default function PartidosList() {
                 }
               }}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+                menu: (base) => ({ ...base, zIndex: 20 }),
+              }}
             />
           </div>
 
@@ -423,6 +428,11 @@ export default function PartidosList() {
                 }
               }}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+                menu: (base) => ({ ...base, zIndex: 20 }),
+              }}
             />
           </div>
 
@@ -452,6 +462,11 @@ export default function PartidosList() {
                 }
               }}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+                menu: (base) => ({ ...base, zIndex: 20 }),
+              }}
             />
           </div>
 
@@ -470,6 +485,11 @@ export default function PartidosList() {
                 }
               }}
               classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, cursor: "pointer" }),
+                option: (base) => ({ ...base, cursor: "pointer" }),
+                menu: (base) => ({ ...base, zIndex: 20 }),
+              }}
             />
           </div>
         </div>
@@ -501,20 +521,20 @@ export default function PartidosList() {
       </div>
 
       {/* Tabla */}
-      <div className="rounded-lg shadow-md bg-white">
-        <table className="min-w-full text-sm text-gray-800 border-collapse table-fixed">
+      <div className="rounded-lg shadow-md bg-white overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 scrollbar-track-transparent">
+        <table className="min-w-[1100px] w-full text-sm text-gray-800 border-collapse table-fixed">
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
               <th className="px-2 py-1 text-left w-[100px]">Fecha</th>
               <th className="px-2 py-1 text-left w-[170px]">Liga</th>
-              <th className="px-2 py-1 text-left w-[260px]">Partido</th>
+              <th className="px-2 py-1 text-left w-[240px]">Partido</th>
               <th className="px-1 py-1 text-center w-[80px]">% Local</th>
               <th className="px-1 py-1 text-center w-[80px]">% Visit.</th>
               <th className="px-1 py-1 text-center w-[80px]">% Total</th>
               <th className="px-1 py-1 text-center w-[60px]">R.L.</th>
               <th className="px-1 py-1 text-center w-[60px]">R.V.</th>
-              <th className="px-1 py-1 text-center w-[50px]">Estado</th>
-              <th className="px-2 py-1 text-left w-[280px]">Notas</th>
+              <th className="px-1 py-1 text-center w-[100px]">Estado</th>
+              <th className="px-2 py-1 text-left w-[260px]">Notas</th>
               <th className="px-1 py-1 w-[30px]"></th>
             </tr>
           </thead>
@@ -529,7 +549,7 @@ export default function PartidosList() {
                     selected={new Date(p.fecha)}
                     onChange={(date) => date && handleFechaChange(p.id, date)}
                     dateFormat="dd/MM/yyyy"
-                    className="w-full bg-transparent text-sm py-0 h-[24px]"
+                    className="w-full bg-transparent text-sm py-0 h-[24px] cursor-pointer"
                   />
                 </td>
                 <td className="px-2 py-1 w-[170px]">
@@ -569,6 +589,7 @@ export default function PartidosList() {
                         height: 24,
                         border: "none",
                         boxShadow: "none",
+                        cursor: "pointer", // ✅ aquí
                       }),
                       valueContainer: (base) => ({
                         ...base,
@@ -579,10 +600,15 @@ export default function PartidosList() {
                         ...base,
                         height: 24,
                       }),
+                      option: (base) => ({
+                        ...base,
+                        cursor: "pointer", // ✅ y aquí también
+                      }),
                     }}
                   />
                 </td>
-                <td className="px-2 py-1 w-[260px]">
+
+                <td className="px-2 py-1 w-[240px]">
                   <input
                     type="text"
                     value={p.nombre_partido}
@@ -647,7 +673,7 @@ export default function PartidosList() {
                             );
                           });
                       }}
-                      className="text-xs border border-gray-300 rounded w-full"
+                      className="text-xs border border-gray-300 rounded w-full cursor-pointer" // ✅ cursor-pointer
                     >
                       <option value="NO">NO</option>
                       <option value="LIVE">LIVE</option>
@@ -659,7 +685,7 @@ export default function PartidosList() {
                       onChange={(e) =>
                         handleResultadoChange(p.id, e.target.value)
                       }
-                      className="text-xs border border-gray-300 rounded w-full"
+                      className="text-xs border border-gray-300 rounded w-full cursor-pointer" // ✅ cursor-pointer
                     >
                       <option value="">Sin resultado</option>
                       <option value="VERDE">Acierto</option>
@@ -668,7 +694,7 @@ export default function PartidosList() {
                   </div>
                 </td>
 
-                <td className="px-2 py-1 text-left w-[280px]" title={p.notas}>
+                <td className="px-2 py-1 text-left w-[260px]" title={p.notas}>
                   <textarea
                     value={
                       notasTemp[p.id] !== undefined ? notasTemp[p.id] : p.notas
@@ -682,7 +708,7 @@ export default function PartidosList() {
                 <td className="px-1 py-1 w-[30px] text-center">
                   <button
                     onClick={() => setPartidoAEliminar(p)}
-                    className="text-gray-400 hover:text-rose-600 p-0"
+                    className="text-gray-400 hover:text-rose-600 p-0 cursor-pointer"
                   >
                     <Trash2 size={14} />
                   </button>

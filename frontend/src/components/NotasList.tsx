@@ -248,8 +248,8 @@ export default function NotasList() {
       />
 
       {/* Tabla */}
-      <div className="rounded-lg shadow-md bg-white">
-        <table className="min-w-full text-sm text-gray-700 border-collapse table-fixed">
+      <div className="overflow-x-auto overflow-y-hidden rounded-lg shadow-md bg-white scrollbar-thin hover:scrollbar-thumb-gray-400 scrollbar-thumb-gray-300 scrollbar-track-transparent">
+        <table className="w-full min-w-[900px] text-sm text-gray-700 border-collapse table-fixed">
           <thead className="bg-blue-600 text-white text-sm leading-tight">
             <tr>
               <th className="px-2 py-1 text-left w-[90px]">Fecha</th>
