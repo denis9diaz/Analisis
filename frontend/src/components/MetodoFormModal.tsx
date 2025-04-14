@@ -52,7 +52,7 @@ export default function MetodoFormModal({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Añadir Método"
-      className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full mx-auto mt-24 outline-none text-gray-700"
+      className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full mx-4 sm:mx-auto mt-24 outline-none text-gray-700"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50"
     >
       <h2 className="text-xl font-semibold mb-6 text-gray-800">

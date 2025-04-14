@@ -73,8 +73,14 @@ import Header from "../components/Header.astro";
         const timeSinceLastActivity = Date.now() - lastActivity;
     
         if (timeSinceLastActivity < ACTIVE_THRESHOLD) {
-          console.log("Usuario activo. Refrescando token...");
-          window.silentTokenRefresh?.(); // Esto debe estar disponible globalmente
+          console.log("Usuario activo. Intentando refrescar token...");
+    
+          if (typeof window.silentTokenRefresh === "function") {
+            window.silentTokenRefresh();
+          } else {
+            console.warn("silentTokenRefresh aún no está disponible.");
+          }
+    
         } else {
           console.log("Usuario inactivo. No se refresca token.");
         }
