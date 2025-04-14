@@ -17,11 +17,10 @@ export default function EmptyState() {
       </svg>
       <h2 className="text-xl font-semibold mb-6">Sin método seleccionado</h2>
       <p className="text-ml text-center max-w-sm mb-6">
-        Selecciona un método de análisis en la sección lateral
-        izquierda o crea un método pulsando "Añadir método".
+        Selecciona un método de análisis o crea un método pulsando "Añadir método".
       </p>
       <p className="text-ml text-center max-w-sm">
-        La pestaña "Notas" está pensada para apuntar los partidos que quieres analizar en un futuro. Añádelos y los tendrás a solo un clic.
+        La pestaña "Notas" está pensada para apuntar los partidos que quieres analizar en un futuro.
       </p>
     </div>
   );

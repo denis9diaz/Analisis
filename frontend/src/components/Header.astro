@@ -112,9 +112,18 @@
     const centerButtons = `
 <!-- Escritorio -->
 <div class="hidden md:flex gap-6 items-center">
-  <a href="/planes" class="w-32 text-center text-white font-medium hover:underline hover:opacity-90 transition">Planes</a>
-  <a href="/analisis" class="w-32 text-center text-white font-medium hover:underline hover:opacity-90 transition">Análisis</a>
-  <a href="/estadisticas" class="w-32 text-center text-white font-medium hover:underline hover:opacity-90 transition">Estadísticas</a>
+  <a href="/planes" class="w-32 text-center text-white font-medium relative group overflow-hidden">
+    <span class="relative z-10">Planes</span>
+    <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
+  </a>
+  <a href="/analisis" class="w-32 text-center text-white font-medium relative group overflow-hidden">
+    <span class="relative z-10">Análisis</span>
+    <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
+  </a>
+  <a href="/estadisticas" class="w-32 text-center text-white font-medium relative group overflow-hidden">
+    <span class="relative z-10">Estadísticas</span>
+    <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
+  </a>
 </div>
 
 <!-- Móvil -->
@@ -178,13 +187,16 @@
   function showGuestLinks() {
     const centerButtons = `
 <div class="hidden md:flex gap-6 items-center">
-  <a href="/planes" class="w-32 text-center text-white font-medium hover:underline hover:opacity-90 transition">Planes</a>
+  <a href="/planes" class="w-32 text-center text-white font-medium relative group overflow-hidden">
+    <span class="relative z-10">Planes</span>
+    <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
+  </a>
 </div>`;
 
     const rightButtons = `
     <div class="hidden md:flex gap-2 items-center">
-      <a href="/inicio-sesion" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg transition">Iniciar sesión</a>
-      <a href="/registro" class="text-white font-medium hover:underline">Registrarse</a>
+      <a href="/inicio-sesion" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 me-2 rounded-lg transition">Iniciar sesión</a>
+      <a href="/registro" class="text-white font-medium">Registrarse</a>
     </div>`;
 
     const mobileButtons = `
