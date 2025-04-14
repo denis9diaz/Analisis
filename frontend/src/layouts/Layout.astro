@@ -40,7 +40,7 @@ import Header from "../components/Header.astro";
     <script is:inline>
       let timeout;
       const INACTIVITY_LIMIT = 10 * 60 * 1000;
-      const REFRESH_INTERVAL = 8 * 60 * 1000; // Refrescar antes de que expire el token
+      const REFRESH_INTERVAL = 7 * 60 * 1000; // Refrescar con más antelación
       const ACTIVE_THRESHOLD = 9 * 60 * 1000;
 
       let lastActivity = Date.now();
@@ -77,12 +77,17 @@ import Header from "../components/Header.astro";
           clearInterval(waitForSilentTokenRefresh);
 
           // Ahora sí, activar el setInterval real
-          setInterval(() => {
+          setInterval(async () => {
             const timeSinceLastActivity = Date.now() - lastActivity;
 
             if (timeSinceLastActivity < ACTIVE_THRESHOLD) {
               console.log("Usuario activo. Refrescando token...");
-              window.silentTokenRefresh();
+              try {
+                await window.silentTokenRefresh();
+              } catch (err) {
+                console.error("Error al refrescar el token:", err);
+                logout(); // Si falla el refresh, cerrar sesión
+              }
             } else {
               console.log("Usuario inactivo. No se refresca token.");
             }

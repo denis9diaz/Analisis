@@ -37,56 +37,23 @@ export async function fetchWithAuth(
   let res = await fetch(finalUrl, applyAuth(access));
 
   if (res.status === 401 && refresh) {
-    if (!isRefreshing) {
-      isRefreshing = true;
-
-      try {
-        const refreshRes = await fetch(`${API_URL}/api/auth/token/refresh/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refresh }),
-        });
-
-        if (refreshRes.ok) {
-          const data = await refreshRes.json();
-          localStorage.setItem("access_token", data.access);
-          access = data.access;
-        
-          // 🔥 NUEVO: guarda también el nuevo refresh token si lo manda
-          if (data.refresh) {
-            localStorage.setItem("refresh_token", data.refresh);
-          }
-        
-          // Reintentar las peticiones en cola
-          refreshQueue.forEach((cb) => cb());
-          refreshQueue = [];
-        } else {
-          if (redirectOnFail) {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("refresh_token");
-            localStorage.removeItem("username");
-            window.location.href = "/";
-          }
-          return Promise.reject("Sesión expirada. Refresh token inválido.");
-        }
-      } catch (err) {
-        console.error("Error al refrescar el token:", err);
-        if (redirectOnFail) {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("refresh_token");
-          localStorage.removeItem("username");
-          window.location.href = "/";
-        }
-        return Promise.reject("Error al refrescar el token.");
-      } finally {
-        isRefreshing = false;
+    console.warn("Token de acceso expirado. Intentando refrescar...");
+    try {
+      await silentTokenRefresh();
+      access = localStorage.getItem("access_token");
+      if (access) {
+        return fetch(finalUrl, applyAuth(access));
       }
+    } catch (err) {
+      console.error("Error al refrescar el token:", err);
+      if (redirectOnFail) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("username");
+        window.location.href = "/";
+      }
+      return Promise.reject("Sesión expirada. Refresh token inválido.");
     }
-
-    // Esperar a que el token sea refrescado
-    return new Promise((resolve) => {
-      refreshQueue.push(() => resolve(fetch(finalUrl, applyAuth(access!))));
-    });
   }
 
   return res;

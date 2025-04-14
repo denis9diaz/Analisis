@@ -127,7 +127,7 @@ export default function NotasList() {
     return coincideEstado && coincideResultado && coincideMes && coincideStake;
   });
 
-  const itemsPorPagina = 13;
+  const itemsPorPagina = 14;
   const [paginaActual, setPaginaActual] = useState(1);
   const totalPaginas = Math.ceil(notasFiltradas.length / itemsPorPagina);
   const paginadas = notasFiltradas.slice(
@@ -266,7 +266,10 @@ export default function NotasList() {
           </thead>
           <tbody>
             {paginadas.map((n) => (
-              <tr key={n.id} className="border-t border-gray-200">
+              <tr
+                key={n.id}
+                className="border-t border-gray-200 text-sm h-[30px] leading-tight"
+              >
                 <td className="px-2 py-1 w-[90px]">
                   <DatePicker
                     selected={new Date(n.fecha)}
@@ -279,7 +282,7 @@ export default function NotasList() {
                       )
                     }
                     onBlur={() => guardarCampo(n.id)}
-                    className="bg-transparent w-full text-sm leading-tight cursor-pointer"
+                    className="bg-transparent w-full text-sm leading-tight py-0 h-[24px] cursor-pointer"
                     dateFormat="dd/MM/yyyy"
                   />
                 </td>
@@ -289,7 +292,7 @@ export default function NotasList() {
                     defaultValue={n.equipo}
                     onChange={(e) => handleEdit(n.id, "equipo", e.target.value)}
                     onBlur={() => guardarCampo(n.id)}
-                    className="bg-transparent w-full text-sm leading-tight cursor-pointer"
+                    className="bg-transparent w-full text-sm leading-tight py-0 h-[24px] cursor-pointer"
                   />
                 </td>
                 <td className="px-2 py-1 w-[110px]">
@@ -297,7 +300,7 @@ export default function NotasList() {
                     value={tempEdits[n.id]?.tipo || n.tipo}
                     onChange={(e) => handleEdit(n.id, "tipo", e.target.value)}
                     onBlur={() => guardarCampo(n.id)}
-                    className="bg-transparent w-full text-sm leading-tight cursor-pointer"
+                    className="bg-transparent w-full text-sm leading-tight py-0 h-[24px] cursor-pointer"
                   >
                     <option value="LOCAL">Local</option>
                     <option value="VISITANTE">Visitante</option>
@@ -311,7 +314,7 @@ export default function NotasList() {
                       handleEdit(n.id, "analizar", e.target.value)
                     }
                     onBlur={() => guardarCampo(n.id)}
-                    className="bg-transparent w-full text-sm leading-tight cursor-pointer"
+                    className="bg-transparent w-full text-sm leading-tight py-0 h-[24px] cursor-pointer"
                   />
                 </td>
                 <td className="px-2 py-1 w-[90px]">
@@ -320,7 +323,7 @@ export default function NotasList() {
                     defaultValue={n.stake}
                     onChange={(e) => handleEdit(n.id, "stake", e.target.value)}
                     onBlur={() => guardarCampo(n.id)}
-                    className="bg-transparent w-full text-sm leading-tight cursor-pointer"
+                    className="bg-transparent w-full text-sm leading-tight py-0 h-[24px] cursor-pointer"
                   />
                 </td>
                 <td
@@ -377,7 +380,7 @@ export default function NotasList() {
                     onChange={(e) => handleEdit(n.id, "notas", e.target.value)}
                     onBlur={() => guardarCampo(n.id)}
                     spellCheck={false}
-                    className="w-full h-[25px] resize-none border rounded-md p-1 text-sm whitespace-nowrap overflow-x-auto overflow-y-hidden bg-transparent custom-scroll"
+                    className="w-full h-[24px] resize-none border rounded-md p-1 text-sm whitespace-nowrap overflow-x-auto overflow-y-hidden bg-transparent custom-scroll"
                   />
                 </td>
                 <td className="px-2 py-1 w-[40px] text-center">
@@ -396,10 +399,10 @@ export default function NotasList() {
                         );
                       }
                     }}
-                    className="text-gray-400 hover:text-rose-600 transition cursor-pointer"
+                    className="text-gray-400 hover:text-rose-600 p-0 transition cursor-pointer"
                     title="Eliminar"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </button>
                 </td>
               </tr>

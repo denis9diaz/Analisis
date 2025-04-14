@@ -245,7 +245,7 @@ export default function PartidosList() {
     return coincideLiga && coincideEstado && coincideResultado && coincideMes;
   });
 
-  const itemsPorPagina = 11;
+  const itemsPorPagina = 14;
   const [paginaActual, setPaginaActual] = useState(1);
   const totalPaginas = Math.ceil(partidosFiltrados.length / itemsPorPagina);
   const partidosPaginados = partidosFiltrados.slice(
@@ -505,34 +505,34 @@ export default function PartidosList() {
         <table className="min-w-full text-sm text-gray-800 border-collapse table-fixed">
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
-              <th className="px-3 py-2 text-left w-[100px]">Fecha</th>
-              <th className="px-3 py-2 text-left w-[170px]">Liga</th>
-              <th className="px-3 py-2 text-left w-[260px]">Partido</th>
-              <th className="px-3 py-2 text-center w-[80px]">% Local</th>
-              <th className="px-3 py-2 text-center w-[80px]">% Visit.</th>
-              <th className="px-3 py-2 text-center w-[80px]">% Total</th>
-              <th className="px-3 py-2 text-center w-[60px]">R.L.</th>
-              <th className="px-3 py-2 text-center w-[60px]">R.V.</th>
-              <th className="px-3 py-2 text-center w-[50px]">Estado</th>
-              <th className="px-3 py-2 text-left w-[280px]">Notas</th>
-              <th className="px-2 py-2 w-[30px]"></th>
+              <th className="px-2 py-1 text-left w-[100px]">Fecha</th>
+              <th className="px-2 py-1 text-left w-[170px]">Liga</th>
+              <th className="px-2 py-1 text-left w-[260px]">Partido</th>
+              <th className="px-1 py-1 text-center w-[80px]">% Local</th>
+              <th className="px-1 py-1 text-center w-[80px]">% Visit.</th>
+              <th className="px-1 py-1 text-center w-[80px]">% Total</th>
+              <th className="px-1 py-1 text-center w-[60px]">R.L.</th>
+              <th className="px-1 py-1 text-center w-[60px]">R.V.</th>
+              <th className="px-1 py-1 text-center w-[50px]">Estado</th>
+              <th className="px-2 py-1 text-left w-[280px]">Notas</th>
+              <th className="px-1 py-1 w-[30px]"></th>
             </tr>
           </thead>
           <tbody>
             {partidosPaginados.map((p) => (
               <tr
                 key={p.id}
-                className="hover:bg-gray-50 transition border-t border-gray-200"
+                className="hover:bg-gray-50 transition border-t border-gray-200 text-sm h-[30px] leading-tight"
               >
-                <td className="px-3 py-2 w-[100px]">
+                <td className="px-2 py-1 w-[100px]">
                   <DatePicker
                     selected={new Date(p.fecha)}
                     onChange={(date) => date && handleFechaChange(p.id, date)}
                     dateFormat="dd/MM/yyyy"
-                    className="w-full bg-transparent text-sm"
+                    className="w-full bg-transparent text-sm py-0 h-[24px]"
                   />
                 </td>
-                <td className="px-3 py-2 w-[170px]">
+                <td className="px-2 py-1 w-[170px]">
                   <Select
                     options={opcionesLigaEditable}
                     value={
@@ -560,49 +560,60 @@ export default function PartidosList() {
                       }
                     }}
                     placeholder="Selecciona una liga"
-                    isClearable={false} // Disable the clearable option to remove the "X" icon
+                    isClearable={false}
                     classNamePrefix="react-select"
                     styles={{
                       control: (base) => ({
                         ...base,
-                        border: "none", // Sin bordes
-                        boxShadow: "none", // Sin sombra
+                        minHeight: 24,
+                        height: 24,
+                        border: "none",
+                        boxShadow: "none",
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        height: 24,
+                        padding: "0 6px",
+                      }),
+                      indicatorsContainer: (base) => ({
+                        ...base,
+                        height: 24,
                       }),
                     }}
                   />
                 </td>
-                <td className="px-3 py-2 w-[260px]">
+                <td className="px-2 py-1 w-[260px]">
                   <input
                     type="text"
                     value={p.nombre_partido}
                     onChange={(e) => handlePartidoChange(p.id, e.target.value)}
-                    className="w-full bg-transparent text-sm"
+                    className="w-full bg-transparent text-sm py-0 h-[24px]"
                   />
                 </td>
-                <td className="px-3 py-2 text-center w-[80px]">
+                <td className="px-1 py-1 text-center w-[80px]">
                   {mostrarPorcentaje(p.porcentaje_local)}
                 </td>
-                <td className="px-3 py-2 text-center w-[80px]">
+                <td className="px-1 py-1 text-center w-[80px]">
                   {mostrarPorcentaje(p.porcentaje_visitante)}
                 </td>
-                <td className="px-3 py-2 text-center w-[80px]">
+                <td className="px-1 py-1 text-center w-[80px]">
                   {mostrarPorcentaje(p.porcentaje_general)}
                 </td>
-                <td className="px-3 py-2 text-center w-[60px]">
+                <td className="px-1 py-1 text-center w-[60px]">
                   {p.racha_local} ({p.racha_hist_local})
                 </td>
-                <td className="px-3 py-2 text-center w-[60px]">
+                <td className="px-1 py-1 text-center w-[60px]">
                   {p.racha_visitante} ({p.racha_hist_visitante})
                 </td>
                 <td
-                  className={`px-3 py-2 text-center w-[105px] rounded-md transition duration-300
-      ${
-        p.cumplido === "VERDE"
-          ? "bg-green-100 text-green-800"
-          : p.cumplido === "ROJO"
-          ? "bg-red-100 text-red-800"
-          : "bg-gray-100 text-gray-600"
-      }`}
+                  className={`px-1 py-1 text-center w-[105px] rounded-md transition duration-300
+            ${
+              p.cumplido === "VERDE"
+                ? "bg-green-100 text-green-800"
+                : p.cumplido === "ROJO"
+                ? "bg-red-100 text-red-800"
+                : "bg-gray-100 text-gray-600"
+            }`}
                 >
                   <div className="relative group">
                     <span className="block cursor-pointer group-hover:opacity-0 transition-opacity">
@@ -621,7 +632,7 @@ export default function PartidosList() {
                     </select>
                   </div>
                 </td>
-                <td className="px-3 py-2 text-left w-[280px]" title={p.notas}>
+                <td className="px-2 py-1 text-left w-[280px]" title={p.notas}>
                   <textarea
                     value={
                       notasTemp[p.id] !== undefined ? notasTemp[p.id] : p.notas
@@ -629,40 +640,38 @@ export default function PartidosList() {
                     onChange={(e) => handleNotasChange(p.id, e.target.value)}
                     onBlur={() => guardarNotas(p.id)}
                     spellCheck={false}
-                    className="w-full h-[25px] resize-none border rounded-md p-1 text-sm whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll"
+                    className="w-full h-[24px] resize-none border rounded-md p-1 text-sm whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll"
                   />
                 </td>
-
-                <td className="px-2 py-2 w-[30px] text-center">
+                <td className="px-1 py-1 w-[30px] text-center">
                   <button
                     onClick={() => setPartidoAEliminar(p)}
-                    className="text-gray-400 hover:text-rose-600 transition"
+                    className="text-gray-400 hover:text-rose-600 p-0"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {/* Controles de paginación */}
-        <div className="flex justify-center mt-3 gap-2 text-sm mb-2">
-          {Array.from({ length: totalPaginas }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setPaginaActual(i + 1)}
-              className={`px-3 py-1 rounded ${
-                paginaActual === i + 1
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
       </div>
-
+      {/* Controles de paginación */}
+      <div className="flex justify-center mt-4 gap-2 mb-2">
+        {Array.from({ length: totalPaginas }, (_, i) => (
+          <button
+            key={i}
+            onClick={() => setPaginaActual(i + 1)}
+            className={`px-3 py-1 rounded ${
+              paginaActual === i + 1
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
       <PartidoFormModal
         isOpen={showModal}
         onRequestClose={() => setShowModal(false)}
