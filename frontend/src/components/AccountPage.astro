@@ -1,7 +1,3 @@
----
-import EstadisticasUsuario from "../components/EstadisticasUsuario";
----
-
 <script is:inline>
   const token = localStorage.getItem("access_token");
   if (!token) {
@@ -91,11 +87,6 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
           <p id="partidos-count" class="text-xl font-semibold">0</p>
         </div>
       </div>
-    </section>
-
-    <!-- 📈 Gráficos dinámicos -->
-    <section id="estadisticas-section" class="space-y-6">
-      <EstadisticasUsuario client:load />
     </section>
 
     <!-- ⚙️ Opciones avanzadas -->
@@ -327,7 +318,6 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
       const mensaje = document.getElementById("suscripcion-mensaje");
       const abrirModalBtn = document.getElementById("abrir-gestionar-modal");
       const resumen = document.getElementById("resumen-section");
-      const estadisticas = document.getElementById("estadisticas-section");
 
       section.style.display = "block";
 
@@ -336,8 +326,6 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
         abrirModalBtn.style.display = "none";
         resumen.innerHTML =
           "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
-        estadisticas.innerHTML =
-          "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
         return;
       }
 
@@ -347,8 +335,6 @@ import EstadisticasUsuario from "../components/EstadisticasUsuario";
         abrirModalBtn.style.display = "none";
         resumen.innerHTML =
           "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
-        estadisticas.innerHTML =
-          "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tus estadísticas.</p>";
         return;
       }
 

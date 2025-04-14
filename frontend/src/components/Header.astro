@@ -111,17 +111,26 @@
   function showUserLinks(username) {
     // Centro nav: Planes + Análisis
     const centerButtons = `
-      <div class="flex gap-2">
-        <a href="/planes" class="w-32 text-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Planes</a>
-        <a href="/analisis" class="w-32 text-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Análisis</a>
-      </div>`;
+  <!-- Escritorio -->
+  <div class="hidden md:flex gap-2">
+    <a href="/planes" class="w-32 text-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Planes</a>
+    <a href="/analisis" class="w-32 text-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Análisis</a>
+    <a href="/estadisticas" class="w-32 text-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Estadísticas</a>
+  </div>
+
+  <!-- Móvil -->
+  <div class="grid grid-cols-1 gap-2 text-center md:hidden mb-2">
+    <a href="/planes" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Planes</a>
+    <a href="/analisis" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Análisis</a>
+    <a href="/estadisticas" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Estadísticas</a>
+  </div>`;
 
     centerNav.innerHTML = centerButtons;
     mobileCenterNav.innerHTML = centerButtons;
 
     // Usuario dropdown
     const dropdownHTML = `
-      <div class="relative inline-block text-left group">
+      <div class="relative inline-block text-left group mt-2">
         <button id="user-menu-button" class="flex items-center gap-2 font-medium cursor-pointer text-white hover:text-gray-200 transition-all duration-200">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A4 4 0 0112 20a4 4 0 016.879-2.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -168,16 +177,28 @@
   }
 
   function showGuestLinks() {
-    const planesBtn = `
-      <a href="/planes" class="w-32 text-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Planes</a>`;
+    const centerButtons = `
+    <div class="hidden md:flex gap-2">
+      <a href="/planes" class="w-32 text-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Planes</a>
+    </div>`;
 
-    const login = `<a href="/inicio-sesion" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 me-1 rounded-lg transition">Iniciar sesión</a>`;
-    const register = `<a href="/registro" class="text-white font-medium">Registrarse</a>`;
+    const rightButtons = `
+    <div class="hidden md:flex gap-2 items-center">
+      <a href="/inicio-sesion" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg transition">Iniciar sesión</a>
+      <a href="/registro" class="text-white font-medium hover:underline">Registrarse</a>
+    </div>`;
 
-    centerNav.innerHTML = planesBtn;
-    rightNav.innerHTML = login + register;
-    mobileCenterNav.innerHTML = `<div class="mb-2">${planesBtn}</div>`;
-    mobileRightNav.innerHTML = login + register;
+    const mobileButtons = `
+    <div class="grid grid-cols-1 gap-2 text-center">
+      <a href="/planes" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-lg transition">Planes</a>
+      <a href="/inicio-sesion" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition">Iniciar sesión</a>
+      <a href="/registro" class="px-4 py-2 text-white font-medium hover:underline">Registrarse</a>
+    </div>`;
+
+    centerNav.innerHTML = centerButtons;
+    rightNav.innerHTML = rightButtons;
+    mobileCenterNav.innerHTML = mobileButtons;
+    mobileRightNav.innerHTML = "";
   }
 
   checkToken();
