@@ -1,75 +1,123 @@
-<script is:inline>
-  const API_URL = import.meta.env.PUBLIC_API_URL;
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+---
 
-  window.silentTokenRefresh = async function () {
-    const refresh = localStorage.getItem("refresh_token");
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>BetTracker</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta
+      name="description"
+      content="Plataforma para analizar estadísticas de apuestas deportivas y apuntar tus resultados"
+    />
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      integrity="sha512-KN+7fG0RgfWqU6tW7e7r+lKY+u3T3bEuGkBd0EtLVJePykFkKlo6Qw1T5Pp+LKbpDuzp/iylAHLaaPRV3Roh8A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body
+    id="root"
+    data-api-url={import.meta.env.PUBLIC_API_URL}
+    class="bg-[url('/fondo.png')] bg-cover bg-center bg-fixed text-white"
+  >
+    <Header />
+    <slot />
 
-    if (!refresh) {
-      console.warn("No refresh token disponible.");
-      return;
-    }
+    <!-- ✅ Script inline para manejar sesión y refresco automático de token -->
+    <script is:inline>
+      const API_URL = document.getElementById("root").dataset.apiUrl;
 
-    try {
-      console.log("Intentando refrescar el token...");
-      const res = await fetch(`${API_URL}/api/auth/token/refresh/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refresh }),
+      window.silentTokenRefresh = async function () {
+        const refresh = localStorage.getItem("refresh_token");
+
+        if (!refresh) {
+          console.warn("No refresh token disponible.");
+          return;
+        }
+
+        try {
+          console.log("Intentando refrescar el token...");
+          const res = await fetch(`${API_URL}/api/auth/token/refresh/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refresh }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            localStorage.setItem("access_token", data.access);
+            if (data.refresh) {
+              localStorage.setItem("refresh_token", data.refresh);
+            }
+            console.info("Access token refrescado en segundo plano.");
+          } else {
+            console.warn("No se pudo refrescar el token. Cerrando sesión.");
+            logout();
+          }
+        } catch (err) {
+          console.error("Error al refrescar el token:", err);
+          logout();
+        }
+      };
+
+      let timeout;
+      const INACTIVITY_LIMIT = 10 * 60 * 1000;
+      const REFRESH_INTERVAL = 7 * 60 * 1000;
+      const ACTIVE_THRESHOLD = 9 * 60 * 1000;
+      let lastActivity = Date.now();
+
+      function logout() {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("username");
+        window.location.href = "/";
+      }
+
+      function resetInactivityTimer() {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          console.warn("Sesión expirada por inactividad.");
+          logout();
+        }, INACTIVITY_LIMIT);
+        lastActivity = Date.now();
+      }
+
+      ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach((event) => {
+        window.addEventListener(event, resetInactivityTimer);
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("access_token", data.access);
-        if (data.refresh) {
-          localStorage.setItem("refresh_token", data.refresh);
+      resetInactivityTimer();
+
+      setInterval(async () => {
+        const timeSinceLastActivity = Date.now() - lastActivity;
+        if (timeSinceLastActivity < ACTIVE_THRESHOLD) {
+          console.log("Usuario activo. Refrescando token...");
+          await window.silentTokenRefresh();
+        } else {
+          console.log("Usuario inactivo. No se refresca token.");
         }
-        console.info("Access token refrescado en segundo plano.");
-      } else {
-        console.warn("No se pudo refrescar el token. Cerrando sesión.");
-        logout();
-      }
-    } catch (err) {
-      console.error("Error al refrescar el token:", err);
-      logout();
-    }
-  };
+      }, REFRESH_INTERVAL);
+    </script>
+  </body>
+</html>
 
-  // 👇 Resto del script igual que lo tenías
-  let timeout;
-  const INACTIVITY_LIMIT = 10 * 60 * 1000;
-  const REFRESH_INTERVAL = 7 * 60 * 1000;
-  const ACTIVE_THRESHOLD = 9 * 60 * 1000;
-  let lastActivity = Date.now();
-
-  function logout() {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    localStorage.removeItem("username");
-    window.location.href = "/";
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
   }
-
-  function resetInactivityTimer() {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      console.warn("Sesión expirada por inactividad.");
-      logout();
-    }, INACTIVITY_LIMIT);
-    lastActivity = Date.now();
-  }
-
-  ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach((event) => {
-    window.addEventListener(event, resetInactivityTimer);
-  });
-
-  resetInactivityTimer();
-
-  setInterval(async () => {
-    const timeSinceLastActivity = Date.now() - lastActivity;
-    if (timeSinceLastActivity < ACTIVE_THRESHOLD) {
-      console.log("Usuario activo. Refrescando token...");
-      await window.silentTokenRefresh();
-    } else {
-      console.log("Usuario inactivo. No se refresca token.");
-    }
-  }, REFRESH_INTERVAL);
-</script>
+</style>
