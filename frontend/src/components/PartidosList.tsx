@@ -35,6 +35,7 @@ type Option = {
   value: string;
   label: string;
   data: {
+    id: number;
     nombre: string;
     codigo_pais: string;
   };
@@ -143,41 +144,41 @@ export default function PartidosList() {
   }, [metodoSeleccionado]);
 
   const ORDEN_LIGAS = [
-    { nombre: "Bundesliga", codigo_pais: "DE" },
-    { nombre: "Bundesliga II", codigo_pais: "DE" },
-    { nombre: "A-League", codigo_pais: "AU" },
-    { nombre: "Bundesliga AUS", codigo_pais: "AT" },
-    { nombre: "Jupiler Pro-League", codigo_pais: "BE" },
-    { nombre: "Serie A Betano", codigo_pais: "BR" },
-    { nombre: "Superliga", codigo_pais: "DK" },
-    { nombre: "Premier League ESC", codigo_pais: "GB-SCT" },
-    { nombre: "LaLiga EA Sports", codigo_pais: "ES" },
-    { nombre: "LaLiga Hypermotion", codigo_pais: "ES" },
-    { nombre: "MLS", codigo_pais: "US" },
-    { nombre: "Meistriliiga", codigo_pais: "EE" },
-    { nombre: "Esiliiga", codigo_pais: "EE" },
-    { nombre: "Veikkausliiga", codigo_pais: "FI" },
-    { nombre: "Ykkosliiga", codigo_pais: "FI" },
-    { nombre: "Ligue 1", codigo_pais: "FR" },
-    { nombre: "Premier League", codigo_pais: "GB-ENG" },
-    { nombre: "Championship", codigo_pais: "GB-ENG" },
-    { nombre: "League One", codigo_pais: "GB-ENG" },
-    { nombre: "League Two", codigo_pais: "GB-ENG" },
-    { nombre: "Besta deild karla", codigo_pais: "IS" },
-    { nombre: "Division 1", codigo_pais: "IS" },
-    { nombre: "Serie A", codigo_pais: "IT" },
-    { nombre: "Eliteserien", codigo_pais: "NO" },
-    { nombre: "OBOS-ligaen", codigo_pais: "NO" },
-    { nombre: "Eredivisie", codigo_pais: "NL" },
-    { nombre: "Keuken Kampioen", codigo_pais: "NL" },
-    { nombre: "Liga Portugal", codigo_pais: "PT" },
-    { nombre: "Allsvenskan", codigo_pais: "SE" },
-    { nombre: "Superettan", codigo_pais: "SE" },
-    { nombre: "Super League", codigo_pais: "CH" },
-    { nombre: "Super Lig", codigo_pais: "TR" },
-    { nombre: "Champions League", codigo_pais: "EU" },
-    { nombre: "Europa League", codigo_pais: "EU" },
-    { nombre: "Conference League", codigo_pais: "EU" },
+    { id: 1, nombre: "Bundesliga", codigo_pais: "DE" },
+    { id: 2, nombre: "Bundesliga II", codigo_pais: "DE" },
+    { id: 3, nombre: "A-League", codigo_pais: "AU" },
+    { id: 4, nombre: "Bundesliga AUS", codigo_pais: "AT" },
+    { id: 5, nombre: "Jupiler Pro-League", codigo_pais: "BE" },
+    { id: 6, nombre: "Serie A Betano", codigo_pais: "BR" },
+    { id: 7, nombre: "Superliga", codigo_pais: "DK" },
+    { id: 8, nombre: "Premier League ESC", codigo_pais: "GB-SCT" },
+    { id: 9, nombre: "LaLiga EA Sports", codigo_pais: "ES" },
+    { id: 10, nombre: "LaLiga Hypermotion", codigo_pais: "ES" },
+    { id: 11, nombre: "MLS", codigo_pais: "US" },
+    { id: 12, nombre: "Meistriliiga", codigo_pais: "EE" },
+    { id: 13, nombre: "Esiliiga", codigo_pais: "EE" },
+    { id: 14, nombre: "Veikkausliiga", codigo_pais: "FI" },
+    { id: 15, nombre: "Ykkosliiga", codigo_pais: "FI" },
+    { id: 16, nombre: "Ligue 1", codigo_pais: "FR" },
+    { id: 17, nombre: "Premier League", codigo_pais: "GB-ENG" },
+    { id: 18, nombre: "Championship", codigo_pais: "GB-ENG" },
+    { id: 19, nombre: "League One", codigo_pais: "GB-ENG" },
+    { id: 20, nombre: "League Two", codigo_pais: "GB-ENG" },
+    { id: 21, nombre: "Besta deild karla", codigo_pais: "IS" },
+    { id: 22, nombre: "Division 1", codigo_pais: "IS" },
+    { id: 23, nombre: "Serie A", codigo_pais: "IT" },
+    { id: 24, nombre: "Eliteserien", codigo_pais: "NO" },
+    { id: 25, nombre: "OBOS-ligaen", codigo_pais: "NO" },
+    { id: 26, nombre: "Eredivisie", codigo_pais: "NL" },
+    { id: 27, nombre: "Keuken Kampioen", codigo_pais: "NL" },
+    { id: 28, nombre: "Liga Portugal", codigo_pais: "PT" },
+    { id: 29, nombre: "Allsvenskan", codigo_pais: "SE" },
+    { id: 30, nombre: "Superettan", codigo_pais: "SE" },
+    { id: 31, nombre: "Super League", codigo_pais: "CH" },
+    { id: 32, nombre: "Super Lig", codigo_pais: "TR" },
+    { id: 33, nombre: "Champions League", codigo_pais: "EU" },
+    { id: 34, nombre: "Europa League", codigo_pais: "EU" },
+    { id: 35, nombre: "Conference League", codigo_pais: "EU" },
   ];
 
   const ligasMap = new Map<string, Partido["liga"]>();
@@ -228,11 +229,20 @@ export default function PartidosList() {
     return isNaN(numero) ? "-" : `${numero.toFixed(1)}%`;
   };
 
-  const opcionesLigaEditable: Option[] = ORDEN_LIGAS.map((liga) => ({
-    value: liga.nombre,
-    label: liga.nombre,
-    data: liga,
-  }));
+  const opcionesLigaEditable: Option[] = ORDEN_LIGAS.map((liga) => {
+    const ligaConId = partidos.find(
+      (p) => p.liga?.nombre === liga.nombre
+    )?.liga;
+    return {
+      value: liga.nombre,
+      label: liga.nombre,
+      data: {
+        nombre: liga.nombre,
+        codigo_pais: liga.codigo_pais,
+        id: ligaConId?.id ?? -1, // usamos -1 si no se encontró
+      },
+    };
+  });
 
   const partidosFiltrados = partidos.filter((p) => {
     const coincideLiga =
@@ -314,12 +324,10 @@ export default function PartidosList() {
   };
 
   const handleLigaChange = async (id: number, nuevoNombreLiga: string) => {
-    const ligaEncontrada = partidos
-      .map((p) => p.liga)
-      .find((l) => l?.nombre === nuevoNombreLiga);
+    const ligaEncontrada = ORDEN_LIGAS.find((l) => l.nombre === nuevoNombreLiga);
 
     if (!ligaEncontrada) {
-      console.error("No se encontró la liga por nombre:", nuevoNombreLiga);
+      console.error("No se encontró el ID de la liga en ORDEN_LIGAS:", nuevoNombreLiga);
       return;
     }
 
@@ -327,7 +335,7 @@ export default function PartidosList() {
     try {
       const res = await fetchWithAuth(`${API_URL}/api/general/partidos/`, {
         method: "PATCH",
-        body: JSON.stringify({ id, liga: ligaEncontrada.id }), // seguimos enviando el ID al backend
+        body: JSON.stringify({ id, liga: ligaEncontrada.id }),
       });
 
       if (!res.ok) {
@@ -337,6 +345,7 @@ export default function PartidosList() {
       }
 
       const partidoActualizado: Partido = await res.json();
+
       setPartidos((prev) =>
         prev.map((p) =>
           p.id === id ? { ...p, liga: partidoActualizado.liga } : p
