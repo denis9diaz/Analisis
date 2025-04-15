@@ -26,9 +26,8 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://analisis-production.up.railway.app',
-    'https://analisis-virid.vercel.app',
-    'https://analisis-beynzvze8-denis-projects-dd2cd8e0.vercel.app',
+    "https://analisis-production.up.railway.app",
+    "https://analisis-virid.vercel.app",
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -70,9 +69,8 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOWED_ORIGINS = [
-        "https://analisis-virid.vercel.app",
-        "https://analisis-beynzvze8-denis-projects-dd2cd8e0.vercel.app",
-    ]
+    "https://analisis-virid.vercel.app",
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
