@@ -609,8 +609,8 @@ export default function PartidosList() {
       </div>
 
       {/* Tabla */}
-      <div className="overflow-x-auto rounded-lg shadow-md bg-white scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 scrollbar-track-transparent">
-        <table className="w-full text-sm text-gray-800 border-collapse">
+      <div className="overflow-x-auto overflow-y-hidden rounded-lg shadow-md bg-white scrollbar-thin hover:scrollbar-thumb-gray-400 scrollbar-thumb-gray-300 scrollbar-track-transparent">
+        <table className="w-full min-w-[900px] text-sm text-gray-800 border-collapse">
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
               <th className="px-2 py-1 text-left w-[100px]">Fecha</th>
