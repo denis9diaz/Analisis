@@ -40,7 +40,7 @@ export default function CheckoutPage() {
       </p>
 
       <button
-        className="w-full bg-gradient-to-br from-green-300 via-green-400 to-green-600 text-gray-800 font-semibold py-3 px-6 rounded-full hover:from-green-400 hover:to-green-700 transition"
+        className="w-full cursor-pointer bg-gradient-to-br from-green-300 via-green-400 to-green-600 text-gray-800 font-semibold py-3 px-6 rounded-full hover:from-green-400 hover:to-green-700 transition"
         onClick={async () => {
           console.log("Plan enviado al backend:", plan);
           const planMap = {

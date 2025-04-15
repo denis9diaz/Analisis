@@ -24,7 +24,7 @@
         <button
           type="button"
           data-asunto="Información incorrecta"
-          class="asunto-btn w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm"
+          class="asunto-btn cursor-pointer w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm"
         >
           <strong class="text-gray-600">Información incorrecta</strong><br />
           <span class="text-sm text-gray-600 italic"
@@ -34,7 +34,7 @@
         <button
           type="button"
           data-asunto="Problema técnico"
-          class="asunto-btn w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm"
+          class="asunto-btn cursor-pointer w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm"
         >
           <strong class="text-gray-600">Problema técnico</strong><br />
           <span class="text-sm text-gray-600 italic"
@@ -44,7 +44,7 @@
         <button
           type="button"
           data-asunto="Sugerencia o mejora"
-          class="asunto-btn w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm"
+          class="asunto-btn cursor-pointer w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm"
         >
           <strong class="text-gray-600">Sugerencia o mejora</strong><br />
           <span class="text-sm text-gray-600 italic"
@@ -104,11 +104,11 @@
 
       <!-- ✅ Consentimiento -->
       <div class="flex items-center">
-        <input type="checkbox" id="consentimiento" class="mr-2" required />
+        <input type="checkbox" id="consentimiento" class="mr-2 cursor-pointer" required />
         <label for="consentimiento" class="text-sm text-gray-700">
           Acepto el procesamiento de <a
             href="/privacidad"
-            class="text-blue-600 hover:underline">datos personales</a
+            class="text-blue-600 cursor-pointer hover:underline cursor-pointer">datos personales</a
           >
         </label>
       </div>
@@ -117,7 +117,7 @@
       <div class="pt-2">
         <div
           id="recaptcha"
-          class="text-center border border-dashed border-gray-300 p-4 rounded-lg text-sm text-gray-500"
+          class="text-center cursor-pointer border border-dashed border-gray-300 p-4 rounded-lg text-sm text-gray-500"
         >
           Aquí irá el reCAPTCHA (pendiente de implementación)
         </div>
@@ -125,7 +125,7 @@
 
       <button
         type="submit"
-        class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-300"
+        class="w-full bg-blue-600 cursor-pointer text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-300"
         >Enviar mensaje</button
       >
     </form>
