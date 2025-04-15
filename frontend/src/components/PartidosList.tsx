@@ -59,6 +59,7 @@ export default function PartidosList() {
   const { metodoSeleccionado } = useMetodo();
   const [partidos, setPartidos] = useState<Partido[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [partidoAEliminar, setPartidoAEliminar] = useState<Partido | null>(
     null
   );
@@ -427,6 +428,29 @@ export default function PartidosList() {
     return botones;
   };
 
+  function renderNombrePartidoConDestacado(
+    nombre: string,
+    destacado: "local" | "visitante" | null
+  ) {
+    const [equipo1, equipo2] = nombre.split(" - ");
+    if (!equipo1 || !equipo2) return nombre;
+
+    if (destacado === "local") {
+      return (
+        <span>
+          <strong>{equipo1.trim()}</strong> - {equipo2.trim()}
+        </span>
+      );
+    } else if (destacado === "visitante") {
+      return (
+        <span>
+          {equipo1.trim()} - <strong>{equipo2.trim()}</strong>
+        </span>
+      );
+    }
+    return nombre;
+  }
+
   if (!metodoSeleccionado) return null;
 
   return (
@@ -694,7 +718,7 @@ export default function PartidosList() {
                         ...base,
                         zIndex: 100,
                         maxHeight: "400px", // Altura máxima
-                        overflowY: "auto",   // Un solo scroll interno
+                        overflowY: "auto", // Un solo scroll interno
                       }),
                       option: (base, state) => ({
                         ...base,
@@ -705,18 +729,34 @@ export default function PartidosList() {
                         padding: "6px 10px",
                       }),
                     }}
-                    
                   />
                 </td>
 
                 <td className="px-2 py-1 w-[240px]">
-                  <input
-                    type="text"
-                    value={p.nombre_partido}
-                    onChange={(e) => handlePartidoChange(p.id, e.target.value)}
-                    className="w-full bg-transparent text-sm py-0 h-[24px]"
-                  />
+                  {editingId === p.id ? (
+                    <input
+                      type="text"
+                      value={p.nombre_partido}
+                      onChange={(e) =>
+                        handlePartidoChange(p.id, e.target.value)
+                      }
+                      onBlur={() => setEditingId(null)}
+                      className="w-full bg-transparent text-sm py-0 h-[24px]"
+                      autoFocus
+                    />
+                  ) : (
+                    <span
+                      className="cursor-pointer"
+                      onClick={() => setEditingId(p.id)}
+                    >
+                      {renderNombrePartidoConDestacado(
+                        p.nombre_partido,
+                        p.equipo_destacado ?? null
+                      )}
+                    </span>
+                  )}
                 </td>
+
                 <td className="px-1 py-1 text-center w-[80px]">
                   {mostrarPorcentaje(p.porcentaje_local)}
                 </td>
