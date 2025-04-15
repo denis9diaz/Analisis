@@ -54,10 +54,10 @@ export default function MetodosList() {
     <div className="mb-4">
       <h3 className="text-xl font-semibold mb-4 text-gray-700">Mis métodos</h3>
 
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         <button
           onClick={() => setShowModalMetodo(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow cursor-pointer"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow cursor-pointer w-full sm:w-auto"
         >
           Añadir método
         </button>
@@ -67,14 +67,7 @@ export default function MetodosList() {
             setModoNotas(!modoNotas);
             setMetodoSeleccionado(null);
           }}
-          className="text-white font-semibold py-2 px-4 rounded-lg shadow cursor-pointer"
-          style={{ backgroundColor: "#190E2D" }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.backgroundColor = "#190E2D")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.backgroundColor = "#2c1c49")
-          }
+          className="bg-[#190E2D] hover:bg-[#2c1c49] text-white font-semibold py-2 px-4 rounded-lg shadow cursor-pointer w-full sm:w-auto"
         >
           {modoNotas ? "Métodos" : "Notas"}
         </button>
