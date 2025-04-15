@@ -31,6 +31,15 @@ type Partido = {
   equipo_destacado?: "local" | "visitante" | null;
 };
 
+type Option = {
+  value: string;
+  label: string;
+  data: {
+    nombre: string;
+    codigo_pais: string;
+  };
+};
+
 const MESES = [
   { value: "2025-01", label: "Enero 2025" },
   { value: "2025-02", label: "Febrero 2025" },
@@ -133,40 +142,41 @@ export default function PartidosList() {
   }, [metodoSeleccionado]);
 
   const ORDEN_LIGAS = [
-    { id: 124, nombre: "Bundesliga", codigo_pais: "DE" },
-    { id: 125, nombre: "Bundesliga II", codigo_pais: "DE" },
-    { id: 126, nombre: "A-League", codigo_pais: "AU" },
-    { id: 127, nombre: "Jupiler Pro-League", codigo_pais: "BE" },
-    { id: 128, nombre: "Serie A Betano", codigo_pais: "BR" },
-    { id: 129, nombre: "Superliga", codigo_pais: "DK" },
-    { id: 130, nombre: "Premier League ESC", codigo_pais: "GB-SCT" },
-    { id: 131, nombre: "LaLiga EA Sports", codigo_pais: "ES" },
-    { id: 132, nombre: "LaLiga Hypermotion", codigo_pais: "ES" },
-    { id: 133, nombre: "MLS", codigo_pais: "US" },
-    { id: 134, nombre: "Meistriliiga", codigo_pais: "EE" },
-    { id: 135, nombre: "Esiliiga", codigo_pais: "EE" },
-    { id: 136, nombre: "Veikkausliiga", codigo_pais: "FI" },
-    { id: 137, nombre: "Ykkosliiga", codigo_pais: "FI" },
-    { id: 138, nombre: "Ligue 1", codigo_pais: "FR" },
-    { id: 139, nombre: "Premier League", codigo_pais: "GB-ENG" },
-    { id: 140, nombre: "Championship", codigo_pais: "GB-ENG" },
-    { id: 141, nombre: "League One", codigo_pais: "GB-ENG" },
-    { id: 142, nombre: "League Two", codigo_pais: "GB-ENG" },
-    { id: 143, nombre: "Besta deild karla", codigo_pais: "IS" },
-    { id: 144, nombre: "Division 1", codigo_pais: "IS" },
-    { id: 145, nombre: "Serie A", codigo_pais: "IT" },
-    { id: 146, nombre: "Eliteserien", codigo_pais: "NO" },
-    { id: 147, nombre: "OBOS-ligaen", codigo_pais: "NO" },
-    { id: 148, nombre: "Eredivisie", codigo_pais: "NL" },
-    { id: 149, nombre: "Keuken Kampioen", codigo_pais: "NL" },
-    { id: 150, nombre: "Liga Portugal", codigo_pais: "PT" },
-    { id: 151, nombre: "Allsvenskan", codigo_pais: "SE" },
-    { id: 152, nombre: "Superettan", codigo_pais: "SE" },
-    { id: 153, nombre: "Super League", codigo_pais: "CH" },
-    { id: 154, nombre: "Super Lig", codigo_pais: "TR" },
-    { id: 155, nombre: "Champions League", codigo_pais: "EU" },
-    { id: 156, nombre: "Europa League", codigo_pais: "EU" },
-    { id: 157, nombre: "Conference League", codigo_pais: "EU" },
+    { nombre: "Bundesliga", codigo_pais: "DE" },
+    { nombre: "Bundesliga II", codigo_pais: "DE" },
+    { nombre: "A-League", codigo_pais: "AU" },
+    { nombre: "Bundesliga AUS", codigo_pais: "AT" },
+    { nombre: "Jupiler Pro-League", codigo_pais: "BE" },
+    { nombre: "Serie A Betano", codigo_pais: "BR" },
+    { nombre: "Superliga", codigo_pais: "DK" },
+    { nombre: "Premier League ESC", codigo_pais: "GB-SCT" },
+    { nombre: "LaLiga EA Sports", codigo_pais: "ES" },
+    { nombre: "LaLiga Hypermotion", codigo_pais: "ES" },
+    { nombre: "MLS", codigo_pais: "US" },
+    { nombre: "Meistriliiga", codigo_pais: "EE" },
+    { nombre: "Esiliiga", codigo_pais: "EE" },
+    { nombre: "Veikkausliiga", codigo_pais: "FI" },
+    { nombre: "Ykkosliiga", codigo_pais: "FI" },
+    { nombre: "Ligue 1", codigo_pais: "FR" },
+    { nombre: "Premier League", codigo_pais: "GB-ENG" },
+    { nombre: "Championship", codigo_pais: "GB-ENG" },
+    { nombre: "League One", codigo_pais: "GB-ENG" },
+    { nombre: "League Two", codigo_pais: "GB-ENG" },
+    { nombre: "Besta deild karla", codigo_pais: "IS" },
+    { nombre: "Division 1", codigo_pais: "IS" },
+    { nombre: "Serie A", codigo_pais: "IT" },
+    { nombre: "Eliteserien", codigo_pais: "NO" },
+    { nombre: "OBOS-ligaen", codigo_pais: "NO" },
+    { nombre: "Eredivisie", codigo_pais: "NL" },
+    { nombre: "Keuken Kampioen", codigo_pais: "NL" },
+    { nombre: "Liga Portugal", codigo_pais: "PT" },
+    { nombre: "Allsvenskan", codigo_pais: "SE" },
+    { nombre: "Superettan", codigo_pais: "SE" },
+    { nombre: "Super League", codigo_pais: "CH" },
+    { nombre: "Super Lig", codigo_pais: "TR" },
+    { nombre: "Champions League", codigo_pais: "EU" },
+    { nombre: "Europa League", codigo_pais: "EU" },
+    { nombre: "Conference League", codigo_pais: "EU" },
   ];
 
   const ligasMap = new Map<string, Partido["liga"]>();
@@ -217,20 +227,9 @@ export default function PartidosList() {
     return isNaN(numero) ? "-" : `${numero.toFixed(1)}%`;
   };
 
-  const opcionesLigaEditable = ORDEN_LIGAS.map((liga) => ({
-    value: liga.id, // Ensure value is a number
-    label: (
-      <div className="flex items-center gap-2">
-        <img
-          src={`https://flagcdn.com/w20/${liga.codigo_pais.toLowerCase()}.png`}
-          alt={liga.nombre}
-          className="inline"
-          width={20}
-          height={15}
-        />
-        <span>{liga.nombre}</span>
-      </div>
-    ),
+  const opcionesLigaEditable: Option[] = ORDEN_LIGAS.map((liga) => ({
+    value: liga.nombre,
+    label: liga.nombre,
     data: liga,
   }));
 
@@ -313,13 +312,21 @@ export default function PartidosList() {
     );
   };
 
-  const handleLigaChange = async (id: number, nuevaLigaId: number) => {
-    console.log("Actualizando liga con ID:", nuevaLigaId); // Verifica el ID que se envía
+  const handleLigaChange = async (id: number, nuevoNombreLiga: string) => {
+    const ligaEncontrada = partidos
+      .map((p) => p.liga)
+      .find((l) => l?.nombre === nuevoNombreLiga);
+
+    if (!ligaEncontrada) {
+      console.error("No se encontró la liga por nombre:", nuevoNombreLiga);
+      return;
+    }
+
     const API_URL = import.meta.env.PUBLIC_API_URL;
     try {
       const res = await fetchWithAuth(`${API_URL}/api/general/partidos/`, {
         method: "PATCH",
-        body: JSON.stringify({ id, liga: nuevaLigaId }), // Asegúrate de enviar el ID correcto
+        body: JSON.stringify({ id, liga: ligaEncontrada.id }), // seguimos enviando el ID al backend
       });
 
       if (!res.ok) {
@@ -602,8 +609,8 @@ export default function PartidosList() {
       </div>
 
       {/* Tabla */}
-      <div className="rounded-lg shadow-md bg-white overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 scrollbar-track-transparent">
-        <table className="min-w-[1100px] w-full text-sm text-gray-800 border-collapse table-fixed">
+      <div className="overflow-x-auto rounded-lg shadow-md bg-white scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 scrollbar-track-transparent">
+        <table className="w-full text-sm text-gray-800 border-collapse">
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
               <th className="px-2 py-1 text-left w-[100px]">Fecha</th>
@@ -633,26 +640,14 @@ export default function PartidosList() {
                     className="w-full bg-transparent text-sm py-0 h-[24px] cursor-pointer"
                   />
                 </td>
-                <td className="px-2 py-1 w-[170px]">
+                <td className="px-2 py-1 w-[170px] relative z-10 bg-white text-black">
                   <Select
                     options={opcionesLigaEditable}
                     value={
                       p.liga
-                        ? {
-                            value: p.liga.id,
-                            label: (
-                              <div className="flex items-center gap-2">
-                                <img
-                                  src={`https://flagcdn.com/w20/${p.liga.codigo_pais.toLowerCase()}.png`}
-                                  alt={p.liga.nombre}
-                                  className="inline"
-                                  width={20}
-                                  height={15}
-                                />
-                                <span>{p.liga.nombre}</span>
-                              </div>
-                            ),
-                          }
+                        ? opcionesLigaEditable.find(
+                            (op) => op.value === p.liga!.nombre
+                          )
                         : null
                     }
                     onChange={(selectedOption) => {
@@ -660,32 +655,57 @@ export default function PartidosList() {
                         handleLigaChange(p.id, selectedOption.value);
                       }
                     }}
+                    isSearchable
                     placeholder="Selecciona una liga"
-                    isClearable={false}
                     classNamePrefix="react-select"
+                    formatOptionLabel={(option) => (
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={`https://flagcdn.com/w20/${option.data.codigo_pais.toLowerCase()}.png`}
+                          alt={option.label}
+                          width={20}
+                          height={15}
+                        />
+                        <span>{option.label}</span>
+                      </div>
+                    )}
+                    menuPortalTarget={document.body}
+                    menuPosition="absolute"
                     styles={{
                       control: (base) => ({
                         ...base,
-                        minHeight: 24,
-                        height: 24,
+                        minHeight: 30,
+                        height: 30,
                         border: "none",
                         boxShadow: "none",
-                        cursor: "pointer", // ✅ aquí
+                        cursor: "pointer",
+                        fontSize: "14px",
                       }),
                       valueContainer: (base) => ({
                         ...base,
-                        height: 24,
-                        padding: "0 6px",
+                        height: 30,
+                        padding: "0 8px",
                       }),
                       indicatorsContainer: (base) => ({
                         ...base,
-                        height: 24,
+                        height: 30,
                       }),
-                      option: (base) => ({
+                      menu: (base) => ({
                         ...base,
-                        cursor: "pointer", // ✅ y aquí también
+                        zIndex: 100,
+                        maxHeight: "400px", // Altura máxima
+                        overflowY: "auto",   // Un solo scroll interno
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        color: "black",
+                        backgroundColor: state.isFocused ? "#f0f0f0" : "white",
+                        padding: "6px 10px",
                       }),
                     }}
+                    
                   />
                 </td>
 
@@ -799,7 +819,7 @@ export default function PartidosList() {
           </tbody>
         </table>
       </div>
-      
+
       {/* Controles de paginación */}
       <div className="flex justify-center mt-4 gap-2 mb-2 flex-wrap">
         {renderBotonesPaginacion()}
