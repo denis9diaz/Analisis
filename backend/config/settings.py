@@ -28,6 +28,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 CSRF_TRUSTED_ORIGINS = [
     'https://analisis-production.up.railway.app',
     'https://analisis-virid.vercel.app',
+    'https://analisis-beynzvze8-denis-projects-dd2cd8e0.vercel.app',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -70,8 +71,9 @@ if DEBUG:
 else:
     CORS_ALLOW_ALL_ORIGINS = False
     CORS_ALLOWED_ORIGINS = [
-    "https://analisis-virid.vercel.app",
-]
+        "https://analisis-virid.vercel.app",
+        "https://analisis-beynzvze8-denis-projects-dd2cd8e0.vercel.app",
+    ]
 
 CORS_ALLOW_CREDENTIALS = True
 
