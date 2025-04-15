@@ -69,7 +69,6 @@ MIDDLEWARE = [
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOW_ALL_ORIGINS = False
     CORS_ALLOWED_ORIGINS = [
         "https://analisis-virid.vercel.app",
         "https://analisis-beynzvze8-denis-projects-dd2cd8e0.vercel.app",
@@ -82,7 +81,6 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 ]
 
 CORS_ALLOW_METHODS = list(default_methods)
-
 
 CORS_ALLOW_CREDENTIALS = True
 
