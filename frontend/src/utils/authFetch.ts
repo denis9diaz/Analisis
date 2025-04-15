@@ -1,7 +1,11 @@
-const API_URL = import.meta.env.PUBLIC_API_URL;
+const API_URL =
+  typeof window !== "undefined"
+    ? document.getElementById("root")?.getAttribute("data-api-url") || ""
+    : "";
 
-let isRefreshing = false; // Estado para evitar múltiples refrescos simultáneos
-let refreshQueue: (() => void)[] = []; // Cola para reintentar peticiones
+// Estado para evitar múltiples refrescos simultáneos
+let isRefreshing = false;
+let refreshQueue: (() => void)[] = [];
 
 export async function fetchWithAuth(
   input: RequestInfo,
@@ -78,30 +82,30 @@ export async function silentTokenRefresh() {
     if (res.ok) {
       const data = await res.json();
       localStorage.setItem("access_token", data.access);
-    
-      // 🔥 NUEVO: Guarda también el nuevo refresh token si lo manda
+
       if (data.refresh) {
         localStorage.setItem("refresh_token", data.refresh);
       }
-    
+
       console.info("Access token refrescado en segundo plano.");
     } else {
-      console.warn("No se pudo refrescar el token en segundo plano. Eliminando credenciales...");
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      localStorage.removeItem("username");
-      window.location.href = "/";
+      console.warn("No se pudo refrescar el token. Cerrando sesión...");
+      logout();
     }
   } catch (err) {
-    console.error("Error al refrescar token en segundo plano:", err);
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    localStorage.removeItem("username");
-    window.location.href = "/";
+    console.error("Error al refrescar el token:", err);
+    logout();
   }
 }
 
-// Expone la función globalmente para que pueda ser usada desde Astro
+function logout() {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  localStorage.removeItem("username");
+  window.location.href = "/";
+}
+
+// ✅ Expone silentTokenRefresh para el script inline
 if (typeof window !== "undefined") {
   // @ts-ignore
   window.silentTokenRefresh = silentTokenRefresh;
