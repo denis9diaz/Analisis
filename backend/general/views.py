@@ -82,11 +82,20 @@ class PartidoListAPIView(APIView):
         if not verificar_suscripcion_activa(request.user):
             return Response({"error": "Se requiere una suscripción activa para crear partidos."}, status=403)
 
-        serializer = PartidoWriteSerializer(data=request.data)
+        data = request.data
+        if isinstance(data, list):  # caso: múltiple
+            serializer = PartidoWriteSerializer(data=data, many=True)
+        else:
+            serializer = PartidoWriteSerializer(data=data)
+
         if serializer.is_valid():
-            partido = serializer.save()
-            return Response(PartidoReadSerializer(partido).data, status=201)
+            partidos = serializer.save()
+            if isinstance(partidos, list):
+                return Response(PartidoReadSerializer(partidos, many=True).data, status=201)
+            return Response(PartidoReadSerializer(partidos).data, status=201)
+
         return Response(serializer.errors, status=400)
+
 
     def patch(self, request):
         if not verificar_suscripcion_activa(request.user):
