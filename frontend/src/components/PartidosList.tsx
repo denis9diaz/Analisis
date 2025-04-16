@@ -324,10 +324,15 @@ export default function PartidosList() {
   };
 
   const handleLigaChange = async (id: number, nuevoNombreLiga: string) => {
-    const ligaEncontrada = ORDEN_LIGAS.find((l) => l.nombre === nuevoNombreLiga);
+    const ligaEncontrada = ORDEN_LIGAS.find(
+      (l) => l.nombre === nuevoNombreLiga
+    );
 
     if (!ligaEncontrada) {
-      console.error("No se encontró el ID de la liga en ORDEN_LIGAS:", nuevoNombreLiga);
+      console.error(
+        "No se encontró el ID de la liga en ORDEN_LIGAS:",
+        nuevoNombreLiga
+      );
       return;
     }
 
@@ -702,8 +707,9 @@ export default function PartidosList() {
                         <span>{option.label}</span>
                       </div>
                     )}
-                    menuPortalTarget={document.body}
+                    menuPortalTarget={document.body} // Renderiza el menú en el body para evitar problemas de contención
                     menuPosition="absolute"
+                    menuPlacement="auto"
                     styles={{
                       control: (base) => ({
                         ...base,
@@ -725,9 +731,13 @@ export default function PartidosList() {
                       }),
                       menu: (base) => ({
                         ...base,
-                        zIndex: 100,
-                        maxHeight: "400px", // Altura máxima
-                        overflowY: "auto", // Un solo scroll interno
+                        zIndex: 9999, // Asegura que el menú esté por encima de otros elementos
+                        maxHeight: "400px",
+                        overflowY: "auto",
+                      }),
+                      menuPortal: (base) => ({
+                        ...base,
+                        zIndex: 9999, // Asegura que el portal del menú esté por encima de otros elementos
                       }),
                       option: (base, state) => ({
                         ...base,
