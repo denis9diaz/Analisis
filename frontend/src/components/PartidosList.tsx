@@ -59,6 +59,10 @@ const MESES = [
 export default function PartidosList() {
   const { metodoSeleccionado } = useMetodo();
   const [partidos, setPartidos] = useState<Partido[]>([]);
+  const [nombreEditado, setNombreEditado] = useState<{ [id: number]: string }>(
+    {}
+  );
+
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [partidoAEliminar, setPartidoAEliminar] = useState<Partido | null>(
@@ -442,6 +446,33 @@ export default function PartidosList() {
     return botones;
   };
 
+  const guardarNombrePartido = async (id: number) => {
+    const nuevoNombre = nombreEditado[id];
+    if (!nuevoNombre) return;
+
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+    const res = await fetchWithAuth(`${API_URL}/api/general/partidos/`, {
+      method: "PATCH",
+      body: JSON.stringify({ id, nombre_partido: nuevoNombre }),
+    });
+
+    const partidoActualizado: Partido = await res.json();
+    setPartidos((prev) =>
+      prev.map((p) =>
+        p.id === id
+          ? { ...p, nombre_partido: partidoActualizado.nombre_partido }
+          : p
+      )
+    );
+
+    setEditingId(null);
+    setNombreEditado((prev) => {
+      const nuevo = { ...prev };
+      delete nuevo[id];
+      return nuevo;
+    });
+  };
+
   function renderNombrePartidoConDestacado(
     nombre: string,
     destacado: "local" | "visitante" | null
@@ -676,8 +707,10 @@ export default function PartidosList() {
                     onChange={(date) => date && handleFechaChange(p.id, date)}
                     dateFormat="dd/MM/yyyy"
                     className="w-full bg-transparent text-sm py-0 h-[24px] cursor-pointer"
+                    withPortal
                   />
                 </td>
+
                 <td className="px-2 py-1 w-[170px] relative z-10 bg-white text-black">
                   <Select
                     options={opcionesLigaEditable}
@@ -755,18 +788,27 @@ export default function PartidosList() {
                   {editingId === p.id ? (
                     <input
                       type="text"
-                      value={p.nombre_partido}
+                      value={nombreEditado[p.id] || ""}
                       onChange={(e) =>
-                        handlePartidoChange(p.id, e.target.value)
+                        setNombreEditado((prev) => ({
+                          ...prev,
+                          [p.id]: e.target.value,
+                        }))
                       }
-                      onBlur={() => setEditingId(null)}
+                      onBlur={() => guardarNombrePartido(p.id)}
                       className="w-full bg-transparent text-sm py-0 h-[24px]"
                       autoFocus
                     />
                   ) : (
                     <span
                       className="cursor-pointer"
-                      onClick={() => setEditingId(p.id)}
+                      onClick={() => {
+                        setEditingId(p.id);
+                        setNombreEditado((prev) => ({
+                          ...prev,
+                          [p.id]: p.nombre_partido,
+                        }));
+                      }}
                     >
                       {renderNombrePartidoConDestacado(
                         p.nombre_partido,

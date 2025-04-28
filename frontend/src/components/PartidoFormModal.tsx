@@ -4,6 +4,8 @@ Modal.setAppElement("#root");
 import Select from "react-select";
 import { useMetodo } from "../context/MetodoContext";
 import { fetchWithAuth } from "../utils/authFetch";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 type Liga = {
   id: number;
@@ -32,7 +34,11 @@ export default function PartidoFormModal({
   const [ligas, setLigas] = useState<Option[]>([]);
   const [ligaSeleccionada, setLigaSeleccionada] = useState<Option | null>(null);
 
-  const [fecha, setFecha] = useState("");
+  const [fecha, setFecha] = useState(() => {
+    const hoy = new Date();
+    return hoy.toISOString().split("T")[0];
+  });
+
   const [nombre, setNombre] = useState("");
   const [porLocal, setPorLocal] = useState<number | "">("");
   const [porVisitante, setPorVisitante] = useState<number | "">("");
@@ -132,11 +138,13 @@ export default function PartidoFormModal({
         Añadir partido
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="date"
-          value={fecha}
-          onChange={(e) => setFecha(e.target.value)}
-          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <DatePicker
+          selected={fecha ? new Date(fecha) : null}
+          onChange={(date) =>
+            date && setFecha(date.toISOString().split("T")[0])
+          }
+          dateFormat="dd/MM/yyyy"
+          className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300"
         />
         <input
           type="text"
