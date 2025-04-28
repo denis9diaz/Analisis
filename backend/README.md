@@ -10,7 +10,8 @@ Backend del proyecto **BetTracker**, una plataforma profesional para registrar y
 - Django
 - Django REST Framework
 - SimpleJWT (autenticación)
-- SQLite (modo local)
+- SQLite (local)
+- PostgreSQL (producción)
 
 ---
 
