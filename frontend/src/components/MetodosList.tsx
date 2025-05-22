@@ -67,7 +67,7 @@ export default function MetodosList() {
             setModoNotas(!modoNotas);
             setMetodoSeleccionado(null);
           }}
-          className="bg-[#190E2D] hover:bg-[#2c1c49] text-white font-semibold py-2 px-4 rounded-lg shadow cursor-pointer w-full sm:w-auto"
+          className="bg-[#2c1c49] hover:bg-[#190E2D] text-white font-semibold py-2 px-4 rounded-lg shadow cursor-pointer w-full sm:w-auto"
         >
           {modoNotas ? "Métodos" : "Notas"}
         </button>

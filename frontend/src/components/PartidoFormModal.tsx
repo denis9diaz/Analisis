@@ -33,12 +33,7 @@ export default function PartidoFormModal({
   const { metodoSeleccionado } = useMetodo();
   const [ligas, setLigas] = useState<Option[]>([]);
   const [ligaSeleccionada, setLigaSeleccionada] = useState<Option | null>(null);
-
-  const [fecha, setFecha] = useState(() => {
-    const hoy = new Date();
-    return hoy.toISOString().split("T")[0];
-  });
-
+  const [fecha, setFecha] = useState<Date>(new Date());
   const [nombre, setNombre] = useState("");
   const [porLocal, setPorLocal] = useState<number | "">("");
   const [porVisitante, setPorVisitante] = useState<number | "">("");
@@ -88,7 +83,13 @@ export default function PartidoFormModal({
       method: "POST",
       body: JSON.stringify({
         metodo: metodoSeleccionado.id,
-        fecha,
+        fecha:
+          fecha.getFullYear() +
+          "-" +
+          String(fecha.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(fecha.getDate()).padStart(2, "0"),
+
         nombre_partido: nombre,
         liga: ligaSeleccionada.value,
         porcentaje_local: porLocal,
@@ -109,7 +110,7 @@ export default function PartidoFormModal({
         onRequestClose();
 
         // Limpiar formulario
-        setFecha("");
+        setFecha(new Date());
         setNombre("");
         setEquipoDestacado("");
         setLigaSeleccionada(null);
@@ -139,10 +140,8 @@ export default function PartidoFormModal({
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <DatePicker
-          selected={fecha ? new Date(fecha) : null}
-          onChange={(date) =>
-            date && setFecha(date.toISOString().split("T")[0])
-          }
+          selected={fecha}
+          onChange={(date) => date && setFecha(date)}
           dateFormat="dd/MM/yyyy"
           className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300"
         />

@@ -473,6 +473,26 @@ export default function PartidosList() {
     });
   };
 
+  const opcionesEquipoDestacado = [
+    {
+      value: "encabezado",
+      label: "Equipo a marcar",
+      isDisabled: true,
+    },
+    {
+      value: "local",
+      label: "Local",
+    },
+    {
+      value: "visitante",
+      label: "Visitante",
+    },
+        {
+      value: "",
+      label: "Ninguno",
+    },
+  ];
+
   function renderNombrePartidoConDestacado(
     nombre: string,
     destacado: "local" | "visitante" | null
@@ -784,7 +804,8 @@ export default function PartidosList() {
                   />
                 </td>
 
-                <td className="px-2 py-1 w-[240px]">
+                <td className="relative px-2 py-1 w-[240px] group text-left">
+                  {/* Nombre del partido, editable al hacer clic */}
                   {editingId === p.id ? (
                     <input
                       type="text"
@@ -801,7 +822,7 @@ export default function PartidosList() {
                     />
                   ) : (
                     <span
-                      className="cursor-pointer"
+                      className="cursor-pointer block truncate pr-5"
                       onClick={() => {
                         setEditingId(p.id);
                         setNombreEditado((prev) => ({
@@ -816,6 +837,98 @@ export default function PartidosList() {
                       )}
                     </span>
                   )}
+
+                  {/* Dropdown invisible hasta hover */}
+                  <div className="absolute top-1/2 right-1 -translate-y-1/2 w-[32px] opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Select
+                      options={opcionesEquipoDestacado}
+                      value={opcionesEquipoDestacado.find(
+                        (opt) => opt.value === (p.equipo_destacado ?? "")
+                      )}
+                      onChange={async (selectedOption) => {
+                        const nuevoValor = selectedOption?.value || null;
+                        const API_URL = import.meta.env.PUBLIC_API_URL;
+
+                        const res = await fetchWithAuth(
+                          `${API_URL}/api/general/partidos/`,
+                          {
+                            method: "PATCH",
+                            body: JSON.stringify({
+                              id: p.id,
+                              equipo_destacado: nuevoValor,
+                            }),
+                          }
+                        );
+
+                        const partidoActualizado: Partido = await res.json();
+                        setPartidos((prev) =>
+                          prev.map((item) =>
+                            item.id === p.id
+                              ? {
+                                  ...item,
+                                  equipo_destacado:
+                                    partidoActualizado.equipo_destacado,
+                                }
+                              : item
+                          )
+                        );
+                      }}
+                      placeholder=""
+                      getOptionLabel={(e) => e.label}
+                      classNamePrefix="react-select"
+                      menuPortalTarget={document.body}
+                      menuPosition="absolute"
+                      menuPlacement="auto"
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          minHeight: 24,
+                          height: 24,
+                          width: 24,
+                          padding: 0,
+                          border: "none",
+                          boxShadow: "none",
+                          cursor: "pointer",
+                          backgroundColor: "transparent",
+                        }),
+                        valueContainer: (base) => ({
+                          ...base,
+                          padding: 0,
+                          height: 24,
+                        }),
+                        indicatorsContainer: (base) => ({
+                          ...base,
+                          height: 24,
+                        }),
+                        singleValue: () => ({ display: "none" }), // oculta texto
+                        placeholder: () => ({}),
+                        dropdownIndicator: (base) => ({
+                          ...base,
+                          padding: 0,
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          fontSize: "14px",
+                          padding: "6px 10px",
+                          backgroundColor: state.isFocused
+                            ? "#f0f0f0"
+                            : "white",
+                          color: "black",
+                          cursor: state.isDisabled ? "default" : "pointer",
+                          fontWeight:
+                            state.data.value === "encabezado"
+                              ? "bold"
+                              : "normal", // 👈 esto
+                        }),
+
+                        menu: (base) => ({
+                          ...base,
+                          zIndex: 9999,
+                          minWidth: "140px",
+                        }),
+                      }}
+                    />
+                  </div>
                 </td>
 
                 <td className="px-1 py-1 text-center w-[80px]">
