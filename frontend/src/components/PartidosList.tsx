@@ -487,7 +487,7 @@ export default function PartidosList() {
   const opcionesEquipoDestacado = [
     {
       value: "encabezado",
-      label: "Equipo destacado",
+      label: "Equipo destacado:",
       isDisabled: true,
     },
     {
@@ -935,7 +935,7 @@ export default function PartidosList() {
                         menu: (base) => ({
                           ...base,
                           zIndex: 9999,
-                          minWidth: "140px",
+                          minWidth: "148px",
                         }),
                       }}
                     />
