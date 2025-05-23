@@ -147,48 +147,63 @@ export default function PartidosList() {
       });
   }, [metodoSeleccionado]);
 
-  const ORDEN_LIGAS = [
-    { id: 1, nombre: "Bundesliga", codigo_pais: "DE" },
-    { id: 2, nombre: "Bundesliga II", codigo_pais: "DE" },
-    { id: 3, nombre: "A-League", codigo_pais: "AU" },
-    { id: 4, nombre: "Bundesliga AUS", codigo_pais: "AT" },
-    { id: 5, nombre: "Jupiler Pro-League", codigo_pais: "BE" },
-    { id: 6, nombre: "Serie A Betano", codigo_pais: "BR" },
-    { id: 7, nombre: "Superliga", codigo_pais: "DK" },
-    { id: 8, nombre: "Premier League ESC", codigo_pais: "GB-SCT" },
-    { id: 9, nombre: "LaLiga EA Sports", codigo_pais: "ES" },
-    { id: 10, nombre: "LaLiga Hypermotion", codigo_pais: "ES" },
-    { id: 11, nombre: "MLS", codigo_pais: "US" },
-    { id: 12, nombre: "Meistriliiga", codigo_pais: "EE" },
-    { id: 13, nombre: "Esiliiga", codigo_pais: "EE" },
-    { id: 14, nombre: "Veikkausliiga", codigo_pais: "FI" },
-    { id: 15, nombre: "Ykkosliiga", codigo_pais: "FI" },
-    { id: 16, nombre: "Ligue 1", codigo_pais: "FR" },
-    { id: 17, nombre: "Ligue 2", codigo_pais: "FR" },
-    { id: 18, nombre: "Premier League", codigo_pais: "GB-ENG" },
-    { id: 19, nombre: "Championship", codigo_pais: "GB-ENG" },
-    { id: 20, nombre: "League One", codigo_pais: "GB-ENG" },
-    { id: 21, nombre: "League Two", codigo_pais: "GB-ENG" },
-    { id: 22, nombre: "Premier League IRL", codigo_pais: "IE" },
-    { id: 23, nombre: "Besta deild karla", codigo_pais: "IS" },
-    { id: 24, nombre: "Division 1", codigo_pais: "IS" },
-    { id: 25, nombre: "Serie A", codigo_pais: "IT" },
-    { id: 26, nombre: "Serie B", codigo_pais: "IT" },
-    { id: 27, nombre: "Eliteserien", codigo_pais: "NO" },
-    { id: 28, nombre: "OBOS-ligaen", codigo_pais: "NO" },
-    { id: 29, nombre: "Eredivisie", codigo_pais: "NL" },
-    { id: 30, nombre: "Keuken Kampioen", codigo_pais: "NL" },
-    { id: 31, nombre: "Liga Portugal", codigo_pais: "PT" },
-    { id: 32, nombre: "Allsvenskan", codigo_pais: "SE" },
-    { id: 33, nombre: "Superettan", codigo_pais: "SE" },
-    { id: 34, nombre: "Super League", codigo_pais: "CH" },
-    { id: 35, nombre: "Challenge League", codigo_pais: "CH" },
-    { id: 36, nombre: "Super Lig", codigo_pais: "TR" },
-    { id: 37, nombre: "1. Lig", codigo_pais: "TR" },
-    { id: 38, nombre: "Champions League", codigo_pais: "EU" },
-    { id: 39, nombre: "Europa League", codigo_pais: "EU" },
-    { id: 40, nombre: "Conference League", codigo_pais: "EU" },
+  useEffect(() => {
+    const API_URL = import.meta.env.PUBLIC_API_URL;
+    fetchWithAuth(`${API_URL}/api/general/ligas/`)
+      .then((res) => res.json())
+      .then((data) => setLigasBackend(data));
+  }, []);
+
+  const ORDEN_VISUAL = [
+    "Bundesliga",
+    "Bundesliga II",
+    "A-League",
+    "Bundesliga AUS",
+    "Jupiler Pro-League",
+    "Serie A Betano",
+    "Superliga",
+    "Premier League ESC",
+    "LaLiga EA Sports",
+    "LaLiga Hypermotion",
+    "MLS",
+    "Meistriliiga",
+    "Esiliiga",
+    "Veikkausliiga",
+    "Ykkosliiga",
+    "Ligue 1",
+    "Ligue 2",
+    "Premier League",
+    "Championship",
+    "League One",
+    "League Two",
+    "Premier League IRL",
+    "Besta deild karla",
+    "Division 1",
+    "Serie A",
+    "Serie B",
+    "Eliteserien",
+    "OBOS-ligaen",
+    "Eredivisie",
+    "Keuken Kampioen",
+    "Liga Portugal",
+    "Allsvenskan",
+    "Superettan",
+    "Super League",
+    "Challenge League",
+    "Super Lig",
+    "1. Lig",
+    "Champions League",
+    "Europa League",
+    "Conference League",
   ];
+
+  const [ligasBackend, setLigasBackend] = useState<
+    { id: number; nombre: string; codigo_pais: string }[]
+  >([]);
+
+  const ligasOrdenadas = ORDEN_VISUAL.map((nombre) =>
+    ligasBackend.find((liga) => liga.nombre === nombre)
+  ).filter(Boolean) as { id: number; nombre: string; codigo_pais: string }[];
 
   const ligasMap = new Map<string, Partido["liga"]>();
 
@@ -202,7 +217,7 @@ export default function PartidosList() {
   });
 
   const ligasUnicas: { id: number; nombre: string; codigo_pais: string }[] =
-    ORDEN_LIGAS.map((liga) => {
+    ligasOrdenadas.map((liga) => {
       const ligaEncontrada = Array.from(ligasMap.values()).find(
         (l) => l?.nombre === liga.nombre
       );
@@ -210,7 +225,7 @@ export default function PartidosList() {
         ligaEncontrada || {
           id: -1,
           nombre: liga.nombre,
-          codigo_pais: liga.codigo_pais, // Código de país genérico si no está en el mapa
+          codigo_pais: liga.codigo_pais,
         }
       );
     });
@@ -238,20 +253,11 @@ export default function PartidosList() {
     return isNaN(numero) ? "-" : `${numero.toFixed(1)}%`;
   };
 
-  const opcionesLigaEditable: Option[] = ORDEN_LIGAS.map((liga) => {
-    const ligaConId = partidos.find(
-      (p) => p.liga?.nombre === liga.nombre
-    )?.liga;
-    return {
-      value: liga.nombre,
-      label: liga.nombre,
-      data: {
-        nombre: liga.nombre,
-        codigo_pais: liga.codigo_pais,
-        id: ligaConId?.id ?? -1, // usamos -1 si no se encontró
-      },
-    };
-  });
+  const opcionesLigaEditable: Option[] = ligasOrdenadas.map((liga) => ({
+    value: liga.nombre,
+    label: liga.nombre,
+    data: liga,
+  }));
 
   const partidosFiltrados = partidos.filter((p) => {
     const coincideLiga =
@@ -333,7 +339,7 @@ export default function PartidosList() {
   };
 
   const handleLigaChange = async (id: number, nuevoNombreLiga: string) => {
-    const ligaEncontrada = ORDEN_LIGAS.find(
+    const ligaEncontrada = ligasOrdenadas.find(
       (l) => l.nombre === nuevoNombreLiga
     );
 
