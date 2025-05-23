@@ -487,7 +487,7 @@ export default function PartidosList() {
   const opcionesEquipoDestacado = [
     {
       value: "encabezado",
-      label: "Equipo a marcar",
+      label: "Equipo destacado",
       isDisabled: true,
     },
     {
