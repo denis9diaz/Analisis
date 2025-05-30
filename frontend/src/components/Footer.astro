@@ -1,25 +1,25 @@
-<footer class="fade-target opacity-0 transition-opacity ease-in-out duration-[500ms] delay-[200ms] text-white text-center py-20 px-4">
-  <div class="container mx-auto px-6 max-w-6xl grid md:grid-cols-3 grid-cols-1 items-center gap-8 text-white">
+<footer class="text-white text-center py-20 px-4 animate__animated animate__fadeIn animate__delay-1s">
+  <div class="container mx-auto px-6 max-w-6xl grid md:grid-cols-3 grid-cols-1 items-center gap-8">
 
     <!-- Logo -->
-    <div class="flex justify-center md:justify-start">
+    <div class="flex justify-center md:justify-start animate__animated animate__fadeInDown animate__delay-2s">
       <img src="/logo.png" alt="Logo" class="h-24 w-auto" />
     </div>
 
     <!-- Sección central -->
-    <div class="flex flex-col items-center text-center">
+    <div class="flex flex-col items-center text-center animate__animated animate__fadeInUp animate__delay-3s">
       <div class="flex flex-col gap-1 text-sm">
         <a href="/terminosycondiciones" class="hover:text-blue-100 transition">Términos y condiciones</a>
         <a href="/privacidad" class="hover:text-blue-100 transition">Política de privacidad</a>
         <a href="/contacto" class="hover:text-blue-100 transition">Contacto</a>
       </div>
-      <div class="mt-4 text-xs text-white border-t border-blue-800 pt-4 w-full">
+      <div class="mt-4 text-xs border-t border-blue-800 pt-4 w-full">
         © <span id="year"></span> BetTracker. Todos los derechos reservados.
       </div>
     </div>
 
     <!-- Redes sociales -->
-    <div class="flex justify-center md:justify-end gap-4 text-white">
+    <div class="flex justify-center md:justify-end gap-4 animate__animated animate__zoomIn animate__delay-4s">
       <a href="https://twitter.com" target="_blank" aria-label="Twitter" class="hover:text-blue-100 transition">
         <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
           <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.4 1.64a9.14 9.14 0 0 1-2.88 1.1 4.52 4.52 0 0 0-7.69 4.13A12.94 12.94 0 0 1 3 2.16a4.51 4.51 0 0 0 1.4 6.05A4.49 4.49 0 0 1 2.8 7v.06a4.52 4.52 0 0 0 3.63 4.43 4.52 4.52 0 0 1-2.04.08 4.53 4.53 0 0 0 4.23 3.14A9.05 9.05 0 0 1 2 19.54a12.8 12.8 0 0 0 7 2.05c8.4 0 13-7 13-13v-.59A9.22 9.22 0 0 0 23 3z" />
@@ -34,9 +34,6 @@
   </div>
 
   <script>
-    const yearSpan = document.getElementById('year');
-    if (yearSpan) {
-      yearSpan.textContent = String(new Date().getFullYear());
-    }
+    document.getElementById('year')!.textContent = String(new Date().getFullYear());
   </script>
 </footer>
