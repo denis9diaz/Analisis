@@ -830,6 +830,7 @@ export default function PartidosList() {
                       onBlur={() => guardarNombrePartido(p.id)}
                       className="w-full bg-transparent text-sm py-0 h-[24px]"
                       autoFocus
+                      spellCheck={false}
                     />
                   ) : (
                     <span
