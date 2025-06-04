@@ -686,7 +686,7 @@ export default function PartidosList() {
       {/* Estadísticas */}
       <div className="mb-4 bg-gray-50 border border-gray-200 rounded-md p-4 shadow-sm text-sm text-gray-700">
         <p className="mb-1 font-medium flex items-center gap-2">
-          <img src="/2.png" alt="Estadísticas" className="w-5 h-5" />
+          <img src="/2.webp" alt="Estadísticas" className="w-5 h-5" />
           Estadísticas (según filtros aplicados):
         </p>
         <div className="flex flex-wrap gap-4">
