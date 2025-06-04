@@ -63,6 +63,7 @@ export default function MetodoFormModal({
           type="text"
           placeholder="Nombre del método"
           value={nombre}
+          spellCheck="false"
           onChange={(e) => setNombre(e.target.value)}
           className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />

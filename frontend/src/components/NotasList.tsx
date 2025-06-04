@@ -567,6 +567,7 @@ export default function NotasList() {
             type="text"
             placeholder="Equipo"
             value={form.equipo}
+            spellCheck="false"
             onChange={(e) => setForm((f) => ({ ...f, equipo: e.target.value }))}
             className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300"
           />
@@ -582,6 +583,7 @@ export default function NotasList() {
             type="text"
             placeholder="Analizar"
             value={form.analizar}
+            spellCheck="false"
             onChange={(e) =>
               setForm((f) => ({ ...f, analizar: e.target.value }))
             }
@@ -591,6 +593,7 @@ export default function NotasList() {
             type="text"
             placeholder="Stake"
             value={form.stake}
+            spellCheck="false"
             onChange={(e) => setForm((f) => ({ ...f, stake: e.target.value }))}
             className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300"
           />
@@ -606,6 +609,7 @@ export default function NotasList() {
           <textarea
             placeholder="Notas"
             value={form.notas}
+            spellCheck="false"
             onChange={(e) => setForm((f) => ({ ...f, notas: e.target.value }))}
             className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300"
           />

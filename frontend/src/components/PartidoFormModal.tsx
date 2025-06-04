@@ -149,6 +149,7 @@ export default function PartidoFormModal({
           type="text"
           placeholder="Partido"
           value={nombre}
+          spellCheck="false"
           onChange={(e) => setNombre(e.target.value)}
           className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -256,6 +257,7 @@ export default function PartidoFormModal({
         <textarea
           placeholder="Notas"
           value={notas}
+          spellCheck="false"
           onChange={(e) => setNotas(e.target.value)}
           className="w-full px-3 py-1 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
