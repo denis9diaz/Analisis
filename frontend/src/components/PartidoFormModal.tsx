@@ -54,11 +54,64 @@ export default function PartidoFormModal({
     fetchWithAuth(`${API_URL}/api/general/ligas/`)
       .then((res) => res.json())
       .then((data: Liga[]) => {
-        const options: Option[] = data.map((liga) => ({
-          value: liga.id,
-          label: liga.nombre,
-          data: liga,
-        }));
+        const ORDEN_VISUAL = [
+          "Bundesliga",
+          "Bundesliga II",
+          "A-League",
+          "Bundesliga AUS",
+          "Jupiler Pro-League",
+          "Serie A Betano",
+          "Superliga",
+          "Premier League ESC",
+          "LaLiga EA Sports",
+          "LaLiga Hypermotion",
+          "MLS",
+          "Meistriliiga",
+          "Esiliiga",
+          "Veikkausliiga",
+          "Ykkosliiga",
+          "Kakkonen",
+          "Ligue 1",
+          "Ligue 2",
+          "Premier League",
+          "Championship",
+          "League One",
+          "League Two",
+          "Premier League IRL",
+          "Besta deild karla",
+          "Division 1",
+          "Serie A",
+          "Serie B",
+          "Eliteserien",
+          "OBOS-ligaen",
+          "Eredivisie",
+          "Keuken Kampioen",
+          "Liga Portugal",
+          "Allsvenskan",
+          "Superettan",
+          "Super League",
+          "Challenge League",
+          "Super Lig",
+          "1. Lig",
+          "Champions League",
+          "Europa League",
+          "Conference League",
+        ];
+
+        const options: Option[] = data
+          .map((liga) => ({
+            value: liga.id,
+            label: liga.nombre,
+            data: liga,
+          }))
+          .sort((a, b) => {
+            const indexA = ORDEN_VISUAL.indexOf(a.label);
+            const indexB = ORDEN_VISUAL.indexOf(b.label);
+            if (indexA === -1) return 1; // al final si no está en la lista
+            if (indexB === -1) return -1;
+            return indexA - indexB;
+          });
+
         setLigas(options);
       });
   }, []);

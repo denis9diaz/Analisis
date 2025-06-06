@@ -170,6 +170,7 @@ export default function PartidosList() {
     "Esiliiga",
     "Veikkausliiga",
     "Ykkosliiga",
+    "Kakkonen",
     "Ligue 1",
     "Ligue 2",
     "Premier League",
