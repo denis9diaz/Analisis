@@ -183,7 +183,6 @@
         localStorage.setItem("access_token", data.access);
         localStorage.setItem("refresh_token", data.refresh);
         localStorage.setItem("username", data.username);
-        showToast("Inicio de sesión correcto", "success");
         setTimeout(() => {
           window.location.href = "/analisis";
         }, 1000);

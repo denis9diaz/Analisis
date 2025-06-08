@@ -20,7 +20,7 @@ export default function EmptyState() {
         Selecciona un método de análisis o crea un método pulsando "Añadir método".
       </p>
       <p className="text-ml text-center max-w-sm">
-        La pestaña "Notas" está pensada para apuntar los partidos que quieres analizar en un futuro.
+        Pulsa la pestaña "Notas" para apuntar los partidos que quieres analizar en un futuro.
       </p>
     </div>
   );

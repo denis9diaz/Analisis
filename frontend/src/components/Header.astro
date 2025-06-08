@@ -138,22 +138,23 @@
 
     // Usuario dropdown
     const dropdownHTML = `
-      <div class="relative inline-block text-left group mt-2">
-        <button id="user-menu-button" class="flex items-center gap-2 font-medium cursor-pointer text-white hover:text-gray-200 transition-all duration-200">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A4 4 0 0112 20a4 4 0 016.879-2.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span>${username}</span>
-          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white text-black rounded-xl shadow-xl z-20 overflow-hidden text-sm origin-top-right">
-          <a href="/cuenta" class="block px-5 py-3 hover:bg-gray-100 font-medium">Mi cuenta</a>
-          <div class="border-t border-gray-200"></div>
-          <button id="logout-button" class="block w-full text-left px-5 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 font-medium cursor-pointer">Cerrar sesión</button>
-        </div>
-      </div>`;
+  <div class="relative inline-block text-left group mt-2">
+    <button id="user-menu-button" class="flex items-center gap-2 font-medium cursor-pointer text-white hover:text-gray-200 transition-all duration-200">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A4 4 0 0112 20a4 4 0 016.879-2.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span>${username}</span>
+      <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+    <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white text-black rounded-xl shadow-xl z-20 overflow-hidden text-sm origin-top-right">
+      <a href="/cuenta" class="block px-5 py-3 hover:bg-gray-100 font-medium">Mi cuenta</a>
+      <a href="/faqs" class="block px-5 py-3 hover:bg-gray-100 font-medium">Ayuda</a>
+      <div class="border-t border-gray-200"></div>
+      <button id="logout-button" class="block w-full text-left px-5 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 font-medium cursor-pointer">Salir</button>
+    </div>
+  </div>`;
 
     rightNav.innerHTML = dropdownHTML;
     mobileRightNav.innerHTML = dropdownHTML;

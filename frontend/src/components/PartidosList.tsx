@@ -720,8 +720,19 @@ export default function PartidosList() {
               <th className="px-1 py-1 text-center w-[80px]">% Local</th>
               <th className="px-1 py-1 text-center w-[80px]">% Visit.</th>
               <th className="px-1 py-1 text-center w-[80px]">% Total</th>
-              <th className="px-1 py-1 text-center w-[60px]">R.L.</th>
-              <th className="px-1 py-1 text-center w-[60px]">R.V.</th>
+              <th
+                className="px-2 py-1 text-center w-[60px]"
+                title="Racha Local: ACTUAL (HISTÓRICA)"
+              >
+                R.L.
+              </th>
+              <th
+                className="px-2 py-1 text-center w-[60px]"
+                title="Racha Visitante: ACTUAL (HISTÓRICA)"
+              >
+                R.V.
+              </th>
+
               <th className="px-1 py-1 text-center w-[100px]">Estado</th>
               <th className="px-2 py-1 text-left w-[260px]">Notas</th>
               <th className="px-1 py-1 w-[30px]"></th>
