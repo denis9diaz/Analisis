@@ -325,7 +325,7 @@ import { Pencil } from "lucide-react";
       section.style.display = "block";
 
       if (!res.ok) {
-        mensaje.textContent = "No estás suscrito."; // Mensaje si no hay suscripción activa
+        mensaje.textContent = "No estás suscrito.";
         abrirModalBtn.style.display = "none";
         resumen.innerHTML =
           "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
@@ -334,14 +334,13 @@ import { Pencil } from "lucide-react";
 
       const data = await res.json();
       if (!data || !data.activa) {
-        mensaje.textContent = "No estás suscrito."; // Cambia este mensaje si no hay suscripción activa
+        mensaje.textContent = "No estás suscrito.";
         abrirModalBtn.style.display = "none";
         resumen.innerHTML =
           "<p class='text-sm text-gray-500 text-center'>Contrata un plan para ver tu resumen.</p>";
         return;
       }
 
-      // Si hay suscripción activa, mostramos los datos correctamente
       const fechaTexto = new Date(data.fecha_fin).toLocaleDateString();
       let mensajeFinal = "";
 
@@ -354,7 +353,6 @@ import { Pencil } from "lucide-react";
       mensaje.innerHTML = mensajeFinal;
     }
 
-    // Eliminar cuenta con confirmación
     const deleteLink = document.querySelector('a[href="/eliminar"]');
     const modal = document.getElementById("delete-modal");
     const cancelBtn = document.getElementById("cancel-delete");
