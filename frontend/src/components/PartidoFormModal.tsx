@@ -70,6 +70,7 @@ export default function PartidoFormModal({
           "Esiliiga",
           "Veikkausliiga",
           "Ykkosliiga",
+          "Ykkonen",
           "Kakkonen",
           "Ligue 1",
           "Ligue 2",
