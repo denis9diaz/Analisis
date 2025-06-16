@@ -784,7 +784,7 @@ export default function PartidosList() {
                         <span>{option.label}</span>
                       </div>
                     )}
-                    menuPortalTarget={document.body} // Renderiza el menú en el body para evitar problemas de contención
+                    menuPortalTarget={document.body}
                     menuPosition="absolute"
                     menuPlacement="auto"
                     styles={{
@@ -808,7 +808,7 @@ export default function PartidosList() {
                       }),
                       menu: (base) => ({
                         ...base,
-                        zIndex: 9999, // Asegura que el menú esté por encima de otros elementos
+                        zIndex: 9999,
                         maxHeight: "400px",
                         overflowY: "auto",
                       }),
@@ -1013,7 +1013,7 @@ export default function PartidosList() {
                             );
                           });
                       }}
-                      className="text-xs border border-gray-300 rounded w-full cursor-pointer" // ✅ cursor-pointer
+                      className="text-xs border border-gray-300 rounded w-full cursor-pointer"
                     >
                       <option value="NO">NO</option>
                       <option value="LIVE">LIVE</option>
@@ -1025,7 +1025,7 @@ export default function PartidosList() {
                       onChange={(e) =>
                         handleResultadoChange(p.id, e.target.value)
                       }
-                      className="text-xs border border-gray-300 rounded w-full cursor-pointer" // ✅ cursor-pointer
+                      className="text-xs border border-gray-300 rounded w-full cursor-pointer"
                     >
                       <option value="">Sin resultado</option>
                       <option value="VERDE">Acierto</option>
