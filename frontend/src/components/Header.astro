@@ -6,17 +6,20 @@
     class="w-full max-w-screen-xl mx-auto px-4 flex items-center justify-between relative"
   >
     <!-- Lado izquierdo: logo -->
-    <div class="w-[300px] flex items-center">
+    <div class="flex items-center">
       <a href="/" class="flex items-center gap-2">
         <img src="/logo.png" alt="Logo" class="h-24 w-auto" />
       </a>
     </div>
 
-    <!-- Centro: botón análisis -->
-    <div id="center-nav" class="hidden md:flex justify-center"></div>
+    <!-- Lado derecho: navegación completa -->
+    <div class="flex items-center gap-8">
+      <!-- Enlaces de navegación (ocultos en móvil) -->
+      <nav id="nav-links" class="hidden md:flex items-center gap-8"></nav>
+      
+      <!-- Usuario/Auth (oculto en móvil) -->
+      <div class="hidden md:flex items-center" id="auth-section"></div>
 
-    <!-- Lado derecho: usuario -->
-    <div class="w-[300px] flex justify-end items-center">
       <!-- Hamburguesa móvil -->
       <button id="menu-toggle" class="md:hidden focus:outline-none">
         <svg
@@ -32,24 +35,19 @@
             d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
-
-      <!-- Usuario (oculto en móvil) -->
-      <div class="hidden md:flex items-center gap-4" id="header-nav"></div>
     </div>
   </div>
 
   <!-- Menú móvil -->
-  <div id="mobile-menu" class="md:hidden hidden px-4 pt-4 pb-2">
-    <div id="mobile-center-nav" class="mb-2"></div>
-    <div id="mobile-header-nav"></div>
+  <div id="mobile-menu" class="md:hidden hidden px-4 pt-4 pb-2 border-t border-white/10 mt-2">
+    <div id="mobile-nav"></div>
   </div>
 </header>
 
 <script type="module">
-  const centerNav = document.getElementById("center-nav");
-  const rightNav = document.getElementById("header-nav");
-  const mobileCenterNav = document.getElementById("mobile-center-nav");
-  const mobileRightNav = document.getElementById("mobile-header-nav");
+  const navLinks = document.getElementById("nav-links");
+  const authSection = document.getElementById("auth-section");
+  const mobileNav = document.getElementById("mobile-nav");
   const mobileMenu = document.getElementById("mobile-menu");
   const menuToggle = document.getElementById("menu-toggle");
 
@@ -109,61 +107,135 @@
   window.checkToken = checkToken;
 
   function showUserLinks(username) {
-    const centerButtons = `
-<!-- Escritorio -->
-<div class="hidden md:flex gap-6 items-center">
-  <a href="/planes" class="w-32 text-center text-white font-medium relative group overflow-hidden">
-    <span class="relative z-10">Planes</span>
-    <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
-  </a>
-  <a href="/analisis" class="w-32 text-center text-white font-medium relative group overflow-hidden">
-    <span class="relative z-10">Análisis</span>
-    <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
-  </a>
-  <a href="/estadisticas" class="w-32 text-center text-white font-medium relative group overflow-hidden">
-    <span class="relative z-10">Estadísticas</span>
-    <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
-  </a>
-</div>
+    // Enlaces de navegación
+    const navigationLinks = `
+      <a href="/analisis" class="text-white font-medium relative group px-3 py-2">
+        <span class="relative z-10">Análisis</span>
+        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
+      </a>
+      <a href="/estadisticas" class="text-white font-medium relative group px-3 py-2">
+        <span class="relative z-10">Estadísticas</span>
+        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
+      </a>
+      <a href="/planes" class="text-white font-medium relative group px-3 py-2">
+        <span class="relative z-10">Planes</span>
+        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
+      </a>
+    `;
 
-<!-- Móvil -->
-<div class="grid grid-cols-1 gap-2 text-center md:hidden mb-2">
-  <a href="/planes" class="text-white font-medium hover:underline transition">Planes</a>
-  <a href="/analisis" class="text-white font-medium hover:underline transition">Análisis</a>
-  <a href="/estadisticas" class="text-white font-medium hover:underline transition">Estadísticas</a>
-</div>`;
-
-    centerNav.innerHTML = centerButtons;
-    mobileCenterNav.innerHTML = centerButtons;
+    navLinks.innerHTML = navigationLinks;
 
     // Usuario dropdown
-    const dropdownHTML = `
-  <div class="relative inline-block text-left group mt-2">
-    <button id="user-menu-button" class="flex items-center gap-2 font-medium cursor-pointer text-white hover:text-gray-200 transition-all duration-200">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A4 4 0 0112 20a4 4 0 016.879-2.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-      <span>${username}</span>
-      <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-      </svg>
-    </button>
-    <div id="user-dropdown" class="hidden absolute left-1/2 transform -translate-x-1/2 mt-2 w-52 bg-white text-black rounded-xl shadow-xl z-20 overflow-hidden text-sm origin-top">
-      <a href="/cuenta" class="block px-5 py-3 hover:bg-gray-100 font-medium">Mi cuenta</a>
-      <a href="/faqs" class="block px-5 py-3 hover:bg-gray-100 font-medium">Ayuda</a>
-      <div class="border-t border-gray-200"></div>
-      <button id="logout-button" class="block w-full text-left px-5 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 font-medium cursor-pointer">Salir</button>
-    </div>
-  </div>`;
+    const userDropdown = `
+      <div class="relative inline-block text-left group">
+        <button id="user-menu-button" class="flex items-center gap-2 font-medium cursor-pointer text-white hover:text-gray-200 transition-all duration-200 px-3 py-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A4 4 0 0112 20a4 4 0 016.879-2.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>${username}</span>
+          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-52 bg-white text-black rounded-xl shadow-xl z-20 overflow-hidden text-sm origin-top-right">
+          <a href="/cuenta" class="block px-5 py-3 hover:bg-gray-100 font-medium">Mi cuenta</a>
+          <a href="/faqs" class="block px-5 py-3 hover:bg-gray-100 font-medium">Ayuda</a>
+          <div class="border-t border-gray-200"></div>
+          <button id="logout-button" class="block w-full text-left px-5 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 font-medium cursor-pointer">Salir</button>
+        </div>
+      </div>
+    `;
 
-    rightNav.innerHTML = dropdownHTML;
-    mobileRightNav.innerHTML = dropdownHTML;
+    authSection.innerHTML = userDropdown;
 
-    function bindDropdownEvents(scope) {
-      const userButton = scope.querySelector("#user-menu-button");
-      const dropdown = scope.querySelector("#user-dropdown");
-      const logoutBtn = scope.querySelector("#logout-button");
+    // Menú móvil completo
+    const mobileContent = `
+      <div class="space-y-3">
+        <a href="/analisis" class="block text-white font-medium hover:text-gray-200 transition py-2">Análisis</a>
+        <a href="/estadisticas" class="block text-white font-medium hover:text-gray-200 transition py-2">Estadísticas</a>
+        <a href="/planes" class="block text-white font-medium hover:text-gray-200 transition py-2">Planes</a>
+        <div class="border-t border-white/20 pt-3 mt-3">
+          <a href="/cuenta" class="block text-white font-medium hover:text-gray-200 transition py-2">Mi cuenta</a>
+          <a href="/faqs" class="block text-white font-medium hover:text-gray-200 transition py-2">Ayuda</a>
+          <button id="mobile-logout-button" class="block w-full text-left text-red-400 hover:text-red-300 font-medium cursor-pointer py-2">Salir</button>
+        </div>
+      </div>
+    `;
 
+    mobileNav.innerHTML = mobileContent;
+
+    // Bind events
+    bindDropdownEvents(document);
+    
+    // Mobile logout
+    const mobileLogout = document.getElementById("mobile-logout-button");
+    if (mobileLogout) {
+      mobileLogout.addEventListener("click", () => {
+        clearSession();
+        window.location.href = "/";
+      });
+    }
+  }
+
+  function showGuestLinks() {
+    // Enlaces de navegación
+    const navigationLinks = `
+      <a href="/analisis" class="text-white font-medium relative group px-3 py-2">
+        <span class="relative z-10">Análisis</span>
+        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
+      </a>
+      <a href="/estadisticas" class="text-white font-medium relative group px-3 py-2">
+        <span class="relative z-10">Estadísticas</span>
+        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
+      </a>
+      <a href="/planes" class="text-white font-medium relative group px-3 py-2">
+        <span class="relative z-10">Planes</span>
+        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
+      </a>
+    `;
+
+    navLinks.innerHTML = navigationLinks;
+
+    // Botones de autenticación
+    const authButtons = `
+      <div class="flex gap-3 items-center">
+        <a href="/inicio-sesion" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-5 py-2 rounded-lg transition-all duration-200">
+          Iniciar sesión
+        </a>
+        <a href="/registro" class="text-white font-medium hover:text-gray-200 transition-all duration-200 px-3 py-2">
+          Registrarse
+        </a>
+      </div>
+    `;
+
+    authSection.innerHTML = authButtons;
+
+    // Menú móvil para invitados
+    const mobileContent = `
+      <div class="space-y-3">
+        <a href="/analisis" class="block text-white font-medium hover:text-gray-200 transition py-2">Análisis</a>
+        <a href="/estadisticas" class="block text-white font-medium hover:text-gray-200 transition py-2">Estadísticas</a>
+        <a href="/planes" class="block text-white font-medium hover:text-gray-200 transition py-2">Planes</a>
+        <div class="border-t border-white/20 pt-3 mt-3 space-y-2">
+          <a href="/inicio-sesion" class="block w-full bg-white/20 hover:bg-white/30 text-white font-semibold text-center px-4 py-2 rounded-lg transition">
+            Iniciar sesión
+          </a>
+          <a href="/registro" class="block text-white font-medium hover:text-gray-200 transition py-2 text-center">
+            Registrarse
+          </a>
+        </div>
+      </div>
+    `;
+
+    mobileNav.innerHTML = mobileContent;
+  }
+
+  function bindDropdownEvents(scope) {
+    const userButton = scope.querySelector("#user-menu-button");
+    const dropdown = scope.querySelector("#user-dropdown");
+    const logoutBtn = scope.querySelector("#logout-button");
+
+    if (userButton && dropdown && logoutBtn) {
       userButton.addEventListener("click", (e) => {
         e.stopPropagation();
         dropdown.classList.toggle("hidden");
@@ -180,37 +252,6 @@
         }
       });
     }
-
-    bindDropdownEvents(document);
-    bindDropdownEvents(mobileMenu);
-  }
-
-  function showGuestLinks() {
-    const centerButtons = `
-<div class="hidden md:flex gap-6 items-center">
-  <a href="/planes" class="w-32 text-center text-white font-medium relative group overflow-hidden">
-    <span class="relative z-10">Planes</span>
-    <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
-  </a>
-</div>`;
-
-    const rightButtons = `
-    <div class="hidden md:flex gap-2 items-center">
-      <a href="/inicio-sesion" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 me-2 rounded-lg transition">Iniciar sesión</a>
-      <a href="/registro" class="text-white font-medium">Registrarse</a>
-    </div>`;
-
-    const mobileButtons = `
-<div class="grid grid-cols-1 gap-2 text-center">
-  <a href="/planes" class="text-white font-medium hover:underline transition">Planes</a>
-  <a href="/inicio-sesion" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition">Iniciar sesión</a>
-  <a href="/registro" class="px-4 py-2 text-white font-medium hover:underline">Registrarse</a>
-</div>`;
-
-    centerNav.innerHTML = centerButtons;
-    rightNav.innerHTML = rightButtons;
-    mobileCenterNav.innerHTML = mobileButtons;
-    mobileRightNav.innerHTML = "";
   }
 
   checkToken();
