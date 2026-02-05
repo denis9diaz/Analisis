@@ -544,19 +544,19 @@ export default function PartidosList() {
   if (!metodoSeleccionado) return null;
 
   return (
-    <div className="p-1">
+    <div className="p-0 sm:p-1">
       {/* Filtros */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4 text-gray-700">
+      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 sm:gap-4 text-gray-700">
         <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition cursor-pointer"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 sm:px-6 rounded-lg shadow transition cursor-pointer text-sm sm:text-base"
         >
           Añadir partido
         </button>
 
-        <div className="flex gap-4 items-center flex-wrap">
+        <div className="flex gap-2 sm:gap-3 md:gap-4 items-center flex-wrap">
           {/* Filtro liga */}
-          <div className="min-w-[200px]">
+          <div className="w-full sm:w-auto sm:min-w-[180px] md:min-w-[200px]">
             <Select
               options={[
                 { value: "TODAS", label: "Todas las ligas" },
@@ -611,7 +611,7 @@ export default function PartidosList() {
           </div>
 
           {/* Filtro estado */}
-          <div className="min-w-[200px]">
+          <div className="w-full sm:w-auto sm:min-w-[180px] md:min-w-[200px]">
             <Select
               options={[
                 { value: "TODOS", label: "Todos los estados" },
@@ -639,7 +639,7 @@ export default function PartidosList() {
           </div>
 
           {/* Filtro resultado */}
-          <div className="min-w-[200px]">
+          <div className="w-full sm:w-auto sm:min-w-[180px] md:min-w-[200px]">
             <Select
               options={[
                 { value: "TODOS", label: "Todos los resultados" },
@@ -673,7 +673,7 @@ export default function PartidosList() {
           </div>
 
           {/* Filtro mes */}
-          <div className="min-w-[200px]">
+          <div className="w-full sm:w-auto sm:min-w-[180px] md:min-w-[200px]">
             <Select
               options={[{ value: "TODOS", label: "Todos los meses" }, ...MESES]}
               value={
@@ -698,33 +698,33 @@ export default function PartidosList() {
       </div>
 
       {/* Estadísticas */}
-      <div className="mb-4 bg-gray-50 border border-gray-200 rounded-md p-4 shadow-sm text-sm text-gray-700">
-        <p className="mb-1 font-medium flex items-center gap-2">
-          <img src="/2.webp" alt="Estadísticas" className="w-5 h-5" />
-          Estadísticas (según filtros aplicados):
+      <div className="mb-3 sm:mb-4 bg-gray-50 border border-gray-200 rounded-md p-3 sm:p-4 shadow-sm text-xs sm:text-sm text-gray-700">
+        <p className="mb-2 font-medium flex items-center gap-2">
+          <img src="/2.webp" alt="Estadísticas" className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="text-sm sm:text-base">Estadísticas (según filtros aplicados):</span>
         </p>
-        <div className="flex flex-wrap gap-4">
-          <span>
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3 md:gap-4">
+          <span className="text-xs sm:text-sm">
             Partidos: <strong>{total}</strong>
           </span>
-          <span className="text-green-700">
+          <span className="text-green-700 text-xs sm:text-sm">
             Aciertos: <strong>{aciertos}</strong>
           </span>
-          <span className="text-red-700">
+          <span className="text-red-700 text-xs sm:text-sm">
             Fallos: <strong>{fallos}</strong>
           </span>
-          <span className="text-gray-600">
+          <span className="text-gray-600 text-xs sm:text-sm">
             Sin resultado: <strong>{sinResultado}</strong>
           </span>
-          <span>
-            Porcentaje de acierto: <strong>{porcentaje}%</strong>
+          <span className="col-span-2 sm:col-span-1 text-xs sm:text-sm">
+            Porcentaje: <strong>{porcentaje}%</strong>
           </span>
         </div>
       </div>
 
       {/* Tabla */}
-      <div className="overflow-x-auto overflow-y-hidden rounded-lg shadow-md bg-white scrollbar-thin hover:scrollbar-thumb-gray-400 scrollbar-thumb-gray-300 scrollbar-track-transparent">
-        <table className="w-full min-w-[900px] text-sm text-gray-800 border-collapse">
+      <div className="overflow-x-auto overflow-y-hidden rounded-lg shadow-md bg-white scrollbar-thin hover:scrollbar-thumb-gray-400 scrollbar-thumb-gray-300 scrollbar-track-transparent -mx-2 sm:mx-0">
+        <table className="w-full min-w-[900px] text-xs sm:text-sm text-gray-800 border-collapse">
           <thead className="bg-blue-600 text-white text-sm">
             <tr>
               <th className="px-2 py-1 text-left w-[100px]">Fecha</th>
@@ -1076,7 +1076,7 @@ export default function PartidosList() {
       </div>
 
       {/* Controles de paginación */}
-      <div className="flex justify-center mt-4 gap-2 mb-2 flex-wrap">
+      <div className="flex justify-center mt-3 sm:mt-4 gap-1 sm:gap-2 mb-2 flex-wrap px-2">
         {renderBotonesPaginacion()}
       </div>
 
