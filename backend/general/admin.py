@@ -4,6 +4,19 @@ from .models import MetodoAnalisis, Liga, Partido, Suscripcion, NotaAnalisis  # 
 @admin.register(MetodoAnalisis)
 class MetodoAnalisisAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'usuario')
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        # Define el orden personalizado
+        orden_personalizado = {
+            'Over 0.5 HT - Both': 1,
+            'Over 0.5 HT - H/A': 2,
+            'TTS': 3,
+            'BTTS - H/A': 4,
+            'BTTS - Both': 5,
+        }
+        # Ordena usando el diccionario
+        return sorted(qs, key=lambda x: orden_personalizado.get(x.nombre, 999))
 
 @admin.register(Liga)
 class LigaAdmin(admin.ModelAdmin):
