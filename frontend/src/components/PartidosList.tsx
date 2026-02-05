@@ -54,6 +54,18 @@ const MESES = [
   { value: "2025-10", label: "Octubre 2025" },
   { value: "2025-11", label: "Noviembre 2025" },
   { value: "2025-12", label: "Diciembre 2025" },
+  { value: "2026-01", label: "Enero 2026" },
+  { value: "2026-02", label: "Febrero 2026" },
+  { value: "2026-03", label: "Marzo 2026" },
+  { value: "2026-04", label: "Abril 2026" },
+  { value: "2026-05", label: "Mayo 2026" },
+  { value: "2026-06", label: "Junio 2026" },
+  { value: "2026-07", label: "Julio 2026" },
+  { value: "2026-08", label: "Agosto 2026" },
+  { value: "2026-09", label: "Septiembre 2026" },
+  { value: "2026-10", label: "Octubre 2026" },
+  { value: "2026-11", label: "Noviembre 2026" },
+  { value: "2026-12", label: "Diciembre 2026" },
 ];
 
 export default function PartidosList() {
@@ -748,7 +760,11 @@ export default function PartidosList() {
                 <td className="px-2 py-1 w-[100px]">
                   <DatePicker
                     selected={new Date(p.fecha)}
-                    onChange={(date) => date && handleFechaChange(p.id, date)}
+                    onChange={(date: Date | null) => {
+                      if (date) {
+                        handleFechaChange(p.id, date);
+                      }
+                    }}
                     dateFormat="dd/MM/yyyy"
                     className="w-full bg-transparent text-sm py-0 h-[24px] cursor-pointer"
                     withPortal
