@@ -44,7 +44,18 @@ class MetodoAnalisisListAPIView(APIView):
             return Response({"error": "Se requiere una suscripción activa para ver tus métodos."}, status=403)
 
         metodos = MetodoAnalisis.objects.filter(usuario=request.user)
-        serializer = MetodoAnalisisSerializer(metodos, many=True)
+        
+        # Orden personalizado
+        orden_personalizado = {
+            'Over 0.5 HT - Both': 1,
+            'Over 0.5 HT - H/A': 2,
+            'TTS': 3,
+            'BTTS - H/A': 4,
+            'BTTS - Both': 5,
+        }
+        metodos_ordenados = sorted(metodos, key=lambda x: orden_personalizado.get(x.nombre, 999))
+        
+        serializer = MetodoAnalisisSerializer(metodos_ordenados, many=True)
         return Response(serializer.data)
 
     def post(self, request):
