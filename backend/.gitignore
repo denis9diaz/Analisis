@@ -4,6 +4,7 @@ db.sqlite3
 # Entorno virtual
 venv/
 .env/
+.env
 
 # Archivos compilados
 __pycache__/
